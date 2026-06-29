@@ -1,12 +1,20 @@
 // app/(dashboard)/layout.tsx
+'use client' // 👈 onClick အလုပ်လုပ်ရန် Client Component အဖြစ် ပြောင်းလဲပါသည်
+
 import React from 'react'
 import Link from 'next/link'
+import { signOut } from 'next-auth/react' // 👈 NextAuth ရဲ့ signOut function ကို import ခေါ်ပါ
 
 export default function DashboardLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
+    // 🚪 စနစ်မှထွက်ပြီး Login Page သို့ အော်တို ပြန်မောင်းထုတ်မည့် function
+    const handleLogout = async () => {
+        await signOut({ callbackUrl: '/login' })
+    }
+
     return (
         <div className="flex h-screen bg-gray-100 font-sans text-gray-900">
 
@@ -44,15 +52,26 @@ export default function DashboardLayout({
                     </nav>
                 </div>
 
-                {/* Sidebar အောက်ခြေရှိ အက်ဒမင် ပရိုဖိုင် */}
-                <div className="p-4 border-t border-slate-800 flex items-center gap-3">
-                    <div className="w-9 h-9 bg-orange-500 rounded-full flex items-center justify-center font-bold text-white text-sm">
-                        ကမ
+                {/* 🎯 Sidebar အောက်ခြေရှိ အက်ဒမင် ပရိုဖိုင် နှင့် Logout ခလုတ် */}
+                <div className="p-4 border-t border-slate-800 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-3 overflow-hidden">
+                        <div className="w-9 h-9 bg-orange-500 rounded-full flex items-center justify-center font-bold text-white text-sm shrink-0">
+                            ကမ
+                        </div>
+                        <div className="overflow-hidden">
+                            <p className="text-sm font-medium truncate">ကိုမောင်မောင်</p>
+                            <p className="text-xs text-gray-400">Manager</p>
+                        </div>
                     </div>
-                    <div className="overflow-hidden">
-                        <p className="text-sm font-medium truncate">ကိုမောင်မောင်</p>
-                        <p className="text-xs text-gray-400">Manager</p>
-                    </div>
+
+                    {/* 🚀 ထည့်သွင်းလိုက်သော Logout ခလုတ် */}
+                    <button
+                        onClick={handleLogout}
+                        className="p-2 hover:bg-slate-800 text-gray-400 hover:text-red-400 rounded-lg transition text-sm flex items-center gap-1 shrink-0"
+                        title="စနစ်မှထွက်မည်"
+                    >
+                        🚪 <span className="text-xs font-semibold hidden lg:inline">ထွက်မည်</span>
+                    </button>
                 </div>
             </aside>
 
