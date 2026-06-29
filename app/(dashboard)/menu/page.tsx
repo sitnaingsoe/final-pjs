@@ -123,16 +123,18 @@ export default async function MenuPage() {
                                                 {item.price.toLocaleString()} MMK
                                             </td>
                                             <td className="p-4 text-right">
-                                                <button
-                                                    formAction={handleDelete.bind(null, item.id)}
-                                                    formMethod="POST"
-                                                    className="text-red-500 hover:text-red-700 text-xs font-bold hover:underline"
-                                                >
-                                                    {/* Next.js Server actions flow အရ တိုက်ရိုက် form သုံးနိုင်ရန် button အဖြစ် ထားပါသည် */}
+                                                <div className="flex items-center gap-2">
+
                                                     <form action={handleDelete.bind(null, item.id)}>
-                                                        <button type="submit">🗑️ ဖျက်မည်</button>
+                                                        <button
+                                                            type="submit"
+                                                            className="text-red-500 hover:text-red-700 text-xs font-medium"
+                                                        >
+                                                            🗑️ ဖျက်မည်
+                                                        </button>
                                                     </form>
-                                                </button>
+
+                                                </div>
                                             </td>
                                         </tr>
                                     ))
