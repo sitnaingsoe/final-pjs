@@ -1,0 +1,168 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "./generated"
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  name     String?
+  password String
+  posts    Post[]
+}
+
+model Post {
+  id        Int     @id @default(autoincrement())
+  title     String
+  published Boolean @default(false)
+  author    User?   @relation(fields: [authorId], references: [id])
+  authorId  Int?
+}
+
+model Setting {
+  id                String   @id @default(cuid())
+  restaurantName    String
+  currency          String   @default("MMK") // မြန်မာကျပ်ငွေ
+  taxRate           Float    @default(5.0) // အခွန် ရာခိုင်နှုန်း (ဥပမာ ၅%)
+  isAcceptingOrders Boolean  @default(true) // အော်ဒါ လက်ခံနေသလား
+  updatedAt         DateTime @updatedAt
+}
+
+// ၂။ မီနူး အမျိုးအစားများ (ဥပမာ - အကြော်စုံ၊ ဟင်းရည်၊ အအေး)
+model MenuCategory {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  isActive    Boolean    @default(true)
+  menuItems   MenuItem[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+// ၃။ စားစရာ မီနူးများ (ဥPမာ - ကြက်သားတုတ်ထိုး၊ ပုစွန်တုံယမ်း)
+model MenuItem {
+  id              String                  @id @default(cuid())
+  name            String
+  description     String?
+  price           Float
+  imageUrl        String?
+  isActive        Boolean                 @default(true)
+  categoryId      String
+  category        MenuCategory            @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  addonCategories MenuItemAddonCategory[]
+  orderItems      OrderItem[]
+  discountId      String?
+  discount        Discount?               @relation(fields: [discountId], references: [id], onDelete: SetNull)
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+}
+
+// ၄။ အပိုပစ္စည်း အမျိုးအစား (ဥပမာ - "အသားတိုးမည်"၊ "အချို/အစပ် ရွေးချယ်ရန်")
+model AddonCategory {
+  id        String                  @id @default(cuid())
+  name      String
+  minSelect Int                     @default(0) // အနည်းဆုံး ရွေးချယ်ရမည့် အရေအတွက်
+  maxSelect Int                     @default(1) // အများဆုံး ရွေးချယ်နိုင်သည့် အရေအတွက်
+  addons    Addon[]
+  menuItems MenuItemAddonCategory[]
+  createdAt DateTime                @default(now())
+  updatedAt DateTime                @updatedAt
+}
+
+// MenuItem နှင့် AddonCategory ကြား Many-to-Many ချိတ်ဆက်ပေးသည့် ဇယား (Bridge Table)
+model MenuItemAddonCategory {
+  menuItemId      String
+  addonCategoryId String
+  menuItem        MenuItem      @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  addonCategory   AddonCategory @relation(fields: [addonCategoryId], references: [id], onDelete: Cascade)
+
+  @@id([menuItemId, addonCategoryId])
+}
+
+// ၅။ အပိုထည့်မည့် ပစ္စည်းများ (ဥPမာ - ကြက်ဥထပ်တိုး = ၅၀၀ ကျပ်၊ ဒိန်ခဲ = ၁၀၀၀ ကျပ်)
+model Addon {
+  id              String           @id @default(cuid())
+  name            String
+  price           Float            @default(0.0)
+  isActive        Boolean          @default(true)
+  addonCategoryId String
+  addonCategory   AddonCategory    @relation(fields: [addonCategoryId], references: [id], onDelete: Cascade)
+  orderItemAddons OrderItemAddon[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+// ၆။ ပရိုမိုးရှင်းနှင့် လျှော့စျေးများ
+model Discount {
+  id        String     @id @default(cuid())
+  name      String // ဥပမာ - "နွေရာသီ အထူးလျှော့စျေး"
+  type      String // "PERCENTAGE" (ရာခိုင်နှုန်း) သို့မဟုတ် "FIXED" (ပမာဏအတိအကျ)
+  value     Float
+  startDate DateTime?
+  endDate   DateTime?
+  isActive  Boolean    @default(true)
+  menuItems MenuItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Table {
+  id        String   @id @default(cuid())
+  number    String   @unique // ဥပမာ - "1", "2", "VIP-1"
+  qrUrl     String? // QR Code လှမ်းထုတ်မည့် URL လမ်းကြောင်း သိမ်းရန်
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[] // One-to-Many: တစ်စားပွဲတည်းကနေ အော်ဒါအများကြီး မှာနိုင်သည်
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  orderNumber Int         @unique @default(autoincrement())
+  status      OrderStatus @default(PENDING) // လက်ရှိ အော်ဒါ အခြေအနေ
+  totalAmount Float
+  taxAmount   Float
+  finalAmount Float
+  notes       String?
+  tableId     String?
+  table       Table?      @relation(fields: [tableId], references: [id])
+
+  items     OrderItem[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+// အော်ဒါ အခြေအနေ သတ်မှတ်ချက်များ
+enum OrderStatus {
+  PENDING // စောင့်ဆိုင်းဆဲ
+  CONFIRMED // အတည်ပြုပြီး (မီးဖိုချောင်သို့ ပို့ရန်သင့်ပြီ)
+  COOKING // ချက်ပြုတ်နေဆဲ
+  READY // ပွဲထွက်ရန် အဆင်သင့်
+  DELIVERED // ပို့ဆောင်ပြီး
+  CANCELLED // ပယ်ဖျက်လိုက်သည်
+}
+
+// အော်ဒါတစ်ခုချင်းစီတွင် ပါဝင်သော မီနူးများ
+model OrderItem {
+  id         String           @id @default(cuid())
+  orderId    String
+  order      Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItemId String
+  menuItem   MenuItem         @relation(fields: [menuItemId], references: [id])
+  quantity   Int
+  price      Float // အော်ဒါမှာယူစဉ်က စျေးနှုန်းကို မှတ်ထားရန် (နောင်တွင် စျေးပြောင်းသော်လည်း စာရင်းမရှုပ်စေရန်)
+  addons     OrderItemAddon[]
+}
+
+// ဝယ်ယူသူမှ မှာယူခဲ့သော အပိုပစ္စည်းများ (Addons)
+model OrderItemAddon {
+  id          String    @id @default(cuid())
+  orderItemId String
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  addonId     String
+  addon       Addon     @relation(fields: [addonId], references: [id])
+}
