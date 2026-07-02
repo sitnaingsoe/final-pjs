@@ -1,97 +1,121 @@
 // app/login/page.tsx
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { signIn } from 'next-auth/react' // 👈 NextAuth signIn ကို import ခေါ်ပါ
+import Link from 'next/link' // 👈 လင့်ခ်များ ချိတ်ဆက်ရန်
+import { signIn } from 'next-auth/react'
 
 export default function LoginPage() {
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [isPending, startTransition] = useTransition() // 👈 ခေတ်မီ Loading State ကို သုံးပါသည်
 
-  async function handleLogin() {
-    setError(null);
-    setLoading(true);
-
-    const email = (document.getElementById('email') as HTMLInputElement)?.value;
-    const password = (document.getElementById('password') as HTMLInputElement)?.value;
+  const handleLoginSubmit = (formData: FormData) => {
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
 
     if (!email || !password) {
-      setError("အီးမေးလ်နှင့် လျှို့ဝှက်နံပါတ်ကို ဖြည့်စွက်ပေးပါ");
-      setLoading(false);
-      return;
+      setError("အီးမေးလ်နှင့် လျှို့ဝှက်နံပါတ်ကို ဖြည့်စွက်ပေးပါ")
+      return
     }
 
-    try {
-      // 🚀 NextAuth ရဲ့ credentials စနစ်ဖြင့် Token ဆောက်ခိုင်းခြင်း
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false, // အောင်မြင်မှ ကိုယ့်စိတ်ကြိုက် လမ်းကြောင်းပြောင်းရန်
-      });
+    setError(null)
+    startTransition(async () => {
+      try {
+        const result = await signIn("credentials", {
+          email,
+          password,
+          redirect: false,
+        })
 
-      if (result?.error) {
-        setError("အီးမေးလ် သို့မဟုတ် လျှို့ဝှက်နံပါတ် မှားယွင်းနေပါသည်");
-        setLoading(false);
-      } else {
-        // Token ရှိသွားပြီဖြစ်၍ Middleware က အဝင်ခံမည် ဖြစ်သောကြောင့် /orders ဆီ တိုက်ရိုက်လွှတ်ခြင်း
-        router.push('/orders');
-        router.refresh();
+        if (result?.error) {
+          setError("အီးမေးလ် သို့မဟုတ် လျှို့ဝှက်နံပါတ် မှားယွင်းနေပါသည်")
+        } else {
+          router.push('/orders')
+          router.refresh()
+        }
+      } catch (err) {
+        setError("ဆာဗာနှင့် ချိတ်ဆက်၍ မရပါ")
       }
-
-    } catch (err) {
-      setError("ဆာဗာနှင့် ချိတ်ဆက်၍ မရပါ");
-      setLoading(false);
-    }
+    })
   }
 
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-      <div className="bg-slate-950 p-8 rounded-2xl shadow-xl border border-slate-800 w-full max-w-md space-y-6">
+      <div className="bg-slate-950 p-8 rounded-2xl shadow-2xl border border-slate-800 w-full max-w-md space-y-6">
 
-        <div className="text-center space-y-1">
-          <h1 className="text-xl font-black text-white">Backoffice Login</h1>
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <div className="text-3xl">🍕</div>
+          <h1 className="text-2xl font-black text-white tracking-wide">Backoffice Login</h1>
           <p className="text-xs text-slate-400">စနစ်အတွင်းသို့ ဝင်ရောက်ရန် အကောင့်အချက်အလက် ဖြည့်ပါ</p>
         </div>
 
+        {/* Error Alert */}
         {error && (
-          <div className="bg-red-950 border border-red-800 text-red-400 text-xs p-3.5 rounded-xl font-medium flex items-center gap-2">
+          <div className="bg-red-950/50 border border-red-800 text-red-400 text-xs p-3.5 rounded-xl font-medium flex items-center gap-2 animate-shake">
             ⚠️ {error}
           </div>
         )}
 
-        <div className="space-y-4">
+        {/* Form */}
+        <form action={handleLoginSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-slate-400 mb-1">အီးမေးလ် (Email)</label>
+            <label className="block text-xs font-bold text-slate-400 mb-1.5">အီးမေးလ် (Email)</label>
             <input
               type="email"
-              id="email"
+              name="email"
               placeholder="admin@restaurant.com"
-              className="w-full border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-slate-500 transition bg-slate-900 text-white placeholder-slate-500"
+              className="w-full border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition bg-slate-900 text-white placeholder-slate-500"
               required
+              disabled={isPending}
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-400 mb-1">လျှို့ဝှက်နံပါတ် (Password)</label>
+            <div className="flex justify-between items-center mb-1.5">
+              <label className="text-xs font-bold text-slate-400">လျှို့ဝှက်နံပါတ် (Password)</label>
+
+              {/* 🔗 Forgot Password Link */}
+              <Link
+                href="/forgot-password"
+                className="text-xs font-semibold text-orange-500 hover:text-orange-400 hover:underline transition"
+              >
+                စကားဝှက်မေ့နေပါသလား?
+              </Link>
+            </div>
             <input
               type="password"
-              id="password"
+              name="password"
               placeholder="••••••••"
-              className="w-full border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-slate-500 transition bg-slate-900 text-white placeholder-slate-500"
+              className="w-full border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition bg-slate-900 text-white placeholder-slate-500"
               required
+              disabled={isPending}
             />
           </div>
 
           <button
-            type="button"
-            onClick={handleLogin}
-            disabled={loading}
-            className="w-full bg-white hover:bg-slate-200 text-slate-950 text-xs font-bold py-3.5 rounded-xl transition shadow-sm disabled:bg-slate-800 disabled:text-slate-500 font-medium"
+            type="submit"
+            disabled={isPending}
+            className="w-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold py-3.5 rounded-xl transition shadow-md disabled:bg-slate-800 disabled:text-slate-500 flex items-center justify-center gap-2 mt-2"
           >
-            {loading ? "စစ်ဆေးနေပါသည်..." : "🔑 စနစ်ထဲသို့ ဝင်မည်"}
+            {isPending ? (
+              <>
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                <span>စစ်ဆေးနေပါသည်...</span>
+              </>
+            ) : (
+              "🔑 စနစ်ထဲသို့ ဝင်မည်"
+            )}
           </button>
+        </form>
+
+        {/* Register Path Link */}
+        <div className="text-center pt-2 border-t border-slate-900">
+          <Link href="/register" className="text-xs text-slate-400 hover:text-white transition">
+            အကောင့်မရှိသေးဘူးလား? <span className="text-orange-500 font-bold hover:underline">Register ဖွင့်ရန်</span>
+          </Link>
         </div>
 
       </div>

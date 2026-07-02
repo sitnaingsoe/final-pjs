@@ -28,6 +28,11 @@ export type User = Prisma.UserModel
  */
 export type Post = Prisma.PostModel
 /**
+ * Model PasswordResetToken
+ * 
+ */
+export type PasswordResetToken = Prisma.PasswordResetTokenModel
+/**
  * Model Setting
  * 
  */

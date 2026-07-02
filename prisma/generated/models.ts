@@ -10,6 +10,7 @@
  */
 export type * from './models/User'
 export type * from './models/Post'
+export type * from './models/PasswordResetToken'
 export type * from './models/Setting'
 export type * from './models/MenuCategory'
 export type * from './models/MenuItem'
