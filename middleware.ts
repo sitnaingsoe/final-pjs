@@ -1,16 +1,16 @@
-// middleware.ts (Root Folder တွင်ရှိသောဖိုင်)
+// middleware.ts (Root folder ထဲတွင် ထားရှိရပါမည်)
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { getToken } from "next-auth/jwt"
 
 export async function middleware(req: NextRequest) {
-    // 🔐 NextAuth ရဲ့ Session Token ကို ဒေတာဘေ့စ်မခေါ်ဘဲ Cookie ထဲကနေ တိုက်ရိုက်ဆွဲထုတ်ခြင်း
+    // Session Token ကို Cookie ထဲမှ တိုက်ရိုက်ဆွဲထုတ်ခြင်း
     const token = await getToken({
         req,
-        secret: process.env.NEXTAUTH_SECRET || "your_super_secret_fallback_string_here"
+        secret: process.env.NEXTAUTH_SECRET
     })
 
-    // 🚫 Token (Session) မရှိပါက /login UI ဆီသို့ ချက်ချင်းမောင်းထုတ်မည်
+    // အကောင့်ဝင်မထားပါက /login သို့ အတင်းမောင်းထုတ်မည်
     if (!token) {
         const loginUrl = new URL("/login", req.url)
         return NextResponse.redirect(loginUrl)
@@ -19,7 +19,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next()
 }
 
-// 🎯 ကာကွယ်လိုသော Dashboard လမ်းကြောင်းများ (ဒီလမ်းကြောင်းတွေပဲ Middleware ဖြတ်မည်)
+// 🛡️ ကာကွယ်ထားမည့် Dashboard စာမျက်နှာလမ်းကြောင်းများ
 export const config = {
     matcher: [
         "/orders/:path*",
