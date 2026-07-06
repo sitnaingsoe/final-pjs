@@ -29,6 +29,7 @@ export type TableMinAggregateOutputType = {
   number: string | null
   qrUrl: string | null
   isActive: boolean | null
+  branchId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -38,6 +39,7 @@ export type TableMaxAggregateOutputType = {
   number: string | null
   qrUrl: string | null
   isActive: boolean | null
+  branchId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -47,6 +49,7 @@ export type TableCountAggregateOutputType = {
   number: number
   qrUrl: number
   isActive: number
+  branchId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -58,6 +61,7 @@ export type TableMinAggregateInputType = {
   number?: true
   qrUrl?: true
   isActive?: true
+  branchId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -67,6 +71,7 @@ export type TableMaxAggregateInputType = {
   number?: true
   qrUrl?: true
   isActive?: true
+  branchId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -76,6 +81,7 @@ export type TableCountAggregateInputType = {
   number?: true
   qrUrl?: true
   isActive?: true
+  branchId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -158,6 +164,7 @@ export type TableGroupByOutputType = {
   number: string
   qrUrl: string | null
   isActive: boolean
+  branchId: string
   createdAt: Date
   updatedAt: Date
   _count: TableCountAggregateOutputType | null
@@ -188,8 +195,10 @@ export type TableWhereInput = {
   number?: Prisma.StringFilter<"Table"> | string
   qrUrl?: Prisma.StringNullableFilter<"Table"> | string | null
   isActive?: Prisma.BoolFilter<"Table"> | boolean
+  branchId?: Prisma.StringFilter<"Table"> | string
   createdAt?: Prisma.DateTimeFilter<"Table"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Table"> | Date | string
+  branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
   orders?: Prisma.OrderListRelationFilter
 }
 
@@ -198,29 +207,35 @@ export type TableOrderByWithRelationInput = {
   number?: Prisma.SortOrder
   qrUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  branchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  branch?: Prisma.BranchOrderByWithRelationInput
   orders?: Prisma.OrderOrderByRelationAggregateInput
 }
 
 export type TableWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  number?: string
+  number_branchId?: Prisma.TableNumberBranchIdCompoundUniqueInput
   AND?: Prisma.TableWhereInput | Prisma.TableWhereInput[]
   OR?: Prisma.TableWhereInput[]
   NOT?: Prisma.TableWhereInput | Prisma.TableWhereInput[]
+  number?: Prisma.StringFilter<"Table"> | string
   qrUrl?: Prisma.StringNullableFilter<"Table"> | string | null
   isActive?: Prisma.BoolFilter<"Table"> | boolean
+  branchId?: Prisma.StringFilter<"Table"> | string
   createdAt?: Prisma.DateTimeFilter<"Table"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Table"> | Date | string
+  branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
   orders?: Prisma.OrderListRelationFilter
-}, "id" | "number">
+}, "id" | "number_branchId">
 
 export type TableOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   number?: Prisma.SortOrder
   qrUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  branchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.TableCountOrderByAggregateInput
@@ -236,6 +251,7 @@ export type TableScalarWhereWithAggregatesInput = {
   number?: Prisma.StringWithAggregatesFilter<"Table"> | string
   qrUrl?: Prisma.StringNullableWithAggregatesFilter<"Table"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"Table"> | boolean
+  branchId?: Prisma.StringWithAggregatesFilter<"Table"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Table"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Table"> | Date | string
 }
@@ -247,6 +263,7 @@ export type TableCreateInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutTablesInput
   orders?: Prisma.OrderCreateNestedManyWithoutTableInput
 }
 
@@ -255,6 +272,7 @@ export type TableUncheckedCreateInput = {
   number: string
   qrUrl?: string | null
   isActive?: boolean
+  branchId: string
   createdAt?: Date | string
   updatedAt?: Date | string
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutTableInput
@@ -267,6 +285,7 @@ export type TableUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutTablesNestedInput
   orders?: Prisma.OrderUpdateManyWithoutTableNestedInput
 }
 
@@ -275,6 +294,7 @@ export type TableUncheckedUpdateInput = {
   number?: Prisma.StringFieldUpdateOperationsInput | string
   qrUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   orders?: Prisma.OrderUncheckedUpdateManyWithoutTableNestedInput
@@ -285,6 +305,7 @@ export type TableCreateManyInput = {
   number: string
   qrUrl?: string | null
   isActive?: boolean
+  branchId: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -303,8 +324,24 @@ export type TableUncheckedUpdateManyInput = {
   number?: Prisma.StringFieldUpdateOperationsInput | string
   qrUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type TableListRelationFilter = {
+  every?: Prisma.TableWhereInput
+  some?: Prisma.TableWhereInput
+  none?: Prisma.TableWhereInput
+}
+
+export type TableOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
+export type TableNumberBranchIdCompoundUniqueInput = {
+  number: string
+  branchId: string
 }
 
 export type TableCountOrderByAggregateInput = {
@@ -312,6 +349,7 @@ export type TableCountOrderByAggregateInput = {
   number?: Prisma.SortOrder
   qrUrl?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  branchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -321,6 +359,7 @@ export type TableMaxOrderByAggregateInput = {
   number?: Prisma.SortOrder
   qrUrl?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  branchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -330,6 +369,7 @@ export type TableMinOrderByAggregateInput = {
   number?: Prisma.SortOrder
   qrUrl?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  branchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -337,6 +377,48 @@ export type TableMinOrderByAggregateInput = {
 export type TableNullableScalarRelationFilter = {
   is?: Prisma.TableWhereInput | null
   isNot?: Prisma.TableWhereInput | null
+}
+
+export type TableCreateNestedManyWithoutBranchInput = {
+  create?: Prisma.XOR<Prisma.TableCreateWithoutBranchInput, Prisma.TableUncheckedCreateWithoutBranchInput> | Prisma.TableCreateWithoutBranchInput[] | Prisma.TableUncheckedCreateWithoutBranchInput[]
+  connectOrCreate?: Prisma.TableCreateOrConnectWithoutBranchInput | Prisma.TableCreateOrConnectWithoutBranchInput[]
+  createMany?: Prisma.TableCreateManyBranchInputEnvelope
+  connect?: Prisma.TableWhereUniqueInput | Prisma.TableWhereUniqueInput[]
+}
+
+export type TableUncheckedCreateNestedManyWithoutBranchInput = {
+  create?: Prisma.XOR<Prisma.TableCreateWithoutBranchInput, Prisma.TableUncheckedCreateWithoutBranchInput> | Prisma.TableCreateWithoutBranchInput[] | Prisma.TableUncheckedCreateWithoutBranchInput[]
+  connectOrCreate?: Prisma.TableCreateOrConnectWithoutBranchInput | Prisma.TableCreateOrConnectWithoutBranchInput[]
+  createMany?: Prisma.TableCreateManyBranchInputEnvelope
+  connect?: Prisma.TableWhereUniqueInput | Prisma.TableWhereUniqueInput[]
+}
+
+export type TableUpdateManyWithoutBranchNestedInput = {
+  create?: Prisma.XOR<Prisma.TableCreateWithoutBranchInput, Prisma.TableUncheckedCreateWithoutBranchInput> | Prisma.TableCreateWithoutBranchInput[] | Prisma.TableUncheckedCreateWithoutBranchInput[]
+  connectOrCreate?: Prisma.TableCreateOrConnectWithoutBranchInput | Prisma.TableCreateOrConnectWithoutBranchInput[]
+  upsert?: Prisma.TableUpsertWithWhereUniqueWithoutBranchInput | Prisma.TableUpsertWithWhereUniqueWithoutBranchInput[]
+  createMany?: Prisma.TableCreateManyBranchInputEnvelope
+  set?: Prisma.TableWhereUniqueInput | Prisma.TableWhereUniqueInput[]
+  disconnect?: Prisma.TableWhereUniqueInput | Prisma.TableWhereUniqueInput[]
+  delete?: Prisma.TableWhereUniqueInput | Prisma.TableWhereUniqueInput[]
+  connect?: Prisma.TableWhereUniqueInput | Prisma.TableWhereUniqueInput[]
+  update?: Prisma.TableUpdateWithWhereUniqueWithoutBranchInput | Prisma.TableUpdateWithWhereUniqueWithoutBranchInput[]
+  updateMany?: Prisma.TableUpdateManyWithWhereWithoutBranchInput | Prisma.TableUpdateManyWithWhereWithoutBranchInput[]
+  deleteMany?: Prisma.TableScalarWhereInput | Prisma.TableScalarWhereInput[]
+}
+
+export type TableUncheckedUpdateManyWithoutBranchNestedInput = {
+  create?: Prisma.XOR<Prisma.TableCreateWithoutBranchInput, Prisma.TableUncheckedCreateWithoutBranchInput> | Prisma.TableCreateWithoutBranchInput[] | Prisma.TableUncheckedCreateWithoutBranchInput[]
+  connectOrCreate?: Prisma.TableCreateOrConnectWithoutBranchInput | Prisma.TableCreateOrConnectWithoutBranchInput[]
+  upsert?: Prisma.TableUpsertWithWhereUniqueWithoutBranchInput | Prisma.TableUpsertWithWhereUniqueWithoutBranchInput[]
+  createMany?: Prisma.TableCreateManyBranchInputEnvelope
+  set?: Prisma.TableWhereUniqueInput | Prisma.TableWhereUniqueInput[]
+  disconnect?: Prisma.TableWhereUniqueInput | Prisma.TableWhereUniqueInput[]
+  delete?: Prisma.TableWhereUniqueInput | Prisma.TableWhereUniqueInput[]
+  connect?: Prisma.TableWhereUniqueInput | Prisma.TableWhereUniqueInput[]
+  update?: Prisma.TableUpdateWithWhereUniqueWithoutBranchInput | Prisma.TableUpdateWithWhereUniqueWithoutBranchInput[]
+  updateMany?: Prisma.TableUpdateManyWithWhereWithoutBranchInput | Prisma.TableUpdateManyWithWhereWithoutBranchInput[]
+  deleteMany?: Prisma.TableScalarWhereInput | Prisma.TableScalarWhereInput[]
 }
 
 export type TableCreateNestedOneWithoutOrdersInput = {
@@ -355,6 +437,65 @@ export type TableUpdateOneWithoutOrdersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.TableUpdateToOneWithWhereWithoutOrdersInput, Prisma.TableUpdateWithoutOrdersInput>, Prisma.TableUncheckedUpdateWithoutOrdersInput>
 }
 
+export type TableCreateWithoutBranchInput = {
+  id?: string
+  number: string
+  qrUrl?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  orders?: Prisma.OrderCreateNestedManyWithoutTableInput
+}
+
+export type TableUncheckedCreateWithoutBranchInput = {
+  id?: string
+  number: string
+  qrUrl?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutTableInput
+}
+
+export type TableCreateOrConnectWithoutBranchInput = {
+  where: Prisma.TableWhereUniqueInput
+  create: Prisma.XOR<Prisma.TableCreateWithoutBranchInput, Prisma.TableUncheckedCreateWithoutBranchInput>
+}
+
+export type TableCreateManyBranchInputEnvelope = {
+  data: Prisma.TableCreateManyBranchInput | Prisma.TableCreateManyBranchInput[]
+  skipDuplicates?: boolean
+}
+
+export type TableUpsertWithWhereUniqueWithoutBranchInput = {
+  where: Prisma.TableWhereUniqueInput
+  update: Prisma.XOR<Prisma.TableUpdateWithoutBranchInput, Prisma.TableUncheckedUpdateWithoutBranchInput>
+  create: Prisma.XOR<Prisma.TableCreateWithoutBranchInput, Prisma.TableUncheckedCreateWithoutBranchInput>
+}
+
+export type TableUpdateWithWhereUniqueWithoutBranchInput = {
+  where: Prisma.TableWhereUniqueInput
+  data: Prisma.XOR<Prisma.TableUpdateWithoutBranchInput, Prisma.TableUncheckedUpdateWithoutBranchInput>
+}
+
+export type TableUpdateManyWithWhereWithoutBranchInput = {
+  where: Prisma.TableScalarWhereInput
+  data: Prisma.XOR<Prisma.TableUpdateManyMutationInput, Prisma.TableUncheckedUpdateManyWithoutBranchInput>
+}
+
+export type TableScalarWhereInput = {
+  AND?: Prisma.TableScalarWhereInput | Prisma.TableScalarWhereInput[]
+  OR?: Prisma.TableScalarWhereInput[]
+  NOT?: Prisma.TableScalarWhereInput | Prisma.TableScalarWhereInput[]
+  id?: Prisma.StringFilter<"Table"> | string
+  number?: Prisma.StringFilter<"Table"> | string
+  qrUrl?: Prisma.StringNullableFilter<"Table"> | string | null
+  isActive?: Prisma.BoolFilter<"Table"> | boolean
+  branchId?: Prisma.StringFilter<"Table"> | string
+  createdAt?: Prisma.DateTimeFilter<"Table"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Table"> | Date | string
+}
+
 export type TableCreateWithoutOrdersInput = {
   id?: string
   number: string
@@ -362,6 +503,7 @@ export type TableCreateWithoutOrdersInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutTablesInput
 }
 
 export type TableUncheckedCreateWithoutOrdersInput = {
@@ -369,6 +511,7 @@ export type TableUncheckedCreateWithoutOrdersInput = {
   number: string
   qrUrl?: string | null
   isActive?: boolean
+  branchId: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -396,9 +539,49 @@ export type TableUpdateWithoutOrdersInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutTablesNestedInput
 }
 
 export type TableUncheckedUpdateWithoutOrdersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.StringFieldUpdateOperationsInput | string
+  qrUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type TableCreateManyBranchInput = {
+  id?: string
+  number: string
+  qrUrl?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type TableUpdateWithoutBranchInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.StringFieldUpdateOperationsInput | string
+  qrUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  orders?: Prisma.OrderUpdateManyWithoutTableNestedInput
+}
+
+export type TableUncheckedUpdateWithoutBranchInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.StringFieldUpdateOperationsInput | string
+  qrUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutTableNestedInput
+}
+
+export type TableUncheckedUpdateManyWithoutBranchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   number?: Prisma.StringFieldUpdateOperationsInput | string
   qrUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -443,8 +626,10 @@ export type TableSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   number?: boolean
   qrUrl?: boolean
   isActive?: boolean
+  branchId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   orders?: boolean | Prisma.Table$ordersArgs<ExtArgs>
   _count?: boolean | Prisma.TableCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["table"]>
@@ -454,8 +639,10 @@ export type TableSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   number?: boolean
   qrUrl?: boolean
   isActive?: boolean
+  branchId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["table"]>
 
 export type TableSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -463,8 +650,10 @@ export type TableSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   number?: boolean
   qrUrl?: boolean
   isActive?: boolean
+  branchId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["table"]>
 
 export type TableSelectScalar = {
@@ -472,21 +661,28 @@ export type TableSelectScalar = {
   number?: boolean
   qrUrl?: boolean
   isActive?: boolean
+  branchId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TableOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "number" | "qrUrl" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["table"]>
+export type TableOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "number" | "qrUrl" | "isActive" | "branchId" | "createdAt" | "updatedAt", ExtArgs["result"]["table"]>
 export type TableInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   orders?: boolean | Prisma.Table$ordersArgs<ExtArgs>
   _count?: boolean | Prisma.TableCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type TableIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type TableIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type TableIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+}
+export type TableIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+}
 
 export type $TablePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Table"
   objects: {
+    branch: Prisma.$BranchPayload<ExtArgs>
     orders: Prisma.$OrderPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -494,6 +690,7 @@ export type $TablePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     number: string
     qrUrl: string | null
     isActive: boolean
+    branchId: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["table"]>
@@ -890,6 +1087,7 @@ readonly fields: TableFieldRefs;
  */
 export interface Prisma__TableClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   orders<T extends Prisma.Table$ordersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Table$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -924,6 +1122,7 @@ export interface TableFieldRefs {
   readonly number: Prisma.FieldRef<"Table", 'String'>
   readonly qrUrl: Prisma.FieldRef<"Table", 'String'>
   readonly isActive: Prisma.FieldRef<"Table", 'Boolean'>
+  readonly branchId: Prisma.FieldRef<"Table", 'String'>
   readonly createdAt: Prisma.FieldRef<"Table", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Table", 'DateTime'>
 }
@@ -1180,6 +1379,10 @@ export type TableCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extension
    */
   data: Prisma.TableCreateManyInput | Prisma.TableCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TableIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1250,6 +1453,10 @@ export type TableUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many Tables to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TableIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

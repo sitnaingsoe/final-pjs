@@ -40,6 +40,7 @@ export type SettingMinAggregateOutputType = {
   currency: string | null
   taxRate: number | null
   isAcceptingOrders: boolean | null
+  branchId: string | null
   updatedAt: Date | null
 }
 
@@ -49,6 +50,7 @@ export type SettingMaxAggregateOutputType = {
   currency: string | null
   taxRate: number | null
   isAcceptingOrders: boolean | null
+  branchId: string | null
   updatedAt: Date | null
 }
 
@@ -58,6 +60,7 @@ export type SettingCountAggregateOutputType = {
   currency: number
   taxRate: number
   isAcceptingOrders: number
+  branchId: number
   updatedAt: number
   _all: number
 }
@@ -77,6 +80,7 @@ export type SettingMinAggregateInputType = {
   currency?: true
   taxRate?: true
   isAcceptingOrders?: true
+  branchId?: true
   updatedAt?: true
 }
 
@@ -86,6 +90,7 @@ export type SettingMaxAggregateInputType = {
   currency?: true
   taxRate?: true
   isAcceptingOrders?: true
+  branchId?: true
   updatedAt?: true
 }
 
@@ -95,6 +100,7 @@ export type SettingCountAggregateInputType = {
   currency?: true
   taxRate?: true
   isAcceptingOrders?: true
+  branchId?: true
   updatedAt?: true
   _all?: true
 }
@@ -191,6 +197,7 @@ export type SettingGroupByOutputType = {
   currency: string
   taxRate: number
   isAcceptingOrders: boolean
+  branchId: string
   updatedAt: Date
   _count: SettingCountAggregateOutputType | null
   _avg: SettingAvgAggregateOutputType | null
@@ -223,7 +230,9 @@ export type SettingWhereInput = {
   currency?: Prisma.StringFilter<"Setting"> | string
   taxRate?: Prisma.FloatFilter<"Setting"> | number
   isAcceptingOrders?: Prisma.BoolFilter<"Setting"> | boolean
+  branchId?: Prisma.StringFilter<"Setting"> | string
   updatedAt?: Prisma.DateTimeFilter<"Setting"> | Date | string
+  branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
 }
 
 export type SettingOrderByWithRelationInput = {
@@ -232,11 +241,14 @@ export type SettingOrderByWithRelationInput = {
   currency?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
   isAcceptingOrders?: Prisma.SortOrder
+  branchId?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  branch?: Prisma.BranchOrderByWithRelationInput
 }
 
 export type SettingWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  branchId?: string
   AND?: Prisma.SettingWhereInput | Prisma.SettingWhereInput[]
   OR?: Prisma.SettingWhereInput[]
   NOT?: Prisma.SettingWhereInput | Prisma.SettingWhereInput[]
@@ -245,7 +257,8 @@ export type SettingWhereUniqueInput = Prisma.AtLeast<{
   taxRate?: Prisma.FloatFilter<"Setting"> | number
   isAcceptingOrders?: Prisma.BoolFilter<"Setting"> | boolean
   updatedAt?: Prisma.DateTimeFilter<"Setting"> | Date | string
-}, "id">
+  branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+}, "id" | "branchId">
 
 export type SettingOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -253,6 +266,7 @@ export type SettingOrderByWithAggregationInput = {
   currency?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
   isAcceptingOrders?: Prisma.SortOrder
+  branchId?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.SettingCountOrderByAggregateInput
   _avg?: Prisma.SettingAvgOrderByAggregateInput
@@ -270,6 +284,7 @@ export type SettingScalarWhereWithAggregatesInput = {
   currency?: Prisma.StringWithAggregatesFilter<"Setting"> | string
   taxRate?: Prisma.FloatWithAggregatesFilter<"Setting"> | number
   isAcceptingOrders?: Prisma.BoolWithAggregatesFilter<"Setting"> | boolean
+  branchId?: Prisma.StringWithAggregatesFilter<"Setting"> | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Setting"> | Date | string
 }
 
@@ -280,6 +295,7 @@ export type SettingCreateInput = {
   taxRate?: number
   isAcceptingOrders?: boolean
   updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutSettingsInput
 }
 
 export type SettingUncheckedCreateInput = {
@@ -288,6 +304,7 @@ export type SettingUncheckedCreateInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  branchId: string
   updatedAt?: Date | string
 }
 
@@ -298,6 +315,7 @@ export type SettingUpdateInput = {
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutSettingsNestedInput
 }
 
 export type SettingUncheckedUpdateInput = {
@@ -306,6 +324,7 @@ export type SettingUncheckedUpdateInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -315,6 +334,7 @@ export type SettingCreateManyInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  branchId: string
   updatedAt?: Date | string
 }
 
@@ -333,7 +353,13 @@ export type SettingUncheckedUpdateManyInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type SettingNullableScalarRelationFilter = {
+  is?: Prisma.SettingWhereInput | null
+  isNot?: Prisma.SettingWhereInput | null
 }
 
 export type SettingCountOrderByAggregateInput = {
@@ -342,6 +368,7 @@ export type SettingCountOrderByAggregateInput = {
   currency?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
   isAcceptingOrders?: Prisma.SortOrder
+  branchId?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -355,6 +382,7 @@ export type SettingMaxOrderByAggregateInput = {
   currency?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
   isAcceptingOrders?: Prisma.SortOrder
+  branchId?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -364,11 +392,44 @@ export type SettingMinOrderByAggregateInput = {
   currency?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
   isAcceptingOrders?: Prisma.SortOrder
+  branchId?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type SettingSumOrderByAggregateInput = {
   taxRate?: Prisma.SortOrder
+}
+
+export type SettingCreateNestedOneWithoutBranchInput = {
+  create?: Prisma.XOR<Prisma.SettingCreateWithoutBranchInput, Prisma.SettingUncheckedCreateWithoutBranchInput>
+  connectOrCreate?: Prisma.SettingCreateOrConnectWithoutBranchInput
+  connect?: Prisma.SettingWhereUniqueInput
+}
+
+export type SettingUncheckedCreateNestedOneWithoutBranchInput = {
+  create?: Prisma.XOR<Prisma.SettingCreateWithoutBranchInput, Prisma.SettingUncheckedCreateWithoutBranchInput>
+  connectOrCreate?: Prisma.SettingCreateOrConnectWithoutBranchInput
+  connect?: Prisma.SettingWhereUniqueInput
+}
+
+export type SettingUpdateOneWithoutBranchNestedInput = {
+  create?: Prisma.XOR<Prisma.SettingCreateWithoutBranchInput, Prisma.SettingUncheckedCreateWithoutBranchInput>
+  connectOrCreate?: Prisma.SettingCreateOrConnectWithoutBranchInput
+  upsert?: Prisma.SettingUpsertWithoutBranchInput
+  disconnect?: Prisma.SettingWhereInput | boolean
+  delete?: Prisma.SettingWhereInput | boolean
+  connect?: Prisma.SettingWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SettingUpdateToOneWithWhereWithoutBranchInput, Prisma.SettingUpdateWithoutBranchInput>, Prisma.SettingUncheckedUpdateWithoutBranchInput>
+}
+
+export type SettingUncheckedUpdateOneWithoutBranchNestedInput = {
+  create?: Prisma.XOR<Prisma.SettingCreateWithoutBranchInput, Prisma.SettingUncheckedCreateWithoutBranchInput>
+  connectOrCreate?: Prisma.SettingCreateOrConnectWithoutBranchInput
+  upsert?: Prisma.SettingUpsertWithoutBranchInput
+  disconnect?: Prisma.SettingWhereInput | boolean
+  delete?: Prisma.SettingWhereInput | boolean
+  connect?: Prisma.SettingWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SettingUpdateToOneWithWhereWithoutBranchInput, Prisma.SettingUpdateWithoutBranchInput>, Prisma.SettingUncheckedUpdateWithoutBranchInput>
 }
 
 export type FloatFieldUpdateOperationsInput = {
@@ -379,6 +440,62 @@ export type FloatFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
+}
+
+export type SettingCreateWithoutBranchInput = {
+  id?: string
+  restaurantName: string
+  currency?: string
+  taxRate?: number
+  isAcceptingOrders?: boolean
+  updatedAt?: Date | string
+}
+
+export type SettingUncheckedCreateWithoutBranchInput = {
+  id?: string
+  restaurantName: string
+  currency?: string
+  taxRate?: number
+  isAcceptingOrders?: boolean
+  updatedAt?: Date | string
+}
+
+export type SettingCreateOrConnectWithoutBranchInput = {
+  where: Prisma.SettingWhereUniqueInput
+  create: Prisma.XOR<Prisma.SettingCreateWithoutBranchInput, Prisma.SettingUncheckedCreateWithoutBranchInput>
+}
+
+export type SettingUpsertWithoutBranchInput = {
+  update: Prisma.XOR<Prisma.SettingUpdateWithoutBranchInput, Prisma.SettingUncheckedUpdateWithoutBranchInput>
+  create: Prisma.XOR<Prisma.SettingCreateWithoutBranchInput, Prisma.SettingUncheckedCreateWithoutBranchInput>
+  where?: Prisma.SettingWhereInput
+}
+
+export type SettingUpdateToOneWithWhereWithoutBranchInput = {
+  where?: Prisma.SettingWhereInput
+  data: Prisma.XOR<Prisma.SettingUpdateWithoutBranchInput, Prisma.SettingUncheckedUpdateWithoutBranchInput>
+}
+
+export type SettingUpdateWithoutBranchInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  restaurantName?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type SettingUncheckedUpdateWithoutBranchInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  restaurantName?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 
 
 export type SettingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -387,7 +504,9 @@ export type SettingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   currency?: boolean
   taxRate?: boolean
   isAcceptingOrders?: boolean
+  branchId?: boolean
   updatedAt?: boolean
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["setting"]>
 
 export type SettingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -396,7 +515,9 @@ export type SettingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   currency?: boolean
   taxRate?: boolean
   isAcceptingOrders?: boolean
+  branchId?: boolean
   updatedAt?: boolean
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["setting"]>
 
 export type SettingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -405,7 +526,9 @@ export type SettingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   currency?: boolean
   taxRate?: boolean
   isAcceptingOrders?: boolean
+  branchId?: boolean
   updatedAt?: boolean
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["setting"]>
 
 export type SettingSelectScalar = {
@@ -414,20 +537,33 @@ export type SettingSelectScalar = {
   currency?: boolean
   taxRate?: boolean
   isAcceptingOrders?: boolean
+  branchId?: boolean
   updatedAt?: boolean
 }
 
-export type SettingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "restaurantName" | "currency" | "taxRate" | "isAcceptingOrders" | "updatedAt", ExtArgs["result"]["setting"]>
+export type SettingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "restaurantName" | "currency" | "taxRate" | "isAcceptingOrders" | "branchId" | "updatedAt", ExtArgs["result"]["setting"]>
+export type SettingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+}
+export type SettingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+}
+export type SettingIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+}
 
 export type $SettingPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Setting"
-  objects: {}
+  objects: {
+    branch: Prisma.$BranchPayload<ExtArgs>
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     restaurantName: string
     currency: string
     taxRate: number
     isAcceptingOrders: boolean
+    branchId: string
     updatedAt: Date
   }, ExtArgs["result"]["setting"]>
   composites: {}
@@ -823,6 +959,7 @@ readonly fields: SettingFieldRefs;
  */
 export interface Prisma__SettingClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -857,6 +994,7 @@ export interface SettingFieldRefs {
   readonly currency: Prisma.FieldRef<"Setting", 'String'>
   readonly taxRate: Prisma.FieldRef<"Setting", 'Float'>
   readonly isAcceptingOrders: Prisma.FieldRef<"Setting", 'Boolean'>
+  readonly branchId: Prisma.FieldRef<"Setting", 'String'>
   readonly updatedAt: Prisma.FieldRef<"Setting", 'DateTime'>
 }
     
@@ -874,6 +1012,10 @@ export type SettingFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the Setting
    */
   omit?: Prisma.SettingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingInclude<ExtArgs> | null
   /**
    * Filter, which Setting to fetch.
    */
@@ -893,6 +1035,10 @@ export type SettingFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extension
    */
   omit?: Prisma.SettingOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingInclude<ExtArgs> | null
+  /**
    * Filter, which Setting to fetch.
    */
   where: Prisma.SettingWhereUniqueInput
@@ -910,6 +1056,10 @@ export type SettingFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Omit specific fields from the Setting
    */
   omit?: Prisma.SettingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingInclude<ExtArgs> | null
   /**
    * Filter, which Setting to fetch.
    */
@@ -959,6 +1109,10 @@ export type SettingFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions
    */
   omit?: Prisma.SettingOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingInclude<ExtArgs> | null
+  /**
    * Filter, which Setting to fetch.
    */
   where?: Prisma.SettingWhereInput
@@ -1006,6 +1160,10 @@ export type SettingFindManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Omit specific fields from the Setting
    */
   omit?: Prisma.SettingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingInclude<ExtArgs> | null
   /**
    * Filter, which Settings to fetch.
    */
@@ -1055,6 +1213,10 @@ export type SettingCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    */
   omit?: Prisma.SettingOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingInclude<ExtArgs> | null
+  /**
    * The data needed to create a Setting.
    */
   data: Prisma.XOR<Prisma.SettingCreateInput, Prisma.SettingUncheckedCreateInput>
@@ -1088,6 +1250,10 @@ export type SettingCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensi
    */
   data: Prisma.SettingCreateManyInput | Prisma.SettingCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1102,6 +1268,10 @@ export type SettingUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the Setting
    */
   omit?: Prisma.SettingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingInclude<ExtArgs> | null
   /**
    * The data needed to update a Setting.
    */
@@ -1154,6 +1324,10 @@ export type SettingUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensi
    * Limit how many Settings to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1168,6 +1342,10 @@ export type SettingUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the Setting
    */
   omit?: Prisma.SettingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingInclude<ExtArgs> | null
   /**
    * The filter to search for the Setting to update in case it exists.
    */
@@ -1194,6 +1372,10 @@ export type SettingDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the Setting
    */
   omit?: Prisma.SettingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingInclude<ExtArgs> | null
   /**
    * Filter which Setting to delete.
    */
@@ -1226,4 +1408,8 @@ export type SettingDefaultArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Omit specific fields from the Setting
    */
   omit?: Prisma.SettingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingInclude<ExtArgs> | null
 }

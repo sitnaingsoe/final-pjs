@@ -7,21 +7,62 @@ generator client {
   output   = "./generated"
 }
 
-model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  name     String?
-  password String
-  posts    Post[]
+// =================================================================
+// 🏢 ၁။ COMPANY & BRANCH MANAGEMENT (MULTI-TENANT)
+// =================================================================
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String // ဥပမာ - "BiteCraft Food Group"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  branches  Branch[] // One-to-Many
 }
 
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  published Boolean @default(false)
-  author    User?   @relation(fields: [authorId], references: [id])
-  authorId  Int?
+model Branch {
+  id        String  @id @default(cuid())
+  name      String // ဥပမာ - "ရန်ကုန် (လှည်းတန်းဆိုင်ခွဲ)"
+  address   String?
+  phone     String?
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  // ဆိုင်ခွဲတစ်ခုချင်းစီအောက်တွင် သီးသန့်ရှိမည့် ဒေတာများ
+  users          User[]
+  settings       Setting?
+  menuCategories MenuCategory[]
+  tables         Table[]
+  orders         Order[]
+  discounts      Discount[]
+  invoices       Invoice[] // 💡 Invoice နှင့် ချိတ်ဆက်မှု အဆင်ပြေစေရန်
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
+
+// =================================================================
+// 👥 ၂။ USERS & AUTHENTICATION
+// =================================================================
+
+model User {
+  id       Int      @id @default(autoincrement())
+  email    String   @unique
+  name     String?
+  password String
+  role     UserRole @default(STAFF) // 💡 ပိုမိုစနစ်ကျစေရန် အောက်က Enum နှင့် ချိတ်ပေးထားပါသည်
+
+  // 🎯 ဝန်ထမ်း သို့မဟုတ် Admin သည် မည်သည့်ဆိုင်ခွဲတွင် အလုပ်လုပ်သလဲ
+  branchId String?
+  branch   Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
+}
+
+// 💡 Role များကို စနစ်တကျ ထိန်းချုပ်ရန် Enum သုံးခြင်း
+enum UserRole {
+  COMPANY_HEAD
+  BRANCH_ADMIN
+  STAFF
+}
+
 model PasswordResetToken {
   id        String   @id @default(cuid())
   email     String
@@ -31,27 +72,44 @@ model PasswordResetToken {
 
   @@unique([email, token])
 }
+
+// =================================================================
+// ⚙️ ၃။ SYSTEM SETTINGS (BRANCH SPECIFIC)
+// =================================================================
+
 model Setting {
-  id                String   @id @default(cuid())
+  id                String  @id @default(cuid())
   restaurantName    String
-  currency          String   @default("MMK") // မြန်မာကျပ်ငွေ
-  taxRate           Float    @default(5.0) // အခွန် ရာခိုင်နှုန်း (ဥပမာ ၅%)
-  isAcceptingOrders Boolean  @default(true) // အော်ဒါ လက်ခံနေသလား
-  updatedAt         DateTime @updatedAt
+  currency          String  @default("MMK")
+  taxRate           Float   @default(5.0)
+  isAcceptingOrders Boolean @default(true)
+
+  // 🎯 ဆိုင်ခွဲအလိုက် Setting သီးခြားစီထားခြင်း (One-to-One)
+  branchId String @unique
+  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  updatedAt DateTime @updatedAt
 }
 
-// ၂။ မီနူး အမျိုးအစားများ (ဥပမာ - အကြော်စုံ၊ ဟင်းရည်၊ အအေး)
+// =================================================================
+// 🍔 ၄။ MENU & CATEGORIES (BRANCH SPECIFIC)
+// =================================================================
+
 model MenuCategory {
   id          String     @id @default(cuid())
   name        String
   description String?
   isActive    Boolean    @default(true)
   menuItems   MenuItem[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+
+  // 🎯 မီနူးအမျိုးအစားများသည် မည်သည့်ဆိုင်ခွဲအတွက်လဲ
+  branchId String
+  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-// ၃။ စားစရာ မီနူးများ (ဥPမာ - ကြက်သားတုတ်ထိုး၊ ပုစွန်တုံယမ်း)
 model MenuItem {
   id              String                  @id @default(cuid())
   name            String
@@ -69,19 +127,17 @@ model MenuItem {
   updatedAt       DateTime                @updatedAt
 }
 
-// ၄။ အပိုပစ္စည်း အမျိုးအစား (ဥပမာ - "အသားတိုးမည်"၊ "အချို/အစပ် ရွေးချယ်ရန်")
 model AddonCategory {
   id        String                  @id @default(cuid())
   name      String
-  minSelect Int                     @default(0) // အနည်းဆုံး ရွေးချယ်ရမည့် အရေအတွက်
-  maxSelect Int                     @default(1) // အများဆုံး ရွေးချယ်နိုင်သည့် အရေအတွက်
+  minSelect Int                     @default(0)
+  maxSelect Int                     @default(1)
   addons    Addon[]
   menuItems MenuItemAddonCategory[]
   createdAt DateTime                @default(now())
   updatedAt DateTime                @updatedAt
 }
 
-// MenuItem နှင့် AddonCategory ကြား Many-to-Many ချိတ်ဆက်ပေးသည့် ဇယား (Bridge Table)
 model MenuItemAddonCategory {
   menuItemId      String
   addonCategoryId String
@@ -91,7 +147,6 @@ model MenuItemAddonCategory {
   @@id([menuItemId, addonCategoryId])
 }
 
-// ၅။ အပိုထည့်မည့် ပစ္စည်းများ (ဥPမာ - ကြက်ဥထပ်တိုး = ၅၀၀ ကျပ်၊ ဒိန်ခဲ = ၁၀၀၀ ကျပ်)
 model Addon {
   id              String           @id @default(cuid())
   name            String
@@ -104,34 +159,49 @@ model Addon {
   updatedAt       DateTime         @updatedAt
 }
 
-// ၆။ ပရိုမိုးရှင်းနှင့် လျှော့စျေးများ
 model Discount {
   id        String     @id @default(cuid())
-  name      String // ဥပမာ - "နွေရာသီ အထူးလျှော့စျေး"
-  type      String // "PERCENTAGE" (ရာခိုင်နှုန်း) သို့မဟုတ် "FIXED" (ပမာဏအတိအကျ)
+  name      String
+  type      String
   value     Float
   startDate DateTime?
   endDate   DateTime?
   isActive  Boolean    @default(true)
   menuItems MenuItem[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-}
 
-model Table {
-  id        String   @id @default(cuid())
-  number    String   @unique // ဥပမာ - "1", "2", "VIP-1"
-  qrUrl     String? // QR Code လှမ်းထုတ်မည့် URL လမ်းကြောင်း သိမ်းရန်
-  isActive  Boolean  @default(true)
+  // 🎯 လျှော့စျေးများကို ဆိုင်ခွဲအလိုက် သီးခြားသတ်မှတ်ရန်
+  branchId String
+  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  orders    Order[] // One-to-Many: တစ်စားပွဲတည်းကနေ အော်ဒါအများကြီး မှာနိုင်သည်
+}
+
+// =================================================================
+// 🪑 ၅။ TABLES & ORDERS (BRANCH SPECIFIC)
+// =================================================================
+
+model Table {
+  id       String  @id @default(cuid())
+  number   String
+  qrUrl    String?
+  isActive Boolean @default(true)
+
+  // 🎯 စားပွဲဝိုင်းများသည် မည်သည့်ဆိုင်ခွဲမှလဲ
+  branchId String
+  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([number, branchId])
 }
 
 model Order {
   id          String      @id @default(cuid())
   orderNumber Int         @unique @default(autoincrement())
-  status      OrderStatus @default(PENDING) // လက်ရှိ အော်ဒါ အခြေအနေ
+  status      OrderStatus @default(PENDING)
   totalAmount Float
   taxAmount   Float
   finalAmount Float
@@ -139,22 +209,28 @@ model Order {
   tableId     String?
   table       Table?      @relation(fields: [tableId], references: [id])
 
+  // 🎯 အော်ဒါများကို ဆိုင်ခွဲအလိုက် တိုက်ရိုက် Query ထုတ်ရလွယ်ကူစေရန်
+  branchId String
+  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
   items     OrderItem[]
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+
+  // 💡 Order ဖက်ကနေ Invoice ဆီကို သေချာပြန်ညွှန်းပေးထားပါတယ် (Many-to-One)
+  invoiceId String?
+  invoice   Invoice? @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
 }
 
-// အော်ဒါ အခြေအနေ သတ်မှတ်ချက်များ
 enum OrderStatus {
-  PENDING // စောင့်ဆိုင်းဆဲ
-  CONFIRMED // အတည်ပြုပြီး (မီးဖိုချောင်သို့ ပို့ရန်သင့်ပြီ)
-  COOKING // ချက်ပြုတ်နေဆဲ
-  READY // ပွဲထွက်ရန် အဆင်သင့်
-  DELIVERED // ပို့ဆောင်ပြီး
-  CANCELLED // ပယ်ဖျက်လိုက်သည်
+  PENDING
+  CONFIRMED
+  COOKING
+  READY
+  DELIVERED
+  CANCELLED
 }
 
-// အော်ဒါတစ်ခုချင်းစီတွင် ပါဝင်သော မီနူးများ
 model OrderItem {
   id         String           @id @default(cuid())
   orderId    String
@@ -162,15 +238,46 @@ model OrderItem {
   menuItemId String
   menuItem   MenuItem         @relation(fields: [menuItemId], references: [id])
   quantity   Int
-  price      Float // အော်ဒါမှာယူစဉ်က စျေးနှုန်းကို မှတ်ထားရန် (နောင်တွင် စျေးပြောင်းသော်လည်း စာရင်းမရှုပ်စေရန်)
+  price      Float
   addons     OrderItemAddon[]
 }
 
-// ဝယ်ယူသူမှ မှာယူခဲ့သော အပိုပစ္စည်းများ (Addons)
 model OrderItemAddon {
   id          String    @id @default(cuid())
   orderItemId String
   orderItem   OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
   addonId     String
   addon       Addon     @relation(fields: [addonId], references: [id])
+}
+
+// =================================================================
+// 🧾 ၆။ INVOICE & PAYMENT MANAGEMENT
+// =================================================================
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique // ဥပမာ - INV-2026-0001
+  paymentMethod String // CASH, KPAY, CB_PAY, CREDIT_CARD
+  paymentStatus PaymentStatus @default(UNPAID)
+
+  subTotal       Float
+  taxAmount      Float
+  discountAmount Float @default(0.0)
+  finalAmount    Float
+
+  // 🎯 ဆိုင်ခွဲအလိုက် ဝင်ငွေခွဲခြားရန်
+  branchId String
+  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  // 🎯 တစ်ခါတည်း ငွေပေါင်းရှင်းနိုင်ရန် အော်ဒါများကို Link ချိတ်ခြင်း (One-to-Many)
+  orders Order[] // 💡 Order မော်ဒယ်မှာ invoiceId ရှိလို့ ဒီဘက်မှာ array အနေနဲ့ လက်ခံရပါတယ်
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  REFUNDED
 }

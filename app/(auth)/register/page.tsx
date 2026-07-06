@@ -3,7 +3,7 @@
 
 import React, { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link' // 👈 Next.js Client Routing အတွက် Link ကိုသုံးပါသည်
+import Link from 'next/link'
 import { registerAdmin } from '@/server/actions/register'
 
 export default function RegisterPage() {

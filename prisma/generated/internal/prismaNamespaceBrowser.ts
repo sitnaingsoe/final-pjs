@@ -51,8 +51,9 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  Company: 'Company',
+  Branch: 'Branch',
   User: 'User',
-  Post: 'Post',
   PasswordResetToken: 'PasswordResetToken',
   Setting: 'Setting',
   MenuCategory: 'MenuCategory',
@@ -64,7 +65,8 @@ export const ModelName = {
   Table: 'Table',
   Order: 'Order',
   OrderItem: 'OrderItem',
-  OrderItemAddon: 'OrderItemAddon'
+  OrderItemAddon: 'OrderItemAddon',
+  Invoice: 'Invoice'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -83,24 +85,39 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const CompanyScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CompanyScalarFieldEnum = (typeof CompanyScalarFieldEnum)[keyof typeof CompanyScalarFieldEnum]
+
+
+export const BranchScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  address: 'address',
+  phone: 'phone',
+  companyId: 'companyId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BranchScalarFieldEnum = (typeof BranchScalarFieldEnum)[keyof typeof BranchScalarFieldEnum]
+
+
 export const UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
   name: 'name',
-  password: 'password'
+  password: 'password',
+  role: 'role',
+  branchId: 'branchId'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
-
-
-export const PostScalarFieldEnum = {
-  id: 'id',
-  title: 'title',
-  published: 'published',
-  authorId: 'authorId'
-} as const
-
-export type PostScalarFieldEnum = (typeof PostScalarFieldEnum)[keyof typeof PostScalarFieldEnum]
 
 
 export const PasswordResetTokenScalarFieldEnum = {
@@ -120,6 +137,7 @@ export const SettingScalarFieldEnum = {
   currency: 'currency',
   taxRate: 'taxRate',
   isAcceptingOrders: 'isAcceptingOrders',
+  branchId: 'branchId',
   updatedAt: 'updatedAt'
 } as const
 
@@ -131,6 +149,7 @@ export const MenuCategoryScalarFieldEnum = {
   name: 'name',
   description: 'description',
   isActive: 'isActive',
+  branchId: 'branchId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -195,6 +214,7 @@ export const DiscountScalarFieldEnum = {
   startDate: 'startDate',
   endDate: 'endDate',
   isActive: 'isActive',
+  branchId: 'branchId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -207,6 +227,7 @@ export const TableScalarFieldEnum = {
   number: 'number',
   qrUrl: 'qrUrl',
   isActive: 'isActive',
+  branchId: 'branchId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -223,8 +244,10 @@ export const OrderScalarFieldEnum = {
   finalAmount: 'finalAmount',
   notes: 'notes',
   tableId: 'tableId',
+  branchId: 'branchId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  invoiceId: 'invoiceId'
 } as const
 
 export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
@@ -248,6 +271,23 @@ export const OrderItemAddonScalarFieldEnum = {
 } as const
 
 export type OrderItemAddonScalarFieldEnum = (typeof OrderItemAddonScalarFieldEnum)[keyof typeof OrderItemAddonScalarFieldEnum]
+
+
+export const InvoiceScalarFieldEnum = {
+  id: 'id',
+  invoiceNumber: 'invoiceNumber',
+  paymentMethod: 'paymentMethod',
+  paymentStatus: 'paymentStatus',
+  subTotal: 'subTotal',
+  taxAmount: 'taxAmount',
+  discountAmount: 'discountAmount',
+  finalAmount: 'finalAmount',
+  branchId: 'branchId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
 
 
 export const SortOrder = {

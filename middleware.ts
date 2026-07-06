@@ -19,14 +19,8 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next()
 }
 
-// 🛡️ ကာကွယ်ထားမည့် Dashboard စာမျက်နှာလမ်းကြောင်းများ
 export const config = {
     matcher: [
-        "/orders/:path*",
-        "/menu/:path*",
-        "/tables/:path*",
-        "/categories/:path*",
-        "/settings/:path*",
-        "/discounts/:path*",
+
     ],
 }

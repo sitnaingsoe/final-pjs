@@ -42,6 +42,7 @@ export type DiscountMinAggregateOutputType = {
   startDate: Date | null
   endDate: Date | null
   isActive: boolean | null
+  branchId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -54,6 +55,7 @@ export type DiscountMaxAggregateOutputType = {
   startDate: Date | null
   endDate: Date | null
   isActive: boolean | null
+  branchId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -66,6 +68,7 @@ export type DiscountCountAggregateOutputType = {
   startDate: number
   endDate: number
   isActive: number
+  branchId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -88,6 +91,7 @@ export type DiscountMinAggregateInputType = {
   startDate?: true
   endDate?: true
   isActive?: true
+  branchId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -100,6 +104,7 @@ export type DiscountMaxAggregateInputType = {
   startDate?: true
   endDate?: true
   isActive?: true
+  branchId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -112,6 +117,7 @@ export type DiscountCountAggregateInputType = {
   startDate?: true
   endDate?: true
   isActive?: true
+  branchId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -211,6 +217,7 @@ export type DiscountGroupByOutputType = {
   startDate: Date | null
   endDate: Date | null
   isActive: boolean
+  branchId: string
   createdAt: Date
   updatedAt: Date
   _count: DiscountCountAggregateOutputType | null
@@ -246,9 +253,11 @@ export type DiscountWhereInput = {
   startDate?: Prisma.DateTimeNullableFilter<"Discount"> | Date | string | null
   endDate?: Prisma.DateTimeNullableFilter<"Discount"> | Date | string | null
   isActive?: Prisma.BoolFilter<"Discount"> | boolean
+  branchId?: Prisma.StringFilter<"Discount"> | string
   createdAt?: Prisma.DateTimeFilter<"Discount"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Discount"> | Date | string
   menuItems?: Prisma.MenuItemListRelationFilter
+  branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
 }
 
 export type DiscountOrderByWithRelationInput = {
@@ -259,9 +268,11 @@ export type DiscountOrderByWithRelationInput = {
   startDate?: Prisma.SortOrderInput | Prisma.SortOrder
   endDate?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  branchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   menuItems?: Prisma.MenuItemOrderByRelationAggregateInput
+  branch?: Prisma.BranchOrderByWithRelationInput
 }
 
 export type DiscountWhereUniqueInput = Prisma.AtLeast<{
@@ -275,9 +286,11 @@ export type DiscountWhereUniqueInput = Prisma.AtLeast<{
   startDate?: Prisma.DateTimeNullableFilter<"Discount"> | Date | string | null
   endDate?: Prisma.DateTimeNullableFilter<"Discount"> | Date | string | null
   isActive?: Prisma.BoolFilter<"Discount"> | boolean
+  branchId?: Prisma.StringFilter<"Discount"> | string
   createdAt?: Prisma.DateTimeFilter<"Discount"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Discount"> | Date | string
   menuItems?: Prisma.MenuItemListRelationFilter
+  branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
 }, "id">
 
 export type DiscountOrderByWithAggregationInput = {
@@ -288,6 +301,7 @@ export type DiscountOrderByWithAggregationInput = {
   startDate?: Prisma.SortOrderInput | Prisma.SortOrder
   endDate?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  branchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.DiscountCountOrderByAggregateInput
@@ -308,6 +322,7 @@ export type DiscountScalarWhereWithAggregatesInput = {
   startDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Discount"> | Date | string | null
   endDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Discount"> | Date | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"Discount"> | boolean
+  branchId?: Prisma.StringWithAggregatesFilter<"Discount"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Discount"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Discount"> | Date | string
 }
@@ -323,6 +338,7 @@ export type DiscountCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   menuItems?: Prisma.MenuItemCreateNestedManyWithoutDiscountInput
+  branch: Prisma.BranchCreateNestedOneWithoutDiscountsInput
 }
 
 export type DiscountUncheckedCreateInput = {
@@ -333,6 +349,7 @@ export type DiscountUncheckedCreateInput = {
   startDate?: Date | string | null
   endDate?: Date | string | null
   isActive?: boolean
+  branchId: string
   createdAt?: Date | string
   updatedAt?: Date | string
   menuItems?: Prisma.MenuItemUncheckedCreateNestedManyWithoutDiscountInput
@@ -349,6 +366,7 @@ export type DiscountUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   menuItems?: Prisma.MenuItemUpdateManyWithoutDiscountNestedInput
+  branch?: Prisma.BranchUpdateOneRequiredWithoutDiscountsNestedInput
 }
 
 export type DiscountUncheckedUpdateInput = {
@@ -359,6 +377,7 @@ export type DiscountUncheckedUpdateInput = {
   startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   menuItems?: Prisma.MenuItemUncheckedUpdateManyWithoutDiscountNestedInput
@@ -372,6 +391,7 @@ export type DiscountCreateManyInput = {
   startDate?: Date | string | null
   endDate?: Date | string | null
   isActive?: boolean
+  branchId: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -396,8 +416,19 @@ export type DiscountUncheckedUpdateManyInput = {
   startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type DiscountListRelationFilter = {
+  every?: Prisma.DiscountWhereInput
+  some?: Prisma.DiscountWhereInput
+  none?: Prisma.DiscountWhereInput
+}
+
+export type DiscountOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type DiscountNullableScalarRelationFilter = {
@@ -413,6 +444,7 @@ export type DiscountCountOrderByAggregateInput = {
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  branchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -429,6 +461,7 @@ export type DiscountMaxOrderByAggregateInput = {
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  branchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -441,12 +474,55 @@ export type DiscountMinOrderByAggregateInput = {
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  branchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type DiscountSumOrderByAggregateInput = {
   value?: Prisma.SortOrder
+}
+
+export type DiscountCreateNestedManyWithoutBranchInput = {
+  create?: Prisma.XOR<Prisma.DiscountCreateWithoutBranchInput, Prisma.DiscountUncheckedCreateWithoutBranchInput> | Prisma.DiscountCreateWithoutBranchInput[] | Prisma.DiscountUncheckedCreateWithoutBranchInput[]
+  connectOrCreate?: Prisma.DiscountCreateOrConnectWithoutBranchInput | Prisma.DiscountCreateOrConnectWithoutBranchInput[]
+  createMany?: Prisma.DiscountCreateManyBranchInputEnvelope
+  connect?: Prisma.DiscountWhereUniqueInput | Prisma.DiscountWhereUniqueInput[]
+}
+
+export type DiscountUncheckedCreateNestedManyWithoutBranchInput = {
+  create?: Prisma.XOR<Prisma.DiscountCreateWithoutBranchInput, Prisma.DiscountUncheckedCreateWithoutBranchInput> | Prisma.DiscountCreateWithoutBranchInput[] | Prisma.DiscountUncheckedCreateWithoutBranchInput[]
+  connectOrCreate?: Prisma.DiscountCreateOrConnectWithoutBranchInput | Prisma.DiscountCreateOrConnectWithoutBranchInput[]
+  createMany?: Prisma.DiscountCreateManyBranchInputEnvelope
+  connect?: Prisma.DiscountWhereUniqueInput | Prisma.DiscountWhereUniqueInput[]
+}
+
+export type DiscountUpdateManyWithoutBranchNestedInput = {
+  create?: Prisma.XOR<Prisma.DiscountCreateWithoutBranchInput, Prisma.DiscountUncheckedCreateWithoutBranchInput> | Prisma.DiscountCreateWithoutBranchInput[] | Prisma.DiscountUncheckedCreateWithoutBranchInput[]
+  connectOrCreate?: Prisma.DiscountCreateOrConnectWithoutBranchInput | Prisma.DiscountCreateOrConnectWithoutBranchInput[]
+  upsert?: Prisma.DiscountUpsertWithWhereUniqueWithoutBranchInput | Prisma.DiscountUpsertWithWhereUniqueWithoutBranchInput[]
+  createMany?: Prisma.DiscountCreateManyBranchInputEnvelope
+  set?: Prisma.DiscountWhereUniqueInput | Prisma.DiscountWhereUniqueInput[]
+  disconnect?: Prisma.DiscountWhereUniqueInput | Prisma.DiscountWhereUniqueInput[]
+  delete?: Prisma.DiscountWhereUniqueInput | Prisma.DiscountWhereUniqueInput[]
+  connect?: Prisma.DiscountWhereUniqueInput | Prisma.DiscountWhereUniqueInput[]
+  update?: Prisma.DiscountUpdateWithWhereUniqueWithoutBranchInput | Prisma.DiscountUpdateWithWhereUniqueWithoutBranchInput[]
+  updateMany?: Prisma.DiscountUpdateManyWithWhereWithoutBranchInput | Prisma.DiscountUpdateManyWithWhereWithoutBranchInput[]
+  deleteMany?: Prisma.DiscountScalarWhereInput | Prisma.DiscountScalarWhereInput[]
+}
+
+export type DiscountUncheckedUpdateManyWithoutBranchNestedInput = {
+  create?: Prisma.XOR<Prisma.DiscountCreateWithoutBranchInput, Prisma.DiscountUncheckedCreateWithoutBranchInput> | Prisma.DiscountCreateWithoutBranchInput[] | Prisma.DiscountUncheckedCreateWithoutBranchInput[]
+  connectOrCreate?: Prisma.DiscountCreateOrConnectWithoutBranchInput | Prisma.DiscountCreateOrConnectWithoutBranchInput[]
+  upsert?: Prisma.DiscountUpsertWithWhereUniqueWithoutBranchInput | Prisma.DiscountUpsertWithWhereUniqueWithoutBranchInput[]
+  createMany?: Prisma.DiscountCreateManyBranchInputEnvelope
+  set?: Prisma.DiscountWhereUniqueInput | Prisma.DiscountWhereUniqueInput[]
+  disconnect?: Prisma.DiscountWhereUniqueInput | Prisma.DiscountWhereUniqueInput[]
+  delete?: Prisma.DiscountWhereUniqueInput | Prisma.DiscountWhereUniqueInput[]
+  connect?: Prisma.DiscountWhereUniqueInput | Prisma.DiscountWhereUniqueInput[]
+  update?: Prisma.DiscountUpdateWithWhereUniqueWithoutBranchInput | Prisma.DiscountUpdateWithWhereUniqueWithoutBranchInput[]
+  updateMany?: Prisma.DiscountUpdateManyWithWhereWithoutBranchInput | Prisma.DiscountUpdateManyWithWhereWithoutBranchInput[]
+  deleteMany?: Prisma.DiscountScalarWhereInput | Prisma.DiscountScalarWhereInput[]
 }
 
 export type DiscountCreateNestedOneWithoutMenuItemsInput = {
@@ -469,6 +545,74 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
 
+export type DiscountCreateWithoutBranchInput = {
+  id?: string
+  name: string
+  type: string
+  value: number
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  menuItems?: Prisma.MenuItemCreateNestedManyWithoutDiscountInput
+}
+
+export type DiscountUncheckedCreateWithoutBranchInput = {
+  id?: string
+  name: string
+  type: string
+  value: number
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  menuItems?: Prisma.MenuItemUncheckedCreateNestedManyWithoutDiscountInput
+}
+
+export type DiscountCreateOrConnectWithoutBranchInput = {
+  where: Prisma.DiscountWhereUniqueInput
+  create: Prisma.XOR<Prisma.DiscountCreateWithoutBranchInput, Prisma.DiscountUncheckedCreateWithoutBranchInput>
+}
+
+export type DiscountCreateManyBranchInputEnvelope = {
+  data: Prisma.DiscountCreateManyBranchInput | Prisma.DiscountCreateManyBranchInput[]
+  skipDuplicates?: boolean
+}
+
+export type DiscountUpsertWithWhereUniqueWithoutBranchInput = {
+  where: Prisma.DiscountWhereUniqueInput
+  update: Prisma.XOR<Prisma.DiscountUpdateWithoutBranchInput, Prisma.DiscountUncheckedUpdateWithoutBranchInput>
+  create: Prisma.XOR<Prisma.DiscountCreateWithoutBranchInput, Prisma.DiscountUncheckedCreateWithoutBranchInput>
+}
+
+export type DiscountUpdateWithWhereUniqueWithoutBranchInput = {
+  where: Prisma.DiscountWhereUniqueInput
+  data: Prisma.XOR<Prisma.DiscountUpdateWithoutBranchInput, Prisma.DiscountUncheckedUpdateWithoutBranchInput>
+}
+
+export type DiscountUpdateManyWithWhereWithoutBranchInput = {
+  where: Prisma.DiscountScalarWhereInput
+  data: Prisma.XOR<Prisma.DiscountUpdateManyMutationInput, Prisma.DiscountUncheckedUpdateManyWithoutBranchInput>
+}
+
+export type DiscountScalarWhereInput = {
+  AND?: Prisma.DiscountScalarWhereInput | Prisma.DiscountScalarWhereInput[]
+  OR?: Prisma.DiscountScalarWhereInput[]
+  NOT?: Prisma.DiscountScalarWhereInput | Prisma.DiscountScalarWhereInput[]
+  id?: Prisma.StringFilter<"Discount"> | string
+  name?: Prisma.StringFilter<"Discount"> | string
+  type?: Prisma.StringFilter<"Discount"> | string
+  value?: Prisma.FloatFilter<"Discount"> | number
+  startDate?: Prisma.DateTimeNullableFilter<"Discount"> | Date | string | null
+  endDate?: Prisma.DateTimeNullableFilter<"Discount"> | Date | string | null
+  isActive?: Prisma.BoolFilter<"Discount"> | boolean
+  branchId?: Prisma.StringFilter<"Discount"> | string
+  createdAt?: Prisma.DateTimeFilter<"Discount"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Discount"> | Date | string
+}
+
 export type DiscountCreateWithoutMenuItemsInput = {
   id?: string
   name: string
@@ -479,6 +623,7 @@ export type DiscountCreateWithoutMenuItemsInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutDiscountsInput
 }
 
 export type DiscountUncheckedCreateWithoutMenuItemsInput = {
@@ -489,6 +634,7 @@ export type DiscountUncheckedCreateWithoutMenuItemsInput = {
   startDate?: Date | string | null
   endDate?: Date | string | null
   isActive?: boolean
+  branchId: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -519,9 +665,61 @@ export type DiscountUpdateWithoutMenuItemsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutDiscountsNestedInput
 }
 
 export type DiscountUncheckedUpdateWithoutMenuItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  value?: Prisma.FloatFieldUpdateOperationsInput | number
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type DiscountCreateManyBranchInput = {
+  id?: string
+  name: string
+  type: string
+  value: number
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type DiscountUpdateWithoutBranchInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  value?: Prisma.FloatFieldUpdateOperationsInput | number
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  menuItems?: Prisma.MenuItemUpdateManyWithoutDiscountNestedInput
+}
+
+export type DiscountUncheckedUpdateWithoutBranchInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  value?: Prisma.FloatFieldUpdateOperationsInput | number
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  menuItems?: Prisma.MenuItemUncheckedUpdateManyWithoutDiscountNestedInput
+}
+
+export type DiscountUncheckedUpdateManyWithoutBranchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
@@ -572,9 +770,11 @@ export type DiscountSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   startDate?: boolean
   endDate?: boolean
   isActive?: boolean
+  branchId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   menuItems?: boolean | Prisma.Discount$menuItemsArgs<ExtArgs>
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.DiscountCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["discount"]>
 
@@ -586,8 +786,10 @@ export type DiscountSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   startDate?: boolean
   endDate?: boolean
   isActive?: boolean
+  branchId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["discount"]>
 
 export type DiscountSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -598,8 +800,10 @@ export type DiscountSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   startDate?: boolean
   endDate?: boolean
   isActive?: boolean
+  branchId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["discount"]>
 
 export type DiscountSelectScalar = {
@@ -610,22 +814,29 @@ export type DiscountSelectScalar = {
   startDate?: boolean
   endDate?: boolean
   isActive?: boolean
+  branchId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type DiscountOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "type" | "value" | "startDate" | "endDate" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["discount"]>
+export type DiscountOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "type" | "value" | "startDate" | "endDate" | "isActive" | "branchId" | "createdAt" | "updatedAt", ExtArgs["result"]["discount"]>
 export type DiscountInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   menuItems?: boolean | Prisma.Discount$menuItemsArgs<ExtArgs>
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.DiscountCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type DiscountIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type DiscountIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type DiscountIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+}
+export type DiscountIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+}
 
 export type $DiscountPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Discount"
   objects: {
     menuItems: Prisma.$MenuItemPayload<ExtArgs>[]
+    branch: Prisma.$BranchPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -635,6 +846,7 @@ export type $DiscountPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     startDate: Date | null
     endDate: Date | null
     isActive: boolean
+    branchId: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["discount"]>
@@ -1032,6 +1244,7 @@ readonly fields: DiscountFieldRefs;
 export interface Prisma__DiscountClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   menuItems<T extends Prisma.Discount$menuItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Discount$menuItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MenuItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1068,6 +1281,7 @@ export interface DiscountFieldRefs {
   readonly startDate: Prisma.FieldRef<"Discount", 'DateTime'>
   readonly endDate: Prisma.FieldRef<"Discount", 'DateTime'>
   readonly isActive: Prisma.FieldRef<"Discount", 'Boolean'>
+  readonly branchId: Prisma.FieldRef<"Discount", 'String'>
   readonly createdAt: Prisma.FieldRef<"Discount", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Discount", 'DateTime'>
 }
@@ -1324,6 +1538,10 @@ export type DiscountCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extens
    */
   data: Prisma.DiscountCreateManyInput | Prisma.DiscountCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DiscountIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1394,6 +1612,10 @@ export type DiscountUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extens
    * Limit how many Discounts to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DiscountIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
