@@ -66,7 +66,10 @@ export const ModelName = {
   Order: 'Order',
   OrderItem: 'OrderItem',
   OrderItemAddon: 'OrderItemAddon',
-  Invoice: 'Invoice'
+  Invoice: 'Invoice',
+  Menu: 'Menu',
+  MenuOnBranch: 'MenuOnBranch',
+  Inventory: 'Inventory'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -114,7 +117,10 @@ export const UserScalarFieldEnum = {
   name: 'name',
   password: 'password',
   role: 'role',
-  branchId: 'branchId'
+  branchId: 'branchId',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -288,6 +294,43 @@ export const InvoiceScalarFieldEnum = {
 } as const
 
 export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
+
+
+export const MenuScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  basePrice: 'basePrice',
+  image: 'image',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MenuScalarFieldEnum = (typeof MenuScalarFieldEnum)[keyof typeof MenuScalarFieldEnum]
+
+
+export const MenuOnBranchScalarFieldEnum = {
+  menuId: 'menuId',
+  branchId: 'branchId',
+  isAvailable: 'isAvailable'
+} as const
+
+export type MenuOnBranchScalarFieldEnum = (typeof MenuOnBranchScalarFieldEnum)[keyof typeof MenuOnBranchScalarFieldEnum]
+
+
+export const InventoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  quantity: 'quantity',
+  unit: 'unit',
+  minThreshold: 'minThreshold',
+  branchId: 'branchId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InventoryScalarFieldEnum = (typeof InventoryScalarFieldEnum)[keyof typeof InventoryScalarFieldEnum]
 
 
 export const SortOrder = {

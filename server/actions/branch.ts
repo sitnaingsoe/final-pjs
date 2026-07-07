@@ -74,3 +74,40 @@ export async function createBranchWithAdmin(formData: FormData) {
         return { success: false, error: "ဆိုင်ခွဲဆောက်ရာတွင် အမှားအယွင်းရှိနေပါသည်" }
     }
 }
+
+export async function updateBranch(branchId: string, formData: FormData) {
+    const name = formData.get('branchName') as string
+    const address = formData.get('address') as string
+    const phone = formData.get('phone') as string
+
+    if (!name) return { success: false, error: "ဆိုင်ခွဲအမည် ဖြည့်စွက်ပေးရပါမည်" }
+
+    try {
+        await prisma.branch.update({
+            where: { id: branchId },
+            data: { name, address, phone }
+        })
+        return { success: true }
+    } catch (error) {
+        return { success: false, error: "ပြင်ဆင်ရာတွင် အမှားအယွင်း ရှိနေပါသည်" }
+    }
+}
+
+// 🗑️ ၂။ ဆိုင်ခွဲကို ဖျက်ချင်သည့် Action
+export async function deleteBranch(branchId: string) {
+    try {
+        // လူကြီးမင်း၏ Database Cascade သတ်မှတ်ချက်အရ 
+        // ဆိုင်ခွဲအောက်က User များနှင့် Order များကို အရင်ရှင်းရနိုင်ပါသည်
+        await prisma.$transaction([
+            prisma.user.deleteMany({ where: { branchId } }),
+            prisma.order.deleteMany({ where: { branchId } }),
+            prisma.invoice.deleteMany({ where: { branchId } }),
+            prisma.branch.delete({ where: { id: branchId } })
+        ])
+
+        return { success: true }
+    } catch (error) {
+        console.error(error)
+        return { success: false, error: "ဖျက်ဆီးရာတွင် အမှားအယွင်း ရှိနေပါသည်" }
+    }
+}

@@ -440,10 +440,6 @@ export type FloatFieldUpdateOperationsInput = {
   divide?: number
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type SettingCreateWithoutBranchInput = {
   id?: string
   restaurantName: string

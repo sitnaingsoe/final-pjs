@@ -21,6 +21,6 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
     matcher: [
-
+        "/dashboard/:path*", // 🎯 /dashboard အောက်က page မှန်သမျှကို Middleware ဖြင့် လုံခြုံရေးစစ်မည်
     ],
 }

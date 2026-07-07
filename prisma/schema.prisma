@@ -36,8 +36,10 @@ model Branch {
   discounts      Discount[]
   invoices       Invoice[] // 💡 Invoice နှင့် ချိတ်ဆက်မှု အဆင်ပြေစေရန်
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  menuOnBranches MenuOnBranch[]
+  inventories    Inventory[]
 }
 
 // =================================================================
@@ -51,9 +53,14 @@ model User {
   password String
   role     UserRole @default(STAFF) // 💡 ပိုမိုစနစ်ကျစေရန် အောက်က Enum နှင့် ချိတ်ပေးထားပါသည်
 
-  // 🎯 ဝန်ထမ်း သို့မဟုတ် Admin သည် မည်သည့်ဆိုင်ခွဲတွင် အလုပ်လုပ်သလဲ
+  // 🎯 ဝန်ထမ်း သို့မဟုတ် Admin သည် မည်  Boolean  @default(true)
   branchId String?
   branch   Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 // 💡 Role များကို စနစ်တကျ ထိန်းချုပ်ရန် Enum သုံးခြင်း
@@ -280,4 +287,46 @@ enum PaymentStatus {
   UNPAID
   PAID
   REFUNDED
+}
+
+model Menu {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  basePrice   Float // ဗဟိုမှ သတ်မှတ်ထားသော စံနှုန်းစျေးနှုန်း
+  image       String?
+  isActive    Boolean @default(true)
+
+  // ဆိုင်ခွဲများနှင့် ချိတ်ဆက်မည့် Relationship
+  branches MenuOnBranch[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+// 🎯 ဆိုင်ခွဲတစ်ခုချင်းစီမှာ မီနူးတစ်ခုချင်းစီကို အပိတ်/အဖွင့် လုပ်ရန် ကြားခံ Table (Junction Table)
+model MenuOnBranch {
+  menuId   String
+  branchId String
+  menu     Menu   @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  isAvailable Boolean @default(true) // ဆိုင်ခွဲအလိုက် ဒီမီနူးကို ခေတ္တကုန်နေလို့ ပိတ်ထားတာမျိုး လုပ်ရန်
+
+  @@id([menuId, branchId])
+}
+
+model Inventory {
+  id           String @id @default(cuid())
+  name         String // ကုန်ကြမ်းအမည် (ဥပမာ - ကော်ဖီစေ့၊ သကြား၊ ထုပ်ပိုးဗူး)
+  quantity     Float // လက်ရှိလက်ကျန်ပမာဏ
+  unit         String // အလေးချိန်ယူနစ် (ဥပမာ - kg, pcs, bags)
+  minThreshold Float // အနည်းဆုံးရှိရမည့် သတ်မှတ်ချက် (ဒီထက်နည်းရင် Alert တက်မည်)
+
+  // မည်သည့်ဆိုင်ခွဲက ကုန်ကြမ်းလဲဆိုတာ တွဲဖက်ခြင်း
+  branchId String
+  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }

@@ -121,3 +121,18 @@ export type OrderItemAddon = Prisma.OrderItemAddonModel
  * 
  */
 export type Invoice = Prisma.InvoiceModel
+/**
+ * Model Menu
+ * 
+ */
+export type Menu = Prisma.MenuModel
+/**
+ * Model MenuOnBranch
+ * 
+ */
+export type MenuOnBranch = Prisma.MenuOnBranchModel
+/**
+ * Model Inventory
+ * 
+ */
+export type Inventory = Prisma.InventoryModel
