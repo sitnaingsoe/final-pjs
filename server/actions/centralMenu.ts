@@ -3,7 +3,14 @@
 
 import { prisma } from '@/lib/db'
 
+import { auth } from '@/auth'
+
 export async function createMasterMenu(formData: FormData, selectedBranchIds: string[]) {
+    const session = await auth()
+    if (!session?.user?.email) {
+        return { success: false, error: "အကောင့်ဝင်ထားခြင်း မရှိပါ" }
+    }
+
     const name = formData.get('name') as string
     const description = formData.get('description') as string
     const basePrice = parseFloat(formData.get('basePrice') as string)
@@ -13,9 +20,19 @@ export async function createMasterMenu(formData: FormData, selectedBranchIds: st
     }
 
     try {
+        const currentUser = await prisma.user.findUnique({
+            where: { email: session.user.email },
+            select: { companyId: true, branch: { select: { companyId: true } } }
+        })
+        const companyId = currentUser?.companyId || currentUser?.branch?.companyId
+
+        if (!companyId) {
+             return { success: false, error: "ကုမ္ပဏီအချက်အလက် ရှာမတွေ့ပါ" }
+        }
+
         // ၁။ Master Menu ကို အရင်ဆောက်သည်
         const newMenu = await prisma.menu.create({
-            data: { name, description, basePrice }
+            data: { name, description, basePrice, companyId }
         })
 
         // ၂။ ရွေးချယ်လိုက်သော ဆိုင်ခွဲများအားလုံးဆီသို့ ဤမီနူးကို တစ်ပြိုင်နက် လှမ်းဖြန့်ဝေ (Assign) ပေးသည်

@@ -1,7 +1,7 @@
 // app/(dashboard)/orders/page.tsx
 import React from 'react'
 import { getOrders, updateOrderStatus } from '@/server/actions/orders'
-import { OrderStatus } from '../../../prisma/generated/enums'
+import { OrderStatus } from '../../../../prisma/generated/enums'
 
 export default async function OrdersPage() {
     const result = await getOrders()

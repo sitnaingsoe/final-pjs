@@ -28,6 +28,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
                 if (!isPasswordValid) return null
 
+                // 🚫 Account disable လုပ်ထားသော user ကို ဝင်ခွင့်မပြုမည်
+                if (!user.isActive) return null
+
                 // 🎯 ပြန်ပေးလိုက်သော ဒေတာများသည် JWT Token ထဲသို့ ရောက်သွားမည်
                 return {
                     id: user.id.toString(),

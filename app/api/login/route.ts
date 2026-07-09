@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import bcrypt from 'bcryptjs'
+import { generateAccessToken, generateRefreshToken } from '@/lib/tokens'
 
 export async function POST(request: Request) {
     try {
@@ -8,21 +9,49 @@ export async function POST(request: Request) {
         const { email, password } = body
 
         if (!email || !password) {
-            return NextResponse.json({ error: "Email and password are required" }, { status: 400 })
+            return NextResponse.json({ success: false, error: "Email and password are required" }, { status: 400 })
         }
 
         const user = await prisma.user.findUnique({ where: { email } })
-        if (!user) {
-            return NextResponse.json({ error: "Invalid email or password" }, { status: 401 })
+        if (!user || !user.password) {
+            return NextResponse.json({ success: false, error: "Invalid email or password" }, { status: 401 })
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password)
         if (!isPasswordValid) {
-            return NextResponse.json({ error: "Invalid email or password" }, { status: 401 })
+            return NextResponse.json({ success: false, error: "Invalid email or password" }, { status: 401 })
         }
 
-        return NextResponse.json({
+        if (!user.isActive) {
+            return NextResponse.json({ success: false, error: "Account is disabled" }, { status: 403 })
+        }
+
+        // 1. Generate Tokens
+        const accessToken = generateAccessToken({
+            id: user.id,
+            email: user.email,
+            role: user.role,
+            branchId: user.branchId
+        })
+        
+        const refreshToken = generateRefreshToken({ id: user.id })
+
+        // 2. Save Refresh Token to DB (expires in 7 days)
+        const expiresAt = new Date()
+        expiresAt.setDate(expiresAt.getDate() + 7)
+        
+        await prisma.refreshToken.create({
+            data: {
+                token: refreshToken,
+                userId: user.id,
+                expires: expiresAt
+            }
+        })
+
+        // 3. Set Refresh Token as HttpOnly Cookie
+        const response = NextResponse.json({
             success: true,
+            accessToken, // Frontend will save this in localStorage
             user: {
                 id: user.id,
                 email: user.email,
@@ -31,7 +60,21 @@ export async function POST(request: Request) {
                 branchId: user.branchId
             }
         })
+
+        response.cookies.set({
+            name: 'refreshToken',
+            value: refreshToken,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            path: '/', // Accessible everywhere
+            expires: expiresAt
+        })
+
+        return response
+
     } catch (error) {
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
+        console.error("Login API Error:", error)
+        return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 })
     }
 }

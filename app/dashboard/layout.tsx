@@ -18,28 +18,30 @@ export default function DashboardLayout({
 
     // 🚪 စနစ်မှထွက်ပြီး Login Page သို့ ပြန်မောင်းထုတ်မည့် function
     const handleLogout = async () => {
+        // Custom JWT Access Token ကို ရှင်းလင်းမည်
+        localStorage.removeItem('accessToken')
         await signOut({ callbackUrl: '/login' })
     }
 
     // 🎯 Role အပေါ်မူတည်ပြီး လမ်းကြောင်းသစ်များ (dashboard/...) ခွဲခြားသတ်မှတ်ခြင်း
     const links = role === 'COMPANY_HEAD'
         ? [
-            { name: "Overview Dashboard", path: "/dashboard", icon: "🏢" },
-            { name: "ဆိုင်ခွဲများစီမံရန် (Branches)", path: "/dashboard/company/branches", icon: "🏪" },
-            { name: "ဘေလ်မှတ်တမ်းများ (Invoices)", path: "/dashboard/company/invoices", icon: "🧾" },
-            { name: "ဝန်ထမ်းများစီမံရန် (Staffs)", path: "/dashboard/company/staff", icon: "👥" },         // ➕ အသစ်တိုးရန်
-            { name: "ဗဟိုမီနူး (Master Menu)", path: "/dashboard/company/menu", icon: "🍔" },
-            { name: "ကုန်ကြမ်းလက်ကျန် (Inventory)", path: "/dashboard/company/inventory", icon: "⚠️" }// ➕ အသစ်တိုးရန်
+            { name: "Overview Dashboard", path: "/dashboard/hq", icon: "🏢" },
+            { name: "ဆိုင်ခွဲများစီမံရန် (Branches)", path: "/dashboard/hq/branches", icon: "🏪" },
+            { name: "ဘေလ်မှတ်တမ်းများ (Invoices)", path: "/dashboard/hq/invoices", icon: "🧾" },
+            { name: "ဝန်ထမ်းများစီမံရန် (Staffs)", path: "/dashboard/hq/staff", icon: "👥" },         
+            { name: "ဗဟိုမီနူး (Master Menu)", path: "/dashboard/hq/menu", icon: "🍔" },
+            { name: "ကုန်ကြမ်းလက်ကျန် (Inventory)", path: "/dashboard/hq/inventory", icon: "⚠️" }
         ]
         : [
-            { name: "ပင်မ Dashboard", path: "/dashboard", icon: "🍔" },
-            { name: "အော်ဒါများ (Orders)", path: "/dashboard/orders", icon: "🛒" },
-            { name: "မီနူးအုပ်စု (Categories)", path: "/dashboard/categories", icon: "📂" },
-            { name: "စားစရာများ (Menu)", path: "/dashboard/menu", icon: "🍔" },
-            { name: "အပိုပစ္စည်းများ (Addons)", path: "/dashboard/addons", icon: "➕" },
-            { name: "လျှော့စျေး (Discounts)", path: "/dashboard/discounts", icon: "🏷️" },
-            { name: "စားပွဲများ (Tables)", path: "/dashboard/tables", icon: "🍽️" },
-            { name: "ဆက်တင် (Settings)", path: "/dashboard/settings", icon: "⚙️" },
+            { name: "ပင်မ Dashboard", path: "/dashboard/store", icon: "🍔" },
+            { name: "အော်ဒါများ (Orders)", path: "/dashboard/store/orders", icon: "🛒" },
+            { name: "မီနူးအုပ်စု (Categories)", path: "/dashboard/store/categories", icon: "📂" },
+            { name: "စားစရာများ (Menu)", path: "/dashboard/store/menu", icon: "🍔" },
+            { name: "အပိုပစ္စည်းများ (Addons)", path: "/dashboard/store/addons", icon: "➕" },
+            { name: "လျှော့စျေး (Discounts)", path: "/dashboard/store/discounts", icon: "🏷️" },
+            { name: "စားပွဲများ (Tables)", path: "/dashboard/store/tables", icon: "🍽️" },
+            { name: "ဆက်တင် (Settings)", path: "/dashboard/store/settings", icon: "⚙️" },
         ]
 
     // Session ဆွဲနေတုန်း UI ဗလာမဖြစ်အောင် loading ပြခြင်း

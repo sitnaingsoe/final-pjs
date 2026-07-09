@@ -4,12 +4,38 @@
 import React, { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { registerCompanyOwner } from '@/server/actions/register' // 👈 Action သစ်ကို ပြောင်းသုံးပါသည်
+import { registerCompanyOwner } from '@/server/actions/register'
 
 export default function RegisterPage() {
     const router = useRouter()
     const [error, setError] = useState<string | null>(null)
     const [isPending, startTransition] = useTransition()
+    const [showPassword, setShowPassword] = useState(false)
+    const [showConfirm, setShowConfirm] = useState(false)
+
+    // Client-side password match validation ပြုလုပ်ပြီးမှ submit လုပ်မည်
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        const formData = new FormData(e.currentTarget)
+        const password = formData.get('password') as string
+        const confirmPassword = formData.get('confirmPassword') as string
+
+        if (password !== confirmPassword) {
+            setError("လျှို့ဝှက်နံပါတ်နှစ်ခု ထပ်တူမကျပါ")
+            return
+        }
+
+        startTransition(async () => {
+            setError(null)
+            const res = await registerCompanyOwner(formData)
+
+            if (res && !res.success) {
+                setError(res.error || "အကောင့်ဖွင့်၍ မရပါ")
+            } else {
+                router.push('/login')
+            }
+        })
+    }
 
     return (
         <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
@@ -30,23 +56,9 @@ export default function RegisterPage() {
                 )}
 
                 {/* Form */}
-                <form
-                    action={(formData) => {
-                        startTransition(async () => {
-                            setError(null)
-                            const res = await registerCompanyOwner(formData)
+                <form onSubmit={handleSubmit} className="space-y-4">
 
-                            if (res && !res.success) {
-                                setError(res.error || "အကောင့်ဖွင့်၍ မရပါ")
-                            } else {
-                                // အောင်မြင်လျှင် Login ဝင်ခိုင်းမည်
-                                router.push('/login')
-                            }
-                        })
-                    }}
-                    className="space-y-4"
-                >
-                    {/* 🎯 ကုမ္ပဏီ/လုပ်ငန်းအမည် (Company Name) - မဖြစ်မနေ လိုအပ်သည် */}
+                    {/* ကုမ္ပဏီ/လုပ်ငန်းအမည် */}
                     <div>
                         <label className="block text-xs font-bold text-slate-400 mb-1.5">လုပ်ငန်း/ကုမ္ပဏီအမည် (Business/Company Name)</label>
                         <input
@@ -84,20 +96,56 @@ export default function RegisterPage() {
                         />
                     </div>
 
-                    {/* လျှို့ဝှက်နံပါတ် */}
+                    {/* လျှို့ဝှက်နံပါတ် + Show/Hide */}
                     <div>
                         <label className="block text-xs font-bold text-slate-400 mb-1.5">လျှို့ဝှက်နံပါတ် (Password)</label>
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="••••••••"
-                            className="w-full border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition bg-slate-900 text-white placeholder-slate-500"
-                            required
-                            disabled={isPending}
-                        />
+                        <div className="relative">
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                name="password"
+                                placeholder="••••••••"
+                                className="w-full border border-slate-800 rounded-xl p-3 pr-11 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition bg-slate-900 text-white placeholder-slate-500"
+                                required
+                                minLength={6}
+                                disabled={isPending}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-orange-400 transition text-base select-none"
+                                tabIndex={-1}
+                                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                            >
+                                {showPassword ? '🙈' : '👁️'}
+                            </button>
+                        </div>
                     </div>
 
-                    {/* Button */}
+                    {/* လျှို့ဝှက်နံပါတ် ထပ်မံရိုက်ပါ (Confirm Password) */}
+                    <div>
+                        <label className="block text-xs font-bold text-slate-400 mb-1.5">လျှို့ဝှက်နံပါတ်ထပ်မံရိုက်ပါ (Confirm Password)</label>
+                        <div className="relative">
+                            <input
+                                type={showConfirm ? 'text' : 'password'}
+                                name="confirmPassword"
+                                placeholder="••••••••"
+                                className="w-full border border-slate-800 rounded-xl p-3 pr-11 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition bg-slate-900 text-white placeholder-slate-500"
+                                required
+                                disabled={isPending}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowConfirm(!showConfirm)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-orange-400 transition text-base select-none"
+                                tabIndex={-1}
+                                aria-label={showConfirm ? 'Hide confirm password' : 'Show confirm password'}
+                            >
+                                {showConfirm ? '🙈' : '👁️'}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Submit Button */}
                     <button
                         type="submit"
                         disabled={isPending}
@@ -123,4 +171,4 @@ export default function RegisterPage() {
             </div>
         </div>
     )
-}
+}

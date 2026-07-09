@@ -55,6 +55,7 @@ export const ModelName = {
   Branch: 'Branch',
   User: 'User',
   PasswordResetToken: 'PasswordResetToken',
+  RefreshToken: 'RefreshToken',
   Setting: 'Setting',
   MenuCategory: 'MenuCategory',
   MenuItem: 'MenuItem',
@@ -118,6 +119,7 @@ export const UserScalarFieldEnum = {
   password: 'password',
   role: 'role',
   branchId: 'branchId',
+  companyId: 'companyId',
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -135,6 +137,18 @@ export const PasswordResetTokenScalarFieldEnum = {
 } as const
 
 export type PasswordResetTokenScalarFieldEnum = (typeof PasswordResetTokenScalarFieldEnum)[keyof typeof PasswordResetTokenScalarFieldEnum]
+
+
+export const RefreshTokenScalarFieldEnum = {
+  id: 'id',
+  token: 'token',
+  userId: 'userId',
+  expires: 'expires',
+  createdAt: 'createdAt',
+  isRevoked: 'isRevoked'
+} as const
+
+export type RefreshTokenScalarFieldEnum = (typeof RefreshTokenScalarFieldEnum)[keyof typeof RefreshTokenScalarFieldEnum]
 
 
 export const SettingScalarFieldEnum = {
@@ -303,6 +317,7 @@ export const MenuScalarFieldEnum = {
   basePrice: 'basePrice',
   image: 'image',
   isActive: 'isActive',
+  companyId: 'companyId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

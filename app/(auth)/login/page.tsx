@@ -10,6 +10,7 @@ export default function LoginPage() {
     const router = useRouter()
     const [error, setError] = useState<string | null>(null)
     const [isPending, startTransition] = useTransition()
+    const [showPassword, setShowPassword] = useState(false)
 
     return (
         <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
@@ -33,15 +34,49 @@ export default function LoginPage() {
                 <form action={(formData) => {
                     startTransition(async () => {
                         setError(null)
+                        
+                        const email = formData.get('email') as string
+                        const password = formData.get('password') as string
+
+                        // 1. Get Custom Access & Refresh Tokens
+                        try {
+                            const apiRes = await fetch('/api/login', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ email, password })
+                            })
+                            const apiData = await apiRes.json()
+
+                            if (!apiRes.ok || !apiData.success) {
+                                setError(apiData.error || "API Login Failed")
+                                return
+                            }
+
+                            // Save Access Token
+                            localStorage.setItem('accessToken', apiData.accessToken)
+                            
+                        } catch (err) {
+                            setError("Network Error: Could not connect to API")
+                            return
+                        }
+
+                        // 2. Establish NextAuth Session (for Dashboard Middleware)
                         const res = await loginUser(formData)
 
                         if (res && !res.success) {
                             setError(res.error || "အကောင့်ဝင်၍ မရပါ")
                         } else {
-                            router.push('/dashboard')
+                            // 🎯 Role အပေါ်မူတည်ပြီး မတူညီသော Dashboard သို့ ညွှန်းမည်
+                            // 💡 window.location.href ကို သုံးခြင်းဖြင့် Next.js ၏ Cache ကို ရှင်းလင်းပြီး Data အသစ်များကို သေချာဆွဲယူစေပါမည်။
+                            if (res.role === 'COMPANY_HEAD') {
+                                window.location.href = '/dashboard/hq/branches'
+                            } else {
+                                window.location.href = '/dashboard/store/orders' // Default to orders page
+                            }
                         }
                     })
                 }} className="space-y-4">
+
 
                     {/* Email Input */}
                     <div>
@@ -64,14 +99,25 @@ export default function LoginPage() {
                                 Forgot?
                             </Link>
                         </div>
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="••••••••"
-                            className="w-full border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition bg-slate-900 text-white placeholder-slate-500"
-                            required
-                            disabled={isPending}
-                        />
+                        <div className="relative">
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                name="password"
+                                placeholder="••••••••"
+                                className="w-full border border-slate-800 rounded-xl p-3 pr-11 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition bg-slate-900 text-white placeholder-slate-500"
+                                required
+                                disabled={isPending}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-orange-400 transition text-base select-none"
+                                tabIndex={-1}
+                                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                            >
+                                {showPassword ? '🙈' : '👁️'}
+                            </button>
+                        </div>
                     </div>
 
                     {/* Submit Button */}

@@ -4,8 +4,9 @@ import { prisma } from '@/lib/db'
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 
-async function getLowStockAlerts() {
+async function getLowStockAlerts(companyId: string) {
     const allStocks = await prisma.inventory.findMany({
+        where: { branch: { companyId } }, // 🎯 သက်ဆိုင်ရာ ကုမ္ပဏီ၏ ကုန်ကြမ်းများကိုသာ စစ်ဆေးမည်
         include: {
             branch: { select: { name: true } }
         },
@@ -22,7 +23,17 @@ export default async function CentralInventoryAlertsPage() {
         redirect('/dashboard')
     }
 
-    const alertItems = await getLowStockAlerts()
+    const currentUser = await prisma.user.findUnique({
+        where: { email: session.user.email! },
+        select: { companyId: true, branch: { select: { companyId: true } } }
+    })
+    const companyId = currentUser?.companyId || currentUser?.branch?.companyId
+
+    if (!companyId) {
+        return <div className="p-6 text-center text-red-500">ကုမ္ပဏီအချက်အလက် ရှာမတွေ့ပါ။</div>
+    }
+
+    const alertItems = await getLowStockAlerts(companyId)
 
     return (
         <div className="space-y-6 text-white min-h-screen">

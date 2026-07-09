@@ -6,8 +6,9 @@ import { redirect } from 'next/navigation'
 import CreateMenuDialog from '@/components/dashboard/CreateMenuDialog'
 import MenuRowActions from '@/components/dashboard/MenuRowActions'
 
-async function getMasterMenus() {
+async function getMasterMenus(companyId: string) {
     return await prisma.menu.findMany({
+        where: { companyId }, // 🎯 သက်ဆိုင်ရာ ကုမ္ပဏီ၏ မီနူးများကိုသာ ဆွဲထုတ်မည်
         include: {
             branches: {
                 include: { branch: { select: { name: true } } }
@@ -24,9 +25,22 @@ export default async function CentralMenuPage() {
         redirect('/dashboard')
     }
 
-    // ဆိုင်ခွဲစာရင်းနှင့် မီနူးစာရင်းအားလုံးကို ဗဟိုမှ ဆွဲထုတ်ခြင်း
-    const branches = await prisma.branch.findMany({ select: { id: true, name: true } })
-    const menus = await getMasterMenus()
+    const currentUser = await prisma.user.findUnique({
+        where: { email: session.user.email! },
+        select: { companyId: true, branch: { select: { companyId: true } } }
+    })
+    const companyId = currentUser?.companyId || currentUser?.branch?.companyId
+
+    if (!companyId) {
+        return <div className="p-6 text-center text-red-500">ကုမ္ပဏီအချက်အလက် ရှာမတွေ့ပါ။</div>
+    }
+
+    // ဆိုင်ခွဲစာရင်းနှင့် မီနူးစာရင်းများကို သက်ဆိုင်ရာ companyId ဖြင့်သာ ဆွဲထုတ်ခြင်း
+    const branches = await prisma.branch.findMany({ 
+        where: { companyId }, 
+        select: { id: true, name: true } 
+    })
+    const menus = await getMasterMenus(companyId)
 
     return (
         <div className="space-y-6 text-white min-h-screen">

@@ -41,6 +41,7 @@ export type MenuMinAggregateOutputType = {
   basePrice: number | null
   image: string | null
   isActive: boolean | null
+  companyId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -52,6 +53,7 @@ export type MenuMaxAggregateOutputType = {
   basePrice: number | null
   image: string | null
   isActive: boolean | null
+  companyId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -63,6 +65,7 @@ export type MenuCountAggregateOutputType = {
   basePrice: number
   image: number
   isActive: number
+  companyId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -84,6 +87,7 @@ export type MenuMinAggregateInputType = {
   basePrice?: true
   image?: true
   isActive?: true
+  companyId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -95,6 +99,7 @@ export type MenuMaxAggregateInputType = {
   basePrice?: true
   image?: true
   isActive?: true
+  companyId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -106,6 +111,7 @@ export type MenuCountAggregateInputType = {
   basePrice?: true
   image?: true
   isActive?: true
+  companyId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -204,6 +210,7 @@ export type MenuGroupByOutputType = {
   basePrice: number
   image: string | null
   isActive: boolean
+  companyId: string | null
   createdAt: Date
   updatedAt: Date
   _count: MenuCountAggregateOutputType | null
@@ -238,8 +245,10 @@ export type MenuWhereInput = {
   basePrice?: Prisma.FloatFilter<"Menu"> | number
   image?: Prisma.StringNullableFilter<"Menu"> | string | null
   isActive?: Prisma.BoolFilter<"Menu"> | boolean
+  companyId?: Prisma.StringNullableFilter<"Menu"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Menu"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Menu"> | Date | string
+  company?: Prisma.XOR<Prisma.CompanyNullableScalarRelationFilter, Prisma.CompanyWhereInput> | null
   branches?: Prisma.MenuOnBranchListRelationFilter
 }
 
@@ -250,8 +259,10 @@ export type MenuOrderByWithRelationInput = {
   basePrice?: Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  companyId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  company?: Prisma.CompanyOrderByWithRelationInput
   branches?: Prisma.MenuOnBranchOrderByRelationAggregateInput
 }
 
@@ -265,8 +276,10 @@ export type MenuWhereUniqueInput = Prisma.AtLeast<{
   basePrice?: Prisma.FloatFilter<"Menu"> | number
   image?: Prisma.StringNullableFilter<"Menu"> | string | null
   isActive?: Prisma.BoolFilter<"Menu"> | boolean
+  companyId?: Prisma.StringNullableFilter<"Menu"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Menu"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Menu"> | Date | string
+  company?: Prisma.XOR<Prisma.CompanyNullableScalarRelationFilter, Prisma.CompanyWhereInput> | null
   branches?: Prisma.MenuOnBranchListRelationFilter
 }, "id">
 
@@ -277,6 +290,7 @@ export type MenuOrderByWithAggregationInput = {
   basePrice?: Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  companyId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.MenuCountOrderByAggregateInput
@@ -296,6 +310,7 @@ export type MenuScalarWhereWithAggregatesInput = {
   basePrice?: Prisma.FloatWithAggregatesFilter<"Menu"> | number
   image?: Prisma.StringNullableWithAggregatesFilter<"Menu"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"Menu"> | boolean
+  companyId?: Prisma.StringNullableWithAggregatesFilter<"Menu"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Menu"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Menu"> | Date | string
 }
@@ -309,6 +324,7 @@ export type MenuCreateInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  company?: Prisma.CompanyCreateNestedOneWithoutMenusInput
   branches?: Prisma.MenuOnBranchCreateNestedManyWithoutMenuInput
 }
 
@@ -319,6 +335,7 @@ export type MenuUncheckedCreateInput = {
   basePrice: number
   image?: string | null
   isActive?: boolean
+  companyId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   branches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutMenuInput
@@ -333,6 +350,7 @@ export type MenuUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneWithoutMenusNestedInput
   branches?: Prisma.MenuOnBranchUpdateManyWithoutMenuNestedInput
 }
 
@@ -343,6 +361,7 @@ export type MenuUncheckedUpdateInput = {
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutMenuNestedInput
@@ -355,6 +374,7 @@ export type MenuCreateManyInput = {
   basePrice: number
   image?: string | null
   isActive?: boolean
+  companyId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -377,8 +397,19 @@ export type MenuUncheckedUpdateManyInput = {
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type MenuListRelationFilter = {
+  every?: Prisma.MenuWhereInput
+  some?: Prisma.MenuWhereInput
+  none?: Prisma.MenuWhereInput
+}
+
+export type MenuOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type MenuCountOrderByAggregateInput = {
@@ -388,6 +419,7 @@ export type MenuCountOrderByAggregateInput = {
   basePrice?: Prisma.SortOrder
   image?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -403,6 +435,7 @@ export type MenuMaxOrderByAggregateInput = {
   basePrice?: Prisma.SortOrder
   image?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -414,6 +447,7 @@ export type MenuMinOrderByAggregateInput = {
   basePrice?: Prisma.SortOrder
   image?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -425,6 +459,48 @@ export type MenuSumOrderByAggregateInput = {
 export type MenuScalarRelationFilter = {
   is?: Prisma.MenuWhereInput
   isNot?: Prisma.MenuWhereInput
+}
+
+export type MenuCreateNestedManyWithoutCompanyInput = {
+  create?: Prisma.XOR<Prisma.MenuCreateWithoutCompanyInput, Prisma.MenuUncheckedCreateWithoutCompanyInput> | Prisma.MenuCreateWithoutCompanyInput[] | Prisma.MenuUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.MenuCreateOrConnectWithoutCompanyInput | Prisma.MenuCreateOrConnectWithoutCompanyInput[]
+  createMany?: Prisma.MenuCreateManyCompanyInputEnvelope
+  connect?: Prisma.MenuWhereUniqueInput | Prisma.MenuWhereUniqueInput[]
+}
+
+export type MenuUncheckedCreateNestedManyWithoutCompanyInput = {
+  create?: Prisma.XOR<Prisma.MenuCreateWithoutCompanyInput, Prisma.MenuUncheckedCreateWithoutCompanyInput> | Prisma.MenuCreateWithoutCompanyInput[] | Prisma.MenuUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.MenuCreateOrConnectWithoutCompanyInput | Prisma.MenuCreateOrConnectWithoutCompanyInput[]
+  createMany?: Prisma.MenuCreateManyCompanyInputEnvelope
+  connect?: Prisma.MenuWhereUniqueInput | Prisma.MenuWhereUniqueInput[]
+}
+
+export type MenuUpdateManyWithoutCompanyNestedInput = {
+  create?: Prisma.XOR<Prisma.MenuCreateWithoutCompanyInput, Prisma.MenuUncheckedCreateWithoutCompanyInput> | Prisma.MenuCreateWithoutCompanyInput[] | Prisma.MenuUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.MenuCreateOrConnectWithoutCompanyInput | Prisma.MenuCreateOrConnectWithoutCompanyInput[]
+  upsert?: Prisma.MenuUpsertWithWhereUniqueWithoutCompanyInput | Prisma.MenuUpsertWithWhereUniqueWithoutCompanyInput[]
+  createMany?: Prisma.MenuCreateManyCompanyInputEnvelope
+  set?: Prisma.MenuWhereUniqueInput | Prisma.MenuWhereUniqueInput[]
+  disconnect?: Prisma.MenuWhereUniqueInput | Prisma.MenuWhereUniqueInput[]
+  delete?: Prisma.MenuWhereUniqueInput | Prisma.MenuWhereUniqueInput[]
+  connect?: Prisma.MenuWhereUniqueInput | Prisma.MenuWhereUniqueInput[]
+  update?: Prisma.MenuUpdateWithWhereUniqueWithoutCompanyInput | Prisma.MenuUpdateWithWhereUniqueWithoutCompanyInput[]
+  updateMany?: Prisma.MenuUpdateManyWithWhereWithoutCompanyInput | Prisma.MenuUpdateManyWithWhereWithoutCompanyInput[]
+  deleteMany?: Prisma.MenuScalarWhereInput | Prisma.MenuScalarWhereInput[]
+}
+
+export type MenuUncheckedUpdateManyWithoutCompanyNestedInput = {
+  create?: Prisma.XOR<Prisma.MenuCreateWithoutCompanyInput, Prisma.MenuUncheckedCreateWithoutCompanyInput> | Prisma.MenuCreateWithoutCompanyInput[] | Prisma.MenuUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.MenuCreateOrConnectWithoutCompanyInput | Prisma.MenuCreateOrConnectWithoutCompanyInput[]
+  upsert?: Prisma.MenuUpsertWithWhereUniqueWithoutCompanyInput | Prisma.MenuUpsertWithWhereUniqueWithoutCompanyInput[]
+  createMany?: Prisma.MenuCreateManyCompanyInputEnvelope
+  set?: Prisma.MenuWhereUniqueInput | Prisma.MenuWhereUniqueInput[]
+  disconnect?: Prisma.MenuWhereUniqueInput | Prisma.MenuWhereUniqueInput[]
+  delete?: Prisma.MenuWhereUniqueInput | Prisma.MenuWhereUniqueInput[]
+  connect?: Prisma.MenuWhereUniqueInput | Prisma.MenuWhereUniqueInput[]
+  update?: Prisma.MenuUpdateWithWhereUniqueWithoutCompanyInput | Prisma.MenuUpdateWithWhereUniqueWithoutCompanyInput[]
+  updateMany?: Prisma.MenuUpdateManyWithWhereWithoutCompanyInput | Prisma.MenuUpdateManyWithWhereWithoutCompanyInput[]
+  deleteMany?: Prisma.MenuScalarWhereInput | Prisma.MenuScalarWhereInput[]
 }
 
 export type MenuCreateNestedOneWithoutBranchesInput = {
@@ -441,6 +517,71 @@ export type MenuUpdateOneRequiredWithoutBranchesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MenuUpdateToOneWithWhereWithoutBranchesInput, Prisma.MenuUpdateWithoutBranchesInput>, Prisma.MenuUncheckedUpdateWithoutBranchesInput>
 }
 
+export type MenuCreateWithoutCompanyInput = {
+  id?: string
+  name: string
+  description?: string | null
+  basePrice: number
+  image?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branches?: Prisma.MenuOnBranchCreateNestedManyWithoutMenuInput
+}
+
+export type MenuUncheckedCreateWithoutCompanyInput = {
+  id?: string
+  name: string
+  description?: string | null
+  basePrice: number
+  image?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutMenuInput
+}
+
+export type MenuCreateOrConnectWithoutCompanyInput = {
+  where: Prisma.MenuWhereUniqueInput
+  create: Prisma.XOR<Prisma.MenuCreateWithoutCompanyInput, Prisma.MenuUncheckedCreateWithoutCompanyInput>
+}
+
+export type MenuCreateManyCompanyInputEnvelope = {
+  data: Prisma.MenuCreateManyCompanyInput | Prisma.MenuCreateManyCompanyInput[]
+  skipDuplicates?: boolean
+}
+
+export type MenuUpsertWithWhereUniqueWithoutCompanyInput = {
+  where: Prisma.MenuWhereUniqueInput
+  update: Prisma.XOR<Prisma.MenuUpdateWithoutCompanyInput, Prisma.MenuUncheckedUpdateWithoutCompanyInput>
+  create: Prisma.XOR<Prisma.MenuCreateWithoutCompanyInput, Prisma.MenuUncheckedCreateWithoutCompanyInput>
+}
+
+export type MenuUpdateWithWhereUniqueWithoutCompanyInput = {
+  where: Prisma.MenuWhereUniqueInput
+  data: Prisma.XOR<Prisma.MenuUpdateWithoutCompanyInput, Prisma.MenuUncheckedUpdateWithoutCompanyInput>
+}
+
+export type MenuUpdateManyWithWhereWithoutCompanyInput = {
+  where: Prisma.MenuScalarWhereInput
+  data: Prisma.XOR<Prisma.MenuUpdateManyMutationInput, Prisma.MenuUncheckedUpdateManyWithoutCompanyInput>
+}
+
+export type MenuScalarWhereInput = {
+  AND?: Prisma.MenuScalarWhereInput | Prisma.MenuScalarWhereInput[]
+  OR?: Prisma.MenuScalarWhereInput[]
+  NOT?: Prisma.MenuScalarWhereInput | Prisma.MenuScalarWhereInput[]
+  id?: Prisma.StringFilter<"Menu"> | string
+  name?: Prisma.StringFilter<"Menu"> | string
+  description?: Prisma.StringNullableFilter<"Menu"> | string | null
+  basePrice?: Prisma.FloatFilter<"Menu"> | number
+  image?: Prisma.StringNullableFilter<"Menu"> | string | null
+  isActive?: Prisma.BoolFilter<"Menu"> | boolean
+  companyId?: Prisma.StringNullableFilter<"Menu"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"Menu"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Menu"> | Date | string
+}
+
 export type MenuCreateWithoutBranchesInput = {
   id?: string
   name: string
@@ -450,6 +591,7 @@ export type MenuCreateWithoutBranchesInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  company?: Prisma.CompanyCreateNestedOneWithoutMenusInput
 }
 
 export type MenuUncheckedCreateWithoutBranchesInput = {
@@ -459,6 +601,7 @@ export type MenuUncheckedCreateWithoutBranchesInput = {
   basePrice: number
   image?: string | null
   isActive?: boolean
+  companyId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -488,9 +631,57 @@ export type MenuUpdateWithoutBranchesInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneWithoutMenusNestedInput
 }
 
 export type MenuUncheckedUpdateWithoutBranchesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type MenuCreateManyCompanyInput = {
+  id?: string
+  name: string
+  description?: string | null
+  basePrice: number
+  image?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type MenuUpdateWithoutCompanyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branches?: Prisma.MenuOnBranchUpdateManyWithoutMenuNestedInput
+}
+
+export type MenuUncheckedUpdateWithoutCompanyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutMenuNestedInput
+}
+
+export type MenuUncheckedUpdateManyWithoutCompanyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -539,8 +730,10 @@ export type MenuSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   basePrice?: boolean
   image?: boolean
   isActive?: boolean
+  companyId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  company?: boolean | Prisma.Menu$companyArgs<ExtArgs>
   branches?: boolean | Prisma.Menu$branchesArgs<ExtArgs>
   _count?: boolean | Prisma.MenuCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["menu"]>
@@ -552,8 +745,10 @@ export type MenuSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   basePrice?: boolean
   image?: boolean
   isActive?: boolean
+  companyId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  company?: boolean | Prisma.Menu$companyArgs<ExtArgs>
 }, ExtArgs["result"]["menu"]>
 
 export type MenuSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -563,8 +758,10 @@ export type MenuSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   basePrice?: boolean
   image?: boolean
   isActive?: boolean
+  companyId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  company?: boolean | Prisma.Menu$companyArgs<ExtArgs>
 }, ExtArgs["result"]["menu"]>
 
 export type MenuSelectScalar = {
@@ -574,21 +771,28 @@ export type MenuSelectScalar = {
   basePrice?: boolean
   image?: boolean
   isActive?: boolean
+  companyId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type MenuOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "basePrice" | "image" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["menu"]>
+export type MenuOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "basePrice" | "image" | "isActive" | "companyId" | "createdAt" | "updatedAt", ExtArgs["result"]["menu"]>
 export type MenuInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.Menu$companyArgs<ExtArgs>
   branches?: boolean | Prisma.Menu$branchesArgs<ExtArgs>
   _count?: boolean | Prisma.MenuCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type MenuIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type MenuIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type MenuIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.Menu$companyArgs<ExtArgs>
+}
+export type MenuIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.Menu$companyArgs<ExtArgs>
+}
 
 export type $MenuPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Menu"
   objects: {
+    company: Prisma.$CompanyPayload<ExtArgs> | null
     branches: Prisma.$MenuOnBranchPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -598,6 +802,7 @@ export type $MenuPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     basePrice: number
     image: string | null
     isActive: boolean
+    companyId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["menu"]>
@@ -994,6 +1199,7 @@ readonly fields: MenuFieldRefs;
  */
 export interface Prisma__MenuClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  company<T extends Prisma.Menu$companyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Menu$companyArgs<ExtArgs>>): Prisma.Prisma__CompanyClient<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   branches<T extends Prisma.Menu$branchesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Menu$branchesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MenuOnBranchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1030,6 +1236,7 @@ export interface MenuFieldRefs {
   readonly basePrice: Prisma.FieldRef<"Menu", 'Float'>
   readonly image: Prisma.FieldRef<"Menu", 'String'>
   readonly isActive: Prisma.FieldRef<"Menu", 'Boolean'>
+  readonly companyId: Prisma.FieldRef<"Menu", 'String'>
   readonly createdAt: Prisma.FieldRef<"Menu", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Menu", 'DateTime'>
 }
@@ -1286,6 +1493,10 @@ export type MenuCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    */
   data: Prisma.MenuCreateManyInput | Prisma.MenuCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MenuIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1356,6 +1567,10 @@ export type MenuUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many Menus to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MenuIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1422,6 +1637,25 @@ export type MenuDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Limit how many Menus to delete.
    */
   limit?: number
+}
+
+/**
+ * Menu.company
+ */
+export type Menu$companyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Company
+   */
+  select?: Prisma.CompanySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Company
+   */
+  omit?: Prisma.CompanyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompanyInclude<ExtArgs> | null
+  where?: Prisma.CompanyWhereInput
 }
 
 /**

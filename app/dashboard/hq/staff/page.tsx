@@ -5,10 +5,11 @@ import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import StaffRowActions from '@/components/dashboard/StaffRowActions'
 
-async function getAllStaffs() {
+async function getAllStaffs(companyId: string) {
     return await prisma.user.findMany({
         where: {
-            NOT: { role: 'COMPANY_HEAD' }
+            NOT: { role: 'COMPANY_HEAD' },
+            branch: { companyId } // 🎯 ကုမ္ပဏီတူသော ဝန်ထမ်းများကိုသာ ဆွဲထုတ်မည်
         },
         include: {
             branch: { select: { name: true } }
@@ -24,7 +25,17 @@ export default async function CentralStaffPage() {
         redirect('/dashboard')
     }
 
-    const staffs = await getAllStaffs()
+    const currentUser = await prisma.user.findUnique({
+        where: { email: session.user.email! },
+        select: { companyId: true, branch: { select: { companyId: true } } }
+    })
+    const companyId = currentUser?.companyId || currentUser?.branch?.companyId
+
+    if (!companyId) {
+        return <div className="p-6 text-center text-red-500">ကုမ္ပဏီအချက်အလက် ရှာမတွေ့ပါ။</div>
+    }
+
+    const staffs = await getAllStaffs(companyId)
 
     return (
         <div className="space-y-6 text-white min-h-screen">

@@ -17,6 +17,8 @@ model Company {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   branches  Branch[] // One-to-Many
+  users     User[]   // One-to-Many (COMPANY_HEAD users linked directly to Company)
+  menus     Menu[]   // One-to-Many (Master Menus belong to Company)
 }
 
 model Branch {
@@ -57,7 +59,13 @@ model User {
   branchId String?
   branch   Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
 
+  // 🎯 ပိုင်ရှင် (COMPANY_HEAD) သည် Company နှင့် တိုက်ရိုက်ချိတ်ဆက်မည်
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
   isActive Boolean @default(true)
+
+  refreshTokens RefreshToken[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -78,6 +86,16 @@ model PasswordResetToken {
   createdAt DateTime @default(now())
 
   @@unique([email, token])
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expires   DateTime
+  createdAt DateTime @default(now())
+  isRevoked Boolean  @default(false)
 }
 
 // =================================================================
@@ -296,6 +314,10 @@ model Menu {
   basePrice   Float // ဗဟိုမှ သတ်မှတ်ထားသော စံနှုန်းစျေးနှုန်း
   image       String?
   isActive    Boolean @default(true)
+
+  // 🎯 Master Menu များသည် ကုမ္ပဏီတစ်ခုစီအတွက် သီးသန့်ဖြစ်သည်
+  companyId   String?
+  company     Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   // ဆိုင်ခွဲများနှင့် ချိတ်ဆက်မည့် Relationship
   branches MenuOnBranch[]

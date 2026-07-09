@@ -29,13 +29,21 @@ export default async function ManageBranchesPage() {
 
     const currentUser = await prisma.user.findUnique({
         where: { email: session.user.email! },
-        select: { branch: { select: { companyId: true } } }
+        select: { 
+            companyId: true, 
+            branch: { select: { companyId: true } } 
+        }
     })
 
-    let companyId = currentUser?.branch?.companyId
+    // 🎯 ပိုင်ရှင်ဆိုလျှင် companyId တိုက်ရိုက်ရှိမည်၊ ဝန်ထမ်းဆိုလျှင် branch မှတစ်ဆင့်ယူမည်
+    const companyId = currentUser?.companyId || currentUser?.branch?.companyId
+
     if (!companyId) {
-        const firstCompany = await prisma.company.findFirst({ select: { id: true } })
-        companyId = firstCompany?.id || ""
+        return (
+            <div className="p-6 text-center text-red-500">
+                သင်၏ အကောင့်သည် မည်သည့်ကုမ္ပဏီနှင့်မျှ ချိတ်ဆက်ထားခြင်းမရှိပါ။
+            </div>
+        )
     }
 
     const branches = await getBranchesData(companyId)

@@ -36,7 +36,8 @@ export async function registerCompanyOwner(formData: FormData) {
                     email: ownerEmail,
                     password: hashedPassword,
                     role: "COMPANY_HEAD", // 💡 Role မှာ ပိုင်ရှင်ဖြစ်သွားပြီ
-                    branchId: null        // 💡 ဆိုင်ခွဲအားလုံးကို ပိုင်သဖြင့် branch သီးသန့်မရှိပါ
+                    branchId: null,       // 💡 ဆိုင်ခွဲအားလုံးကို ပိုင်သဖြင့် branch သီးသန့်မရှိပါ
+                    companyId: newCompany.id // 🎯 Company နှင့် တိုက်ရိုက်ချိတ်ဆက်မည်
                 }
             })
 
