@@ -4,7 +4,6 @@ import { prisma } from '@/lib/db'
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 
-// Backend မှ ကုန်ကြမ်းပြတ်လုနီးပါး (Low Stock) ဖြစ်နေသည်များကိုသာ စစ်ထုတ်ဆွဲထုတ်ခြင်း
 async function getLowStockAlerts() {
     const allStocks = await prisma.inventory.findMany({
         include: {
@@ -13,7 +12,6 @@ async function getLowStockAlerts() {
         orderBy: { quantity: 'asc' }
     })
 
-    // လက်ရှိလက်ကျန်က minThreshold ထက် ငယ်တာ သို့မဟုတ် ညီတာကို စစ်ထုတ်ခြင်း
     return allStocks.filter(item => item.quantity <= item.minThreshold)
 }
 
@@ -36,7 +34,6 @@ export default async function CentralInventoryAlertsPage() {
                     <p className="text-xs text-slate-400 mt-0.5">ဆိုင်ခွဲအားလုံးရှိ ကုန်ကြမ်းလက်ကျန် ပြတ်လုနီးပါးဖြစ်မှုများကို ဗဟိုမှ စောင့်ကြည့်စနစ်</p>
                 </div>
 
-                {/* အရေးပေါ်ပြတ်လုနီးပါး အရေအတွက်ပြ Badge */}
                 <div className="bg-slate-900 border border-slate-800 px-5 py-2.5 rounded-xl flex items-center gap-3">
                     <span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-ping"></span>
                     <div>
@@ -70,7 +67,6 @@ export default async function CentralInventoryAlertsPage() {
                                 </tr>
                             ) : (
                                 alertItems.map((item) => {
-                                    // လုံးဝပြတ်သွားတာလား၊ နည်းနေတာလား အခြေအနေစစ်ခြင်း
                                     const isOut = item.quantity === 0
 
                                     return (
