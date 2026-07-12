@@ -39,6 +39,7 @@ export type AddonMinAggregateOutputType = {
   name: string | null
   price: number | null
   isActive: boolean | null
+  branchId: string | null
   addonCategoryId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -49,6 +50,7 @@ export type AddonMaxAggregateOutputType = {
   name: string | null
   price: number | null
   isActive: boolean | null
+  branchId: string | null
   addonCategoryId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -59,6 +61,7 @@ export type AddonCountAggregateOutputType = {
   name: number
   price: number
   isActive: number
+  branchId: number
   addonCategoryId: number
   createdAt: number
   updatedAt: number
@@ -79,6 +82,7 @@ export type AddonMinAggregateInputType = {
   name?: true
   price?: true
   isActive?: true
+  branchId?: true
   addonCategoryId?: true
   createdAt?: true
   updatedAt?: true
@@ -89,6 +93,7 @@ export type AddonMaxAggregateInputType = {
   name?: true
   price?: true
   isActive?: true
+  branchId?: true
   addonCategoryId?: true
   createdAt?: true
   updatedAt?: true
@@ -99,6 +104,7 @@ export type AddonCountAggregateInputType = {
   name?: true
   price?: true
   isActive?: true
+  branchId?: true
   addonCategoryId?: true
   createdAt?: true
   updatedAt?: true
@@ -196,6 +202,7 @@ export type AddonGroupByOutputType = {
   name: string
   price: number
   isActive: boolean
+  branchId: string | null
   addonCategoryId: string
   createdAt: Date
   updatedAt: Date
@@ -229,9 +236,11 @@ export type AddonWhereInput = {
   name?: Prisma.StringFilter<"Addon"> | string
   price?: Prisma.FloatFilter<"Addon"> | number
   isActive?: Prisma.BoolFilter<"Addon"> | boolean
+  branchId?: Prisma.StringNullableFilter<"Addon"> | string | null
   addonCategoryId?: Prisma.StringFilter<"Addon"> | string
   createdAt?: Prisma.DateTimeFilter<"Addon"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Addon"> | Date | string
+  branch?: Prisma.XOR<Prisma.BranchNullableScalarRelationFilter, Prisma.BranchWhereInput> | null
   addonCategory?: Prisma.XOR<Prisma.AddonCategoryScalarRelationFilter, Prisma.AddonCategoryWhereInput>
   orderItemAddons?: Prisma.OrderItemAddonListRelationFilter
 }
@@ -241,9 +250,11 @@ export type AddonOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   price?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  branchId?: Prisma.SortOrderInput | Prisma.SortOrder
   addonCategoryId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  branch?: Prisma.BranchOrderByWithRelationInput
   addonCategory?: Prisma.AddonCategoryOrderByWithRelationInput
   orderItemAddons?: Prisma.OrderItemAddonOrderByRelationAggregateInput
 }
@@ -256,9 +267,11 @@ export type AddonWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Addon"> | string
   price?: Prisma.FloatFilter<"Addon"> | number
   isActive?: Prisma.BoolFilter<"Addon"> | boolean
+  branchId?: Prisma.StringNullableFilter<"Addon"> | string | null
   addonCategoryId?: Prisma.StringFilter<"Addon"> | string
   createdAt?: Prisma.DateTimeFilter<"Addon"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Addon"> | Date | string
+  branch?: Prisma.XOR<Prisma.BranchNullableScalarRelationFilter, Prisma.BranchWhereInput> | null
   addonCategory?: Prisma.XOR<Prisma.AddonCategoryScalarRelationFilter, Prisma.AddonCategoryWhereInput>
   orderItemAddons?: Prisma.OrderItemAddonListRelationFilter
 }, "id">
@@ -268,6 +281,7 @@ export type AddonOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   price?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  branchId?: Prisma.SortOrderInput | Prisma.SortOrder
   addonCategoryId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -286,6 +300,7 @@ export type AddonScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Addon"> | string
   price?: Prisma.FloatWithAggregatesFilter<"Addon"> | number
   isActive?: Prisma.BoolWithAggregatesFilter<"Addon"> | boolean
+  branchId?: Prisma.StringNullableWithAggregatesFilter<"Addon"> | string | null
   addonCategoryId?: Prisma.StringWithAggregatesFilter<"Addon"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Addon"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Addon"> | Date | string
@@ -298,6 +313,7 @@ export type AddonCreateInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  branch?: Prisma.BranchCreateNestedOneWithoutAddonsInput
   addonCategory: Prisma.AddonCategoryCreateNestedOneWithoutAddonsInput
   orderItemAddons?: Prisma.OrderItemAddonCreateNestedManyWithoutAddonInput
 }
@@ -307,6 +323,7 @@ export type AddonUncheckedCreateInput = {
   name: string
   price?: number
   isActive?: boolean
+  branchId?: string | null
   addonCategoryId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -320,6 +337,7 @@ export type AddonUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneWithoutAddonsNestedInput
   addonCategory?: Prisma.AddonCategoryUpdateOneRequiredWithoutAddonsNestedInput
   orderItemAddons?: Prisma.OrderItemAddonUpdateManyWithoutAddonNestedInput
 }
@@ -329,6 +347,7 @@ export type AddonUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addonCategoryId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -340,6 +359,7 @@ export type AddonCreateManyInput = {
   name: string
   price?: number
   isActive?: boolean
+  branchId?: string | null
   addonCategoryId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -359,6 +379,7 @@ export type AddonUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addonCategoryId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -379,6 +400,7 @@ export type AddonCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   price?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  branchId?: Prisma.SortOrder
   addonCategoryId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -393,6 +415,7 @@ export type AddonMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   price?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  branchId?: Prisma.SortOrder
   addonCategoryId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -403,6 +426,7 @@ export type AddonMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   price?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  branchId?: Prisma.SortOrder
   addonCategoryId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -415,6 +439,48 @@ export type AddonSumOrderByAggregateInput = {
 export type AddonScalarRelationFilter = {
   is?: Prisma.AddonWhereInput
   isNot?: Prisma.AddonWhereInput
+}
+
+export type AddonCreateNestedManyWithoutBranchInput = {
+  create?: Prisma.XOR<Prisma.AddonCreateWithoutBranchInput, Prisma.AddonUncheckedCreateWithoutBranchInput> | Prisma.AddonCreateWithoutBranchInput[] | Prisma.AddonUncheckedCreateWithoutBranchInput[]
+  connectOrCreate?: Prisma.AddonCreateOrConnectWithoutBranchInput | Prisma.AddonCreateOrConnectWithoutBranchInput[]
+  createMany?: Prisma.AddonCreateManyBranchInputEnvelope
+  connect?: Prisma.AddonWhereUniqueInput | Prisma.AddonWhereUniqueInput[]
+}
+
+export type AddonUncheckedCreateNestedManyWithoutBranchInput = {
+  create?: Prisma.XOR<Prisma.AddonCreateWithoutBranchInput, Prisma.AddonUncheckedCreateWithoutBranchInput> | Prisma.AddonCreateWithoutBranchInput[] | Prisma.AddonUncheckedCreateWithoutBranchInput[]
+  connectOrCreate?: Prisma.AddonCreateOrConnectWithoutBranchInput | Prisma.AddonCreateOrConnectWithoutBranchInput[]
+  createMany?: Prisma.AddonCreateManyBranchInputEnvelope
+  connect?: Prisma.AddonWhereUniqueInput | Prisma.AddonWhereUniqueInput[]
+}
+
+export type AddonUpdateManyWithoutBranchNestedInput = {
+  create?: Prisma.XOR<Prisma.AddonCreateWithoutBranchInput, Prisma.AddonUncheckedCreateWithoutBranchInput> | Prisma.AddonCreateWithoutBranchInput[] | Prisma.AddonUncheckedCreateWithoutBranchInput[]
+  connectOrCreate?: Prisma.AddonCreateOrConnectWithoutBranchInput | Prisma.AddonCreateOrConnectWithoutBranchInput[]
+  upsert?: Prisma.AddonUpsertWithWhereUniqueWithoutBranchInput | Prisma.AddonUpsertWithWhereUniqueWithoutBranchInput[]
+  createMany?: Prisma.AddonCreateManyBranchInputEnvelope
+  set?: Prisma.AddonWhereUniqueInput | Prisma.AddonWhereUniqueInput[]
+  disconnect?: Prisma.AddonWhereUniqueInput | Prisma.AddonWhereUniqueInput[]
+  delete?: Prisma.AddonWhereUniqueInput | Prisma.AddonWhereUniqueInput[]
+  connect?: Prisma.AddonWhereUniqueInput | Prisma.AddonWhereUniqueInput[]
+  update?: Prisma.AddonUpdateWithWhereUniqueWithoutBranchInput | Prisma.AddonUpdateWithWhereUniqueWithoutBranchInput[]
+  updateMany?: Prisma.AddonUpdateManyWithWhereWithoutBranchInput | Prisma.AddonUpdateManyWithWhereWithoutBranchInput[]
+  deleteMany?: Prisma.AddonScalarWhereInput | Prisma.AddonScalarWhereInput[]
+}
+
+export type AddonUncheckedUpdateManyWithoutBranchNestedInput = {
+  create?: Prisma.XOR<Prisma.AddonCreateWithoutBranchInput, Prisma.AddonUncheckedCreateWithoutBranchInput> | Prisma.AddonCreateWithoutBranchInput[] | Prisma.AddonUncheckedCreateWithoutBranchInput[]
+  connectOrCreate?: Prisma.AddonCreateOrConnectWithoutBranchInput | Prisma.AddonCreateOrConnectWithoutBranchInput[]
+  upsert?: Prisma.AddonUpsertWithWhereUniqueWithoutBranchInput | Prisma.AddonUpsertWithWhereUniqueWithoutBranchInput[]
+  createMany?: Prisma.AddonCreateManyBranchInputEnvelope
+  set?: Prisma.AddonWhereUniqueInput | Prisma.AddonWhereUniqueInput[]
+  disconnect?: Prisma.AddonWhereUniqueInput | Prisma.AddonWhereUniqueInput[]
+  delete?: Prisma.AddonWhereUniqueInput | Prisma.AddonWhereUniqueInput[]
+  connect?: Prisma.AddonWhereUniqueInput | Prisma.AddonWhereUniqueInput[]
+  update?: Prisma.AddonUpdateWithWhereUniqueWithoutBranchInput | Prisma.AddonUpdateWithWhereUniqueWithoutBranchInput[]
+  updateMany?: Prisma.AddonUpdateManyWithWhereWithoutBranchInput | Prisma.AddonUpdateManyWithWhereWithoutBranchInput[]
+  deleteMany?: Prisma.AddonScalarWhereInput | Prisma.AddonScalarWhereInput[]
 }
 
 export type AddonCreateNestedManyWithoutAddonCategoryInput = {
@@ -473,6 +539,68 @@ export type AddonUpdateOneRequiredWithoutOrderItemAddonsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AddonUpdateToOneWithWhereWithoutOrderItemAddonsInput, Prisma.AddonUpdateWithoutOrderItemAddonsInput>, Prisma.AddonUncheckedUpdateWithoutOrderItemAddonsInput>
 }
 
+export type AddonCreateWithoutBranchInput = {
+  id?: string
+  name: string
+  price?: number
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  addonCategory: Prisma.AddonCategoryCreateNestedOneWithoutAddonsInput
+  orderItemAddons?: Prisma.OrderItemAddonCreateNestedManyWithoutAddonInput
+}
+
+export type AddonUncheckedCreateWithoutBranchInput = {
+  id?: string
+  name: string
+  price?: number
+  isActive?: boolean
+  addonCategoryId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  orderItemAddons?: Prisma.OrderItemAddonUncheckedCreateNestedManyWithoutAddonInput
+}
+
+export type AddonCreateOrConnectWithoutBranchInput = {
+  where: Prisma.AddonWhereUniqueInput
+  create: Prisma.XOR<Prisma.AddonCreateWithoutBranchInput, Prisma.AddonUncheckedCreateWithoutBranchInput>
+}
+
+export type AddonCreateManyBranchInputEnvelope = {
+  data: Prisma.AddonCreateManyBranchInput | Prisma.AddonCreateManyBranchInput[]
+  skipDuplicates?: boolean
+}
+
+export type AddonUpsertWithWhereUniqueWithoutBranchInput = {
+  where: Prisma.AddonWhereUniqueInput
+  update: Prisma.XOR<Prisma.AddonUpdateWithoutBranchInput, Prisma.AddonUncheckedUpdateWithoutBranchInput>
+  create: Prisma.XOR<Prisma.AddonCreateWithoutBranchInput, Prisma.AddonUncheckedCreateWithoutBranchInput>
+}
+
+export type AddonUpdateWithWhereUniqueWithoutBranchInput = {
+  where: Prisma.AddonWhereUniqueInput
+  data: Prisma.XOR<Prisma.AddonUpdateWithoutBranchInput, Prisma.AddonUncheckedUpdateWithoutBranchInput>
+}
+
+export type AddonUpdateManyWithWhereWithoutBranchInput = {
+  where: Prisma.AddonScalarWhereInput
+  data: Prisma.XOR<Prisma.AddonUpdateManyMutationInput, Prisma.AddonUncheckedUpdateManyWithoutBranchInput>
+}
+
+export type AddonScalarWhereInput = {
+  AND?: Prisma.AddonScalarWhereInput | Prisma.AddonScalarWhereInput[]
+  OR?: Prisma.AddonScalarWhereInput[]
+  NOT?: Prisma.AddonScalarWhereInput | Prisma.AddonScalarWhereInput[]
+  id?: Prisma.StringFilter<"Addon"> | string
+  name?: Prisma.StringFilter<"Addon"> | string
+  price?: Prisma.FloatFilter<"Addon"> | number
+  isActive?: Prisma.BoolFilter<"Addon"> | boolean
+  branchId?: Prisma.StringNullableFilter<"Addon"> | string | null
+  addonCategoryId?: Prisma.StringFilter<"Addon"> | string
+  createdAt?: Prisma.DateTimeFilter<"Addon"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Addon"> | Date | string
+}
+
 export type AddonCreateWithoutAddonCategoryInput = {
   id?: string
   name: string
@@ -480,6 +608,7 @@ export type AddonCreateWithoutAddonCategoryInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  branch?: Prisma.BranchCreateNestedOneWithoutAddonsInput
   orderItemAddons?: Prisma.OrderItemAddonCreateNestedManyWithoutAddonInput
 }
 
@@ -488,6 +617,7 @@ export type AddonUncheckedCreateWithoutAddonCategoryInput = {
   name: string
   price?: number
   isActive?: boolean
+  branchId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   orderItemAddons?: Prisma.OrderItemAddonUncheckedCreateNestedManyWithoutAddonInput
@@ -519,19 +649,6 @@ export type AddonUpdateManyWithWhereWithoutAddonCategoryInput = {
   data: Prisma.XOR<Prisma.AddonUpdateManyMutationInput, Prisma.AddonUncheckedUpdateManyWithoutAddonCategoryInput>
 }
 
-export type AddonScalarWhereInput = {
-  AND?: Prisma.AddonScalarWhereInput | Prisma.AddonScalarWhereInput[]
-  OR?: Prisma.AddonScalarWhereInput[]
-  NOT?: Prisma.AddonScalarWhereInput | Prisma.AddonScalarWhereInput[]
-  id?: Prisma.StringFilter<"Addon"> | string
-  name?: Prisma.StringFilter<"Addon"> | string
-  price?: Prisma.FloatFilter<"Addon"> | number
-  isActive?: Prisma.BoolFilter<"Addon"> | boolean
-  addonCategoryId?: Prisma.StringFilter<"Addon"> | string
-  createdAt?: Prisma.DateTimeFilter<"Addon"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Addon"> | Date | string
-}
-
 export type AddonCreateWithoutOrderItemAddonsInput = {
   id?: string
   name: string
@@ -539,6 +656,7 @@ export type AddonCreateWithoutOrderItemAddonsInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  branch?: Prisma.BranchCreateNestedOneWithoutAddonsInput
   addonCategory: Prisma.AddonCategoryCreateNestedOneWithoutAddonsInput
 }
 
@@ -547,6 +665,7 @@ export type AddonUncheckedCreateWithoutOrderItemAddonsInput = {
   name: string
   price?: number
   isActive?: boolean
+  branchId?: string | null
   addonCategoryId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -575,10 +694,54 @@ export type AddonUpdateWithoutOrderItemAddonsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneWithoutAddonsNestedInput
   addonCategory?: Prisma.AddonCategoryUpdateOneRequiredWithoutAddonsNestedInput
 }
 
 export type AddonUncheckedUpdateWithoutOrderItemAddonsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addonCategoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type AddonCreateManyBranchInput = {
+  id?: string
+  name: string
+  price?: number
+  isActive?: boolean
+  addonCategoryId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type AddonUpdateWithoutBranchInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  addonCategory?: Prisma.AddonCategoryUpdateOneRequiredWithoutAddonsNestedInput
+  orderItemAddons?: Prisma.OrderItemAddonUpdateManyWithoutAddonNestedInput
+}
+
+export type AddonUncheckedUpdateWithoutBranchInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  addonCategoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  orderItemAddons?: Prisma.OrderItemAddonUncheckedUpdateManyWithoutAddonNestedInput
+}
+
+export type AddonUncheckedUpdateManyWithoutBranchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -593,6 +756,7 @@ export type AddonCreateManyAddonCategoryInput = {
   name: string
   price?: number
   isActive?: boolean
+  branchId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -604,6 +768,7 @@ export type AddonUpdateWithoutAddonCategoryInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneWithoutAddonsNestedInput
   orderItemAddons?: Prisma.OrderItemAddonUpdateManyWithoutAddonNestedInput
 }
 
@@ -612,6 +777,7 @@ export type AddonUncheckedUpdateWithoutAddonCategoryInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   orderItemAddons?: Prisma.OrderItemAddonUncheckedUpdateManyWithoutAddonNestedInput
@@ -622,6 +788,7 @@ export type AddonUncheckedUpdateManyWithoutAddonCategoryInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -662,9 +829,11 @@ export type AddonSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   name?: boolean
   price?: boolean
   isActive?: boolean
+  branchId?: boolean
   addonCategoryId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  branch?: boolean | Prisma.Addon$branchArgs<ExtArgs>
   addonCategory?: boolean | Prisma.AddonCategoryDefaultArgs<ExtArgs>
   orderItemAddons?: boolean | Prisma.Addon$orderItemAddonsArgs<ExtArgs>
   _count?: boolean | Prisma.AddonCountOutputTypeDefaultArgs<ExtArgs>
@@ -675,9 +844,11 @@ export type AddonSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   name?: boolean
   price?: boolean
   isActive?: boolean
+  branchId?: boolean
   addonCategoryId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  branch?: boolean | Prisma.Addon$branchArgs<ExtArgs>
   addonCategory?: boolean | Prisma.AddonCategoryDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["addon"]>
 
@@ -686,9 +857,11 @@ export type AddonSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   name?: boolean
   price?: boolean
   isActive?: boolean
+  branchId?: boolean
   addonCategoryId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  branch?: boolean | Prisma.Addon$branchArgs<ExtArgs>
   addonCategory?: boolean | Prisma.AddonCategoryDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["addon"]>
 
@@ -697,27 +870,32 @@ export type AddonSelectScalar = {
   name?: boolean
   price?: boolean
   isActive?: boolean
+  branchId?: boolean
   addonCategoryId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type AddonOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "price" | "isActive" | "addonCategoryId" | "createdAt" | "updatedAt", ExtArgs["result"]["addon"]>
+export type AddonOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "price" | "isActive" | "branchId" | "addonCategoryId" | "createdAt" | "updatedAt", ExtArgs["result"]["addon"]>
 export type AddonInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  branch?: boolean | Prisma.Addon$branchArgs<ExtArgs>
   addonCategory?: boolean | Prisma.AddonCategoryDefaultArgs<ExtArgs>
   orderItemAddons?: boolean | Prisma.Addon$orderItemAddonsArgs<ExtArgs>
   _count?: boolean | Prisma.AddonCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AddonIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  branch?: boolean | Prisma.Addon$branchArgs<ExtArgs>
   addonCategory?: boolean | Prisma.AddonCategoryDefaultArgs<ExtArgs>
 }
 export type AddonIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  branch?: boolean | Prisma.Addon$branchArgs<ExtArgs>
   addonCategory?: boolean | Prisma.AddonCategoryDefaultArgs<ExtArgs>
 }
 
 export type $AddonPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Addon"
   objects: {
+    branch: Prisma.$BranchPayload<ExtArgs> | null
     addonCategory: Prisma.$AddonCategoryPayload<ExtArgs>
     orderItemAddons: Prisma.$OrderItemAddonPayload<ExtArgs>[]
   }
@@ -726,6 +904,7 @@ export type $AddonPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     name: string
     price: number
     isActive: boolean
+    branchId: string | null
     addonCategoryId: string
     createdAt: Date
     updatedAt: Date
@@ -1123,6 +1302,7 @@ readonly fields: AddonFieldRefs;
  */
 export interface Prisma__AddonClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  branch<T extends Prisma.Addon$branchArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Addon$branchArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   addonCategory<T extends Prisma.AddonCategoryDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AddonCategoryDefaultArgs<ExtArgs>>): Prisma.Prisma__AddonCategoryClient<runtime.Types.Result.GetResult<Prisma.$AddonCategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   orderItemAddons<T extends Prisma.Addon$orderItemAddonsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Addon$orderItemAddonsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderItemAddonPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1158,6 +1338,7 @@ export interface AddonFieldRefs {
   readonly name: Prisma.FieldRef<"Addon", 'String'>
   readonly price: Prisma.FieldRef<"Addon", 'Float'>
   readonly isActive: Prisma.FieldRef<"Addon", 'Boolean'>
+  readonly branchId: Prisma.FieldRef<"Addon", 'String'>
   readonly addonCategoryId: Prisma.FieldRef<"Addon", 'String'>
   readonly createdAt: Prisma.FieldRef<"Addon", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Addon", 'DateTime'>
@@ -1559,6 +1740,25 @@ export type AddonDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Limit how many Addons to delete.
    */
   limit?: number
+}
+
+/**
+ * Addon.branch
+ */
+export type Addon$branchArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Branch
+   */
+  select?: Prisma.BranchSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Branch
+   */
+  omit?: Prisma.BranchOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BranchInclude<ExtArgs> | null
+  where?: Prisma.BranchWhereInput
 }
 
 /**

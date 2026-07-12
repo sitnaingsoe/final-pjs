@@ -26,38 +26,38 @@ export default async function MenuPage() {
                     </h2>
                     <p className="text-xs text-slate-400 mt-1">ဟင်းပွဲများ၊ မုန့်များနှင့် ဖျော်ရည်များကို ဤနေရာတွင် ထည့်သွင်းနိုင်ပါသည်</p>
                 </div>
-                <div className="px-4 py-2 bg-slate-950 rounded-xl border border-slate-800 flex items-center gap-3 shadow-md">
-                    <span className="text-xl">🍔</span>
-                    <div>
-                        <p className="text-3xs text-slate-500 font-bold uppercase tracking-wider">Total Items</p>
-                        <p className="text-sm font-black text-slate-200 font-mono">{menuItems.length}</p>
+                <div className="flex items-center gap-4">
+                    <CreateMenuForm categories={categories} addonCategories={addonCategories} />
+                    <div className="px-4 py-2.5 bg-slate-950 rounded-xl border border-slate-800 flex items-center gap-3 shadow-md">
+                        <span className="text-xl">🍔</span>
+                        <div>
+                            <p className="text-3xs text-slate-500 font-bold uppercase tracking-wider">Total Items</p>
+                            <p className="text-sm font-black text-slate-200 font-mono">{menuItems.length}</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="w-full">
 
-                {/* (က) မီနူးအသစ်ထည့်ရန် ဖောင် (Left Column) */}
-                <div className="lg:col-span-4 bg-slate-950 p-6 rounded-2xl border border-slate-800 shadow-xl h-fit sticky top-6">
-                    <h3 className="font-black text-slate-200 mb-4 flex items-center gap-2 text-xs uppercase tracking-wider">
-                        <span className="text-orange-500">➕</span> ဟင်းပွဲအသစ် ထည့်မည်
-                    </h3>
-                    <CreateMenuForm categories={categories} addonCategories={addonCategories} />
-                </div>
-
-                {/* (ခ) ရှိပြီးသား မီနူးများပြကတ်များ (Right Column) */}
-                <div className="lg:col-span-8">
+                {/* (ခ) ရှိပြီးသား မီနူးများပြကတ်များ (Right Column => Full width now) */}
+                <div>
                     {menuItems.length === 0 ? (
                         <div className="bg-slate-950 rounded-2xl border border-slate-800 p-12 text-center flex flex-col items-center justify-center">
                             <span className="text-4xl mb-3 opacity-40">🍽️</span>
                             <h3 className="text-sm font-bold text-slate-400 uppercase">မီနူးများ မရှိသေးပါ</h3>
-                            <p className="text-3xs text-slate-600 mt-1 uppercase">ဘယ်ဘက်ဖောင်မှ စတင်ထည့်သွင်းပါ</p>
+                            <p className="text-3xs text-slate-600 mt-1 uppercase">အထက်ပါခလုတ်မှ စတင်ထည့်သွင်းပါ</p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                             {menuItems.map((item: any) => (
-                                <div key={item.id} className="group bg-slate-950 border border-slate-800 rounded-2xl p-5 hover:border-orange-500/30 transition-all duration-300 flex flex-col justify-between shadow-xl relative">
-                                    <div>
+                                <div key={item.id} className="group bg-slate-950 border border-slate-800 rounded-2xl p-5 hover:border-orange-500/30 transition-all duration-300 flex flex-col justify-between shadow-xl relative overflow-hidden">
+                                    {item.imageUrl && (
+                                        <div className="absolute top-0 left-0 w-full h-24 bg-slate-900 border-b border-slate-800 -mx-5 -mt-5 mb-5 opacity-40 group-hover:opacity-100 transition-opacity">
+                                            <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                                        </div>
+                                    )}
+                                    <div className={item.imageUrl ? "pt-20 relative z-10" : ""}>
                                         <div className="flex justify-between items-start gap-2">
                                             <h4 className="font-bold text-slate-200 text-sm truncate group-hover:text-orange-400 transition-colors">
                                                 {item.name}

@@ -43,6 +43,7 @@ model Branch {
   menuOnBranches MenuOnBranch[]
   inventories    Inventory[]
   addonCategories AddonCategory[]
+  addons         Addon[]
 }
 
 // =================================================================
@@ -180,6 +181,8 @@ model Addon {
   name            String
   price           Float            @default(0.0)
   isActive        Boolean          @default(true)
+  branchId        String?
+  branch          Branch?          @relation(fields: [branchId], references: [id], onDelete: Cascade)
   addonCategoryId String
   addonCategory   AddonCategory    @relation(fields: [addonCategoryId], references: [id], onDelete: Cascade)
   orderItemAddons OrderItemAddon[]

@@ -33,6 +33,7 @@ export async function createMenuItem(formData: FormData, selectedAddonCatIds: st
     const price = parseFloat(formData.get('price') as string)
     const categoryId = formData.get('categoryId') as string
     const description = formData.get('description') as string
+    const imageFile = formData.get('image') as File | null
 
     if (!name || isNaN(price) || !categoryId) {
         return { success: false, error: "လိုအပ်သော အချက်အလက်များ အားလုံး ဖြည့်စွက်ပါ" }
@@ -43,12 +44,20 @@ export async function createMenuItem(formData: FormData, selectedAddonCatIds: st
         const category = await prisma.menuCategory.findUnique({ where: { id: categoryId } })
         if (!category || category.branchId !== session.user.branchId) return { success: false, error: "Unauthorized" }
 
+        // Upload image to DO Spaces if provided
+        let imageUrl = null;
+        if (imageFile && imageFile.size > 0) {
+            const { uploadFileToSpaces } = await import('@/lib/s3')
+            imageUrl = await uploadFileToSpaces(imageFile, 'menu-items')
+        }
+
         await prisma.menuItem.create({
             data: {
                 name,
                 price,
                 categoryId,
                 description,
+                imageUrl, // Store uploaded image URL
                 addonCategories: {
                     create: selectedAddonCatIds.map(addonCategoryId => ({
                         addonCategory: { connect: { id: addonCategoryId } }
