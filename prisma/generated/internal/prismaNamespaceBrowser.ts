@@ -198,6 +198,7 @@ export const AddonCategoryScalarFieldEnum = {
   name: 'name',
   minSelect: 'minSelect',
   maxSelect: 'maxSelect',
+  branchId: 'branchId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

@@ -2,13 +2,14 @@
 'use server'
 
 import { prisma } from '@/lib/db'
-
 import { auth } from '@/auth'
+import { revalidatePath } from 'next/cache'
 
 export async function createMasterMenu(formData: FormData, selectedBranchIds: string[]) {
     const session = await auth()
-    if (!session?.user?.email) {
-        return { success: false, error: "အကောင့်ဝင်ထားခြင်း မရှိပါ" }
+    const companyId = session?.user?.companyId
+    if (!companyId) {
+        return { success: false, error: "Unauthorized: No company found" }
     }
 
     const name = formData.get('name') as string
@@ -20,16 +21,6 @@ export async function createMasterMenu(formData: FormData, selectedBranchIds: st
     }
 
     try {
-        const currentUser = await prisma.user.findUnique({
-            where: { email: session.user.email },
-            select: { companyId: true, branch: { select: { companyId: true } } }
-        })
-        const companyId = currentUser?.companyId || currentUser?.branch?.companyId
-
-        if (!companyId) {
-             return { success: false, error: "ကုမ္ပဏီအချက်အလက် ရှာမတွေ့ပါ" }
-        }
-
         // ၁။ Master Menu ကို အရင်ဆောက်သည်
         const newMenu = await prisma.menu.create({
             data: { name, description, basePrice, companyId }
@@ -37,7 +28,13 @@ export async function createMasterMenu(formData: FormData, selectedBranchIds: st
 
         // ၂။ ရွေးချယ်လိုက်သော ဆိုင်ခွဲများအားလုံးဆီသို့ ဤမီနူးကို တစ်ပြိုင်နက် လှမ်းဖြန့်ဝေ (Assign) ပေးသည်
         if (selectedBranchIds.length > 0) {
-            const connectQueries = selectedBranchIds.map(branchId => ({
+            // Verify branches belong to the company
+            const validBranches = await prisma.branch.findMany({
+                where: { id: { in: selectedBranchIds }, companyId }
+            })
+            const validBranchIds = validBranches.map(b => b.id)
+
+            const connectQueries = validBranchIds.map(branchId => ({
                 menuId: newMenu.id,
                 branchId: branchId
             }))
@@ -47,6 +44,7 @@ export async function createMasterMenu(formData: FormData, selectedBranchIds: st
             })
         }
 
+        revalidatePath('/dashboard/hq/master-menu')
         return { success: true }
     } catch (error) {
         return { success: false, error: "ဗဟိုမီနူး ဖန်တီးခြင်း မအောင်မြင်ပါ" }
@@ -54,6 +52,10 @@ export async function createMasterMenu(formData: FormData, selectedBranchIds: st
 }
 
 export async function updateMasterMenu(menuId: string, formData: FormData) {
+    const session = await auth()
+    const companyId = session?.user?.companyId
+    if (!companyId) return { success: false, error: "Unauthorized" }
+
     const name = formData.get('name') as string
     const description = formData.get('description') as string
     const basePrice = parseFloat(formData.get('basePrice') as string)
@@ -63,10 +65,15 @@ export async function updateMasterMenu(menuId: string, formData: FormData) {
     }
 
     try {
+        // Verify menu belongs to company
+        const menu = await prisma.menu.findUnique({ where: { id: menuId } })
+        if (!menu || menu.companyId !== companyId) return { success: false, error: "Unauthorized" }
+
         await prisma.menu.update({
             where: { id: menuId },
             data: { name, description, basePrice }
         })
+        revalidatePath('/dashboard/hq/master-menu')
         return { success: true }
     } catch (error) {
         return { success: false, error: "ပြင်ဆင်ရာတွင် အမှားအယွင်း ရှိနေပါသည်" }
@@ -75,11 +82,20 @@ export async function updateMasterMenu(menuId: string, formData: FormData) {
 
 // 👁️ ၂။ မီနူးကို ဖျက်မည့်အစား Status အပိတ်/အဖွင့် (Soft Delete) လုပ်မည့် Action
 export async function toggleMenuStatus(menuId: string, currentStatus: boolean) {
+    const session = await auth()
+    const companyId = session?.user?.companyId
+    if (!companyId) return { success: false, error: "Unauthorized" }
+
     try {
+        // Verify menu belongs to company
+        const menu = await prisma.menu.findUnique({ where: { id: menuId } })
+        if (!menu || menu.companyId !== companyId) return { success: false, error: "Unauthorized" }
+
         await prisma.menu.update({
             where: { id: menuId },
             data: { isActive: !currentStatus } // True ဖြစ်နေလျှင် False ပြောင်း၊ False ဖြစ်နေလျှင် True ပြောင်းခြင်း
         })
+        revalidatePath('/dashboard/hq/master-menu')
         return { success: true }
     } catch (error) {
         return { success: false, error: "အခြေအနေ ပြောင်းလဲခြင်း မအောင်မြင်ပါ" }

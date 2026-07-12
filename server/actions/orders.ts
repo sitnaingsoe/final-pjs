@@ -3,11 +3,16 @@
 import { OrderStatus } from '../../prisma/generated/enums'
 import { prisma } from "@/lib/db";
 import { revalidatePath } from 'next/cache'
+import { auth } from "@/auth"
 
 // ၁။ Database ထဲမှ အော်ဒါအားလုံးကို ဆွဲထုတ်ယူသည့် ဖန်ရှင်
 export async function getOrders() {
+    const session = await auth()
+    if (!session?.user?.branchId) return { success: false, error: "Unauthorized" }
+
     try {
         const orders = await prisma.order.findMany({
+            where: { branchId: session.user.branchId },
             include: {
                 items: {
                     include: {
@@ -32,13 +37,16 @@ export async function getOrders() {
 }
 
 export async function updateOrderStatus(orderId: string, newStatus: OrderStatus) {
+    const session = await auth()
+    if (!session?.user?.branchId) return { success: false, error: "Unauthorized" }
+
     try {
         await prisma.order.update({
-            where: { id: orderId },
+            where: { id: orderId, branchId: session.user.branchId },
             data: { status: newStatus }
         })
 
-        revalidatePath('/orders')
+        revalidatePath('/dashboard/store/orders')
         return { success: true }
     } catch (error) {
         console.error("Error updating order status:", error)

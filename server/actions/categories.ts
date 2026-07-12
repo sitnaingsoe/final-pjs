@@ -1,56 +1,82 @@
 // server/actions/categories.ts
 'use server'
 
-import { prisma } from "@/lib/db";
+import { prisma } from '@/lib/db'
+import { auth } from '@/auth'
 import { revalidatePath } from 'next/cache'
 
-// ၁။ Category အားလုံးကို ဒေတာဘေ့စ်မှ ဆွဲထုတ်ယူခြင်း
+// ၁။ လက်ရှိဆိုင်ခွဲနှင့် သက်ဆိုင်သော အမျိုးအစားများအားလုံး ဆွဲထုတ်ခြင်း
 export async function getCategories() {
+    const session = await auth()
+    if (!session?.user?.branchId) return { success: false, data: [] }
+
     try {
-        const categories = await prisma.menuCategory.findMany({
+        const data = await prisma.menuCategory.findMany({
+            where: { branchId: session.user.branchId },
             include: {
-                _count: {
-                    select: { menuItems: true } // မီနူးတစ်ခုစီအောက်မှာ ဟင်းပွဲအရေအတွက် ဘယ်လောက်ရှိလဲပါ တခါတည်းတွက်မည်
-                }
+                _count: { select: { menuItems: true } }
             },
             orderBy: { createdAt: 'desc' }
         })
-        return { success: true, data: categories }
+        return { success: true, data }
     } catch (error) {
-        console.error("Error fetching categories:", error)
-        return { success: false, error: "ဒေတာဆွဲထုတ်ရာတွင် အမှားအယွင်းရှိနေပါသည်" }
+        return { success: false, data: [] }
     }
 }
 
-// ၂။ Category အသစ်တစ်ခု ထည့်သွင်းခြင်း (Create)
+// ၂။ အမျိုးအစားအသစ် တည်ဆောက်ခြင်း
 export async function createCategory(formData: FormData) {
+    const session = await auth()
+    if (!session?.user?.branchId) return { success: false, error: "Authentication လိုအပ်ပါသည်" }
+
     const name = formData.get('name') as string
     const description = formData.get('description') as string
 
-    if (!name) return { success: false, error: "အမျိုးအစားအမည် ထည့်ပေးရန် လိုအပ်ပါသည်" }
+    if (!name) return { success: false, error: "အမျိုးအစားအမည် ဖြည့်စွက်ပါ" }
 
     try {
         await prisma.menuCategory.create({
-            data: { name, description }
+            data: {
+                name,
+                description,
+                branchId: session.user.branchId
+            }
         })
-        revalidatePath('/categories') // UI ကို ဒေတာချက်ချင်း update ဖြစ်စေရန်
+        revalidatePath('/dashboard/categories')
         return { success: true }
     } catch (error) {
-        console.error("Error creating category:", error)
-        return { success: false, error: "အမျိုးအစားအသစ် ထည့်သွင်း၍ မရပါ" }
+        return { success: false, error: "အသစ်ဆောက်ရာတွင် အမှားအယွင်း ရှိနေပါသည်" }
     }
 }
 
-// ၃။ Category ကို ဖျက်ပစ်ခြင်း (Delete)
+// ၃။ အမျိုးအစား ပြင်ဆင်ခြင်း (Update)
+export async function updateCategory(id: string, formData: FormData) {
+    const name = formData.get('name') as string
+    const description = formData.get('description') as string
+
+    if (!name) return { success: false, error: "အမျိုးအစားအမည် ဖြည့်စွက်ပါ" }
+
+    try {
+        await prisma.menuCategory.update({
+            where: { id },
+            data: { name, description }
+        })
+        revalidatePath('/dashboard/categories')
+        return { success: true }
+    } catch (error) {
+        return { success: false, error: "ပြင်ဆင်ရာတွင် အမှားအယွင်း ရှိနေပါသည်" }
+    }
+}
+
+// ၄။ အမျိုးအစား ဖျက်ဆီးခြင်း
 export async function deleteCategory(id: string) {
     try {
         await prisma.menuCategory.delete({
             where: { id }
         })
-        revalidatePath('/categories')
+        revalidatePath('/dashboard/categories')
         return { success: true }
     } catch (error) {
-        console.error("Error deleting category:", error)
-        return { success: false, error: "ဤအမျိုးအစားကို ဖျက်၍မရပါ (ဟင်းပွဲများနှင့် ချိတ်ဆက်နေနိုင်ပါသည်)" }
+        return { success: false, error: "ဤအမျိုးအစားအောက်တွင် ဟင်းပွဲများ ရှိနေသောကြောင့် ဖျက်၍မရပါ" }
     }
 }

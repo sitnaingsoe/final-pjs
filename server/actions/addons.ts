@@ -1,6 +1,7 @@
 // server/actions/addons.ts
 'use server'
 
+import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
 import { revalidatePath } from 'next/cache'
 
@@ -34,8 +35,13 @@ export async function getMenuItemsSimple() {
     }
 }
 
-// ၃။ အပိုပစ္စည်းအုပ်စုအသစ် ဆောက်ရန် (Addon Category Create)
 export async function createAddonCategory(formData: FormData) {
+    // 🎯 ၁။ လက်ရှိ login ဝင်ထားသော user ထံမှ branchId ကို ရယူခြင်း
+    const session = await auth()
+    if (!session?.user?.branchId) {
+        return { success: false, error: "Authentication သို့မဟုတ် ဆိုင်ခွဲသတ်မှတ်ချက် လိုအပ်ပါသည်" }
+    }
+
     const name = formData.get('name') as string
     const minSelectStr = formData.get('minSelect') as string
     const maxSelectStr = formData.get('maxSelect') as string
@@ -48,9 +54,10 @@ export async function createAddonCategory(formData: FormData) {
                 name,
                 minSelect: parseInt(minSelectStr) || 0,
                 maxSelect: parseInt(maxSelectStr) || 1,
+                branchId: session.user.branchId, // 👈 🎯 ဤနေရာတွင် branchId ကို ထည့်သွင်းပေးလိုက်ခြင်းဖြင့် Error ပျောက်သွားပါမည်
             }
         })
-        revalidatePath('/addons')
+        revalidatePath('/dashboard/store/addons') // လမ်းကြောင်းမှန်အောင် ညွှန်းပေးပါ
         return { success: true }
     } catch (error) {
         console.error(error)
@@ -110,5 +117,64 @@ export async function linkMenuWithAddonCategory(formData: FormData) {
             return { success: false, error: "ဤမီနူးနှင့် ဤအုပ်စုသည် ချိတ်ဆက်ပြီးသား ဖြစ်နေပါသည်" }
         }
         return { success: false, error: "ချိတ်ဆက်ရာတွင် အမှားအယွင်းရှိပါသည်" }
+    }
+}
+
+export async function updateAddonCategory(id: string, formData: FormData) {
+    const name = formData.get('name') as string
+    const minSelect = parseInt(formData.get('minSelect') as string) || 0
+    const maxSelect = parseInt(formData.get('maxSelect') as string) || 1
+
+    if (!name) return { success: false, error: "အုပ်စုအမည် ဖြည့်စွက်ပါ" }
+
+    try {
+        await prisma.addonCategory.update({
+            where: { id },
+            data: { name, minSelect, maxSelect }
+        })
+        revalidatePath('/dashboard/addons')
+        return { success: true }
+    } catch (error) {
+        return { success: false, error: "ပြင်ဆင်ခြင်း မအောင်မြင်ပါ" }
+    }
+}
+
+export async function deleteAddonCategory(id: string) {
+    try {
+        await prisma.addonCategory.delete({ where: { id } })
+        revalidatePath('/dashboard/addons')
+        return { success: true }
+    } catch (error) {
+        return { success: false, error: "ဖျက်ဆီးခြင်း မအောင်မြင်ပါ" }
+    }
+}
+
+// === 🚀 ADDON ITEM ACTIONS ===
+
+export async function updateAddon(id: string, formData: FormData) {
+    const name = formData.get('name') as string
+    const price = parseFloat(formData.get('price') as string)
+
+    if (!name || isNaN(price)) return { success: false, error: "အချက်အလက် မှန်ကန်စွာဖြည့်ပါ" }
+
+    try {
+        await prisma.addon.update({
+            where: { id },
+            data: { name, price }
+        })
+        revalidatePath('/dashboard/addons')
+        return { success: true }
+    } catch (error) {
+        return { success: false, error: "ပြင်ဆင်ခြင်း မအောင်မြင်ပါ" }
+    }
+}
+
+export async function deleteAddon(id: string) {
+    try {
+        await prisma.addon.delete({ where: { id } })
+        revalidatePath('/dashboard/addons')
+        return { success: true }
+    } catch (error) {
+        return { success: false, error: "ဖျက်ဆီးခြင်း မအောင်မြင်ပါ" }
     }
 }

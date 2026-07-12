@@ -208,6 +208,7 @@ export type BranchWhereInput = {
   invoices?: Prisma.InvoiceListRelationFilter
   menuOnBranches?: Prisma.MenuOnBranchListRelationFilter
   inventories?: Prisma.InventoryListRelationFilter
+  addonCategories?: Prisma.AddonCategoryListRelationFilter
 }
 
 export type BranchOrderByWithRelationInput = {
@@ -228,6 +229,7 @@ export type BranchOrderByWithRelationInput = {
   invoices?: Prisma.InvoiceOrderByRelationAggregateInput
   menuOnBranches?: Prisma.MenuOnBranchOrderByRelationAggregateInput
   inventories?: Prisma.InventoryOrderByRelationAggregateInput
+  addonCategories?: Prisma.AddonCategoryOrderByRelationAggregateInput
 }
 
 export type BranchWhereUniqueInput = Prisma.AtLeast<{
@@ -251,6 +253,7 @@ export type BranchWhereUniqueInput = Prisma.AtLeast<{
   invoices?: Prisma.InvoiceListRelationFilter
   menuOnBranches?: Prisma.MenuOnBranchListRelationFilter
   inventories?: Prisma.InventoryListRelationFilter
+  addonCategories?: Prisma.AddonCategoryListRelationFilter
 }, "id">
 
 export type BranchOrderByWithAggregationInput = {
@@ -296,6 +299,7 @@ export type BranchCreateInput = {
   invoices?: Prisma.InvoiceCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchCreateNestedManyWithoutBranchInput
   inventories?: Prisma.InventoryCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateInput = {
@@ -315,6 +319,7 @@ export type BranchUncheckedCreateInput = {
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutBranchInput
   inventories?: Prisma.InventoryUncheckedCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUpdateInput = {
@@ -334,6 +339,7 @@ export type BranchUpdateInput = {
   invoices?: Prisma.InvoiceUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUpdateManyWithoutBranchNestedInput
   inventories?: Prisma.InventoryUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateInput = {
@@ -353,6 +359,7 @@ export type BranchUncheckedUpdateInput = {
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutBranchNestedInput
   inventories?: Prisma.InventoryUncheckedUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateManyInput = {
@@ -524,6 +531,20 @@ export type BranchUpdateOneRequiredWithoutMenuCategoriesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.BranchUpdateToOneWithWhereWithoutMenuCategoriesInput, Prisma.BranchUpdateWithoutMenuCategoriesInput>, Prisma.BranchUncheckedUpdateWithoutMenuCategoriesInput>
 }
 
+export type BranchCreateNestedOneWithoutAddonCategoriesInput = {
+  create?: Prisma.XOR<Prisma.BranchCreateWithoutAddonCategoriesInput, Prisma.BranchUncheckedCreateWithoutAddonCategoriesInput>
+  connectOrCreate?: Prisma.BranchCreateOrConnectWithoutAddonCategoriesInput
+  connect?: Prisma.BranchWhereUniqueInput
+}
+
+export type BranchUpdateOneRequiredWithoutAddonCategoriesNestedInput = {
+  create?: Prisma.XOR<Prisma.BranchCreateWithoutAddonCategoriesInput, Prisma.BranchUncheckedCreateWithoutAddonCategoriesInput>
+  connectOrCreate?: Prisma.BranchCreateOrConnectWithoutAddonCategoriesInput
+  upsert?: Prisma.BranchUpsertWithoutAddonCategoriesInput
+  connect?: Prisma.BranchWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BranchUpdateToOneWithWhereWithoutAddonCategoriesInput, Prisma.BranchUpdateWithoutAddonCategoriesInput>, Prisma.BranchUncheckedUpdateWithoutAddonCategoriesInput>
+}
+
 export type BranchCreateNestedOneWithoutDiscountsInput = {
   create?: Prisma.XOR<Prisma.BranchCreateWithoutDiscountsInput, Prisma.BranchUncheckedCreateWithoutDiscountsInput>
   connectOrCreate?: Prisma.BranchCreateOrConnectWithoutDiscountsInput
@@ -624,6 +645,7 @@ export type BranchCreateWithoutCompanyInput = {
   invoices?: Prisma.InvoiceCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchCreateNestedManyWithoutBranchInput
   inventories?: Prisma.InventoryCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutCompanyInput = {
@@ -642,6 +664,7 @@ export type BranchUncheckedCreateWithoutCompanyInput = {
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutBranchInput
   inventories?: Prisma.InventoryUncheckedCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutCompanyInput = {
@@ -699,6 +722,7 @@ export type BranchCreateWithoutUsersInput = {
   invoices?: Prisma.InvoiceCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchCreateNestedManyWithoutBranchInput
   inventories?: Prisma.InventoryCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutUsersInput = {
@@ -717,6 +741,7 @@ export type BranchUncheckedCreateWithoutUsersInput = {
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutBranchInput
   inventories?: Prisma.InventoryUncheckedCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutUsersInput = {
@@ -751,6 +776,7 @@ export type BranchUpdateWithoutUsersInput = {
   invoices?: Prisma.InvoiceUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUpdateManyWithoutBranchNestedInput
   inventories?: Prisma.InventoryUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutUsersInput = {
@@ -769,6 +795,7 @@ export type BranchUncheckedUpdateWithoutUsersInput = {
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutBranchNestedInput
   inventories?: Prisma.InventoryUncheckedUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutSettingsInput = {
@@ -787,6 +814,7 @@ export type BranchCreateWithoutSettingsInput = {
   invoices?: Prisma.InvoiceCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchCreateNestedManyWithoutBranchInput
   inventories?: Prisma.InventoryCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutSettingsInput = {
@@ -805,6 +833,7 @@ export type BranchUncheckedCreateWithoutSettingsInput = {
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutBranchInput
   inventories?: Prisma.InventoryUncheckedCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutSettingsInput = {
@@ -839,6 +868,7 @@ export type BranchUpdateWithoutSettingsInput = {
   invoices?: Prisma.InvoiceUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUpdateManyWithoutBranchNestedInput
   inventories?: Prisma.InventoryUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutSettingsInput = {
@@ -857,6 +887,7 @@ export type BranchUncheckedUpdateWithoutSettingsInput = {
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutBranchNestedInput
   inventories?: Prisma.InventoryUncheckedUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutMenuCategoriesInput = {
@@ -875,6 +906,7 @@ export type BranchCreateWithoutMenuCategoriesInput = {
   invoices?: Prisma.InvoiceCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchCreateNestedManyWithoutBranchInput
   inventories?: Prisma.InventoryCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutMenuCategoriesInput = {
@@ -893,6 +925,7 @@ export type BranchUncheckedCreateWithoutMenuCategoriesInput = {
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutBranchInput
   inventories?: Prisma.InventoryUncheckedCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutMenuCategoriesInput = {
@@ -927,6 +960,7 @@ export type BranchUpdateWithoutMenuCategoriesInput = {
   invoices?: Prisma.InvoiceUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUpdateManyWithoutBranchNestedInput
   inventories?: Prisma.InventoryUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutMenuCategoriesInput = {
@@ -939,6 +973,99 @@ export type BranchUncheckedUpdateWithoutMenuCategoriesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutBranchNestedInput
   settings?: Prisma.SettingUncheckedUpdateOneWithoutBranchNestedInput
+  tables?: Prisma.TableUncheckedUpdateManyWithoutBranchNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutBranchNestedInput
+  discounts?: Prisma.DiscountUncheckedUpdateManyWithoutBranchNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutBranchNestedInput
+  menuOnBranches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutBranchNestedInput
+  inventories?: Prisma.InventoryUncheckedUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUncheckedUpdateManyWithoutBranchNestedInput
+}
+
+export type BranchCreateWithoutAddonCategoriesInput = {
+  id?: string
+  name: string
+  address?: string | null
+  phone?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutBranchesInput
+  users?: Prisma.UserCreateNestedManyWithoutBranchInput
+  settings?: Prisma.SettingCreateNestedOneWithoutBranchInput
+  menuCategories?: Prisma.MenuCategoryCreateNestedManyWithoutBranchInput
+  tables?: Prisma.TableCreateNestedManyWithoutBranchInput
+  orders?: Prisma.OrderCreateNestedManyWithoutBranchInput
+  discounts?: Prisma.DiscountCreateNestedManyWithoutBranchInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutBranchInput
+  menuOnBranches?: Prisma.MenuOnBranchCreateNestedManyWithoutBranchInput
+  inventories?: Prisma.InventoryCreateNestedManyWithoutBranchInput
+}
+
+export type BranchUncheckedCreateWithoutAddonCategoriesInput = {
+  id?: string
+  name: string
+  address?: string | null
+  phone?: string | null
+  companyId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutBranchInput
+  settings?: Prisma.SettingUncheckedCreateNestedOneWithoutBranchInput
+  menuCategories?: Prisma.MenuCategoryUncheckedCreateNestedManyWithoutBranchInput
+  tables?: Prisma.TableUncheckedCreateNestedManyWithoutBranchInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutBranchInput
+  discounts?: Prisma.DiscountUncheckedCreateNestedManyWithoutBranchInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutBranchInput
+  menuOnBranches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutBranchInput
+  inventories?: Prisma.InventoryUncheckedCreateNestedManyWithoutBranchInput
+}
+
+export type BranchCreateOrConnectWithoutAddonCategoriesInput = {
+  where: Prisma.BranchWhereUniqueInput
+  create: Prisma.XOR<Prisma.BranchCreateWithoutAddonCategoriesInput, Prisma.BranchUncheckedCreateWithoutAddonCategoriesInput>
+}
+
+export type BranchUpsertWithoutAddonCategoriesInput = {
+  update: Prisma.XOR<Prisma.BranchUpdateWithoutAddonCategoriesInput, Prisma.BranchUncheckedUpdateWithoutAddonCategoriesInput>
+  create: Prisma.XOR<Prisma.BranchCreateWithoutAddonCategoriesInput, Prisma.BranchUncheckedCreateWithoutAddonCategoriesInput>
+  where?: Prisma.BranchWhereInput
+}
+
+export type BranchUpdateToOneWithWhereWithoutAddonCategoriesInput = {
+  where?: Prisma.BranchWhereInput
+  data: Prisma.XOR<Prisma.BranchUpdateWithoutAddonCategoriesInput, Prisma.BranchUncheckedUpdateWithoutAddonCategoriesInput>
+}
+
+export type BranchUpdateWithoutAddonCategoriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutBranchesNestedInput
+  users?: Prisma.UserUpdateManyWithoutBranchNestedInput
+  settings?: Prisma.SettingUpdateOneWithoutBranchNestedInput
+  menuCategories?: Prisma.MenuCategoryUpdateManyWithoutBranchNestedInput
+  tables?: Prisma.TableUpdateManyWithoutBranchNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutBranchNestedInput
+  discounts?: Prisma.DiscountUpdateManyWithoutBranchNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutBranchNestedInput
+  menuOnBranches?: Prisma.MenuOnBranchUpdateManyWithoutBranchNestedInput
+  inventories?: Prisma.InventoryUpdateManyWithoutBranchNestedInput
+}
+
+export type BranchUncheckedUpdateWithoutAddonCategoriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companyId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UserUncheckedUpdateManyWithoutBranchNestedInput
+  settings?: Prisma.SettingUncheckedUpdateOneWithoutBranchNestedInput
+  menuCategories?: Prisma.MenuCategoryUncheckedUpdateManyWithoutBranchNestedInput
   tables?: Prisma.TableUncheckedUpdateManyWithoutBranchNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutBranchNestedInput
   discounts?: Prisma.DiscountUncheckedUpdateManyWithoutBranchNestedInput
@@ -963,6 +1090,7 @@ export type BranchCreateWithoutDiscountsInput = {
   invoices?: Prisma.InvoiceCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchCreateNestedManyWithoutBranchInput
   inventories?: Prisma.InventoryCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutDiscountsInput = {
@@ -981,6 +1109,7 @@ export type BranchUncheckedCreateWithoutDiscountsInput = {
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutBranchInput
   inventories?: Prisma.InventoryUncheckedCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutDiscountsInput = {
@@ -1015,6 +1144,7 @@ export type BranchUpdateWithoutDiscountsInput = {
   invoices?: Prisma.InvoiceUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUpdateManyWithoutBranchNestedInput
   inventories?: Prisma.InventoryUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutDiscountsInput = {
@@ -1033,6 +1163,7 @@ export type BranchUncheckedUpdateWithoutDiscountsInput = {
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutBranchNestedInput
   inventories?: Prisma.InventoryUncheckedUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutTablesInput = {
@@ -1051,6 +1182,7 @@ export type BranchCreateWithoutTablesInput = {
   invoices?: Prisma.InvoiceCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchCreateNestedManyWithoutBranchInput
   inventories?: Prisma.InventoryCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutTablesInput = {
@@ -1069,6 +1201,7 @@ export type BranchUncheckedCreateWithoutTablesInput = {
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutBranchInput
   inventories?: Prisma.InventoryUncheckedCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutTablesInput = {
@@ -1103,6 +1236,7 @@ export type BranchUpdateWithoutTablesInput = {
   invoices?: Prisma.InvoiceUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUpdateManyWithoutBranchNestedInput
   inventories?: Prisma.InventoryUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutTablesInput = {
@@ -1121,6 +1255,7 @@ export type BranchUncheckedUpdateWithoutTablesInput = {
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutBranchNestedInput
   inventories?: Prisma.InventoryUncheckedUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutOrdersInput = {
@@ -1139,6 +1274,7 @@ export type BranchCreateWithoutOrdersInput = {
   invoices?: Prisma.InvoiceCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchCreateNestedManyWithoutBranchInput
   inventories?: Prisma.InventoryCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutOrdersInput = {
@@ -1157,6 +1293,7 @@ export type BranchUncheckedCreateWithoutOrdersInput = {
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutBranchInput
   inventories?: Prisma.InventoryUncheckedCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutOrdersInput = {
@@ -1191,6 +1328,7 @@ export type BranchUpdateWithoutOrdersInput = {
   invoices?: Prisma.InvoiceUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUpdateManyWithoutBranchNestedInput
   inventories?: Prisma.InventoryUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutOrdersInput = {
@@ -1209,6 +1347,7 @@ export type BranchUncheckedUpdateWithoutOrdersInput = {
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutBranchNestedInput
   inventories?: Prisma.InventoryUncheckedUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutInvoicesInput = {
@@ -1227,6 +1366,7 @@ export type BranchCreateWithoutInvoicesInput = {
   discounts?: Prisma.DiscountCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchCreateNestedManyWithoutBranchInput
   inventories?: Prisma.InventoryCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutInvoicesInput = {
@@ -1245,6 +1385,7 @@ export type BranchUncheckedCreateWithoutInvoicesInput = {
   discounts?: Prisma.DiscountUncheckedCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutBranchInput
   inventories?: Prisma.InventoryUncheckedCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutInvoicesInput = {
@@ -1279,6 +1420,7 @@ export type BranchUpdateWithoutInvoicesInput = {
   discounts?: Prisma.DiscountUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUpdateManyWithoutBranchNestedInput
   inventories?: Prisma.InventoryUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutInvoicesInput = {
@@ -1297,6 +1439,7 @@ export type BranchUncheckedUpdateWithoutInvoicesInput = {
   discounts?: Prisma.DiscountUncheckedUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutBranchNestedInput
   inventories?: Prisma.InventoryUncheckedUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutMenuOnBranchesInput = {
@@ -1315,6 +1458,7 @@ export type BranchCreateWithoutMenuOnBranchesInput = {
   discounts?: Prisma.DiscountCreateNestedManyWithoutBranchInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutBranchInput
   inventories?: Prisma.InventoryCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutMenuOnBranchesInput = {
@@ -1333,6 +1477,7 @@ export type BranchUncheckedCreateWithoutMenuOnBranchesInput = {
   discounts?: Prisma.DiscountUncheckedCreateNestedManyWithoutBranchInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutBranchInput
   inventories?: Prisma.InventoryUncheckedCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutMenuOnBranchesInput = {
@@ -1367,6 +1512,7 @@ export type BranchUpdateWithoutMenuOnBranchesInput = {
   discounts?: Prisma.DiscountUpdateManyWithoutBranchNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutBranchNestedInput
   inventories?: Prisma.InventoryUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutMenuOnBranchesInput = {
@@ -1385,6 +1531,7 @@ export type BranchUncheckedUpdateWithoutMenuOnBranchesInput = {
   discounts?: Prisma.DiscountUncheckedUpdateManyWithoutBranchNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutBranchNestedInput
   inventories?: Prisma.InventoryUncheckedUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutInventoriesInput = {
@@ -1403,6 +1550,7 @@ export type BranchCreateWithoutInventoriesInput = {
   discounts?: Prisma.DiscountCreateNestedManyWithoutBranchInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutInventoriesInput = {
@@ -1421,6 +1569,7 @@ export type BranchUncheckedCreateWithoutInventoriesInput = {
   discounts?: Prisma.DiscountUncheckedCreateNestedManyWithoutBranchInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutInventoriesInput = {
@@ -1455,6 +1604,7 @@ export type BranchUpdateWithoutInventoriesInput = {
   discounts?: Prisma.DiscountUpdateManyWithoutBranchNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutInventoriesInput = {
@@ -1473,6 +1623,7 @@ export type BranchUncheckedUpdateWithoutInventoriesInput = {
   discounts?: Prisma.DiscountUncheckedUpdateManyWithoutBranchNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateManyCompanyInput = {
@@ -1500,6 +1651,7 @@ export type BranchUpdateWithoutCompanyInput = {
   invoices?: Prisma.InvoiceUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUpdateManyWithoutBranchNestedInput
   inventories?: Prisma.InventoryUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutCompanyInput = {
@@ -1518,6 +1670,7 @@ export type BranchUncheckedUpdateWithoutCompanyInput = {
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutBranchNestedInput
   inventories?: Prisma.InventoryUncheckedUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateManyWithoutCompanyInput = {
@@ -1543,6 +1696,7 @@ export type BranchCountOutputType = {
   invoices: number
   menuOnBranches: number
   inventories: number
+  addonCategories: number
 }
 
 export type BranchCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1554,6 +1708,7 @@ export type BranchCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions
   invoices?: boolean | BranchCountOutputTypeCountInvoicesArgs
   menuOnBranches?: boolean | BranchCountOutputTypeCountMenuOnBranchesArgs
   inventories?: boolean | BranchCountOutputTypeCountInventoriesArgs
+  addonCategories?: boolean | BranchCountOutputTypeCountAddonCategoriesArgs
 }
 
 /**
@@ -1622,6 +1777,13 @@ export type BranchCountOutputTypeCountInventoriesArgs<ExtArgs extends runtime.Ty
   where?: Prisma.InventoryWhereInput
 }
 
+/**
+ * BranchCountOutputType without action
+ */
+export type BranchCountOutputTypeCountAddonCategoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AddonCategoryWhereInput
+}
+
 
 export type BranchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1641,6 +1803,7 @@ export type BranchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   invoices?: boolean | Prisma.Branch$invoicesArgs<ExtArgs>
   menuOnBranches?: boolean | Prisma.Branch$menuOnBranchesArgs<ExtArgs>
   inventories?: boolean | Prisma.Branch$inventoriesArgs<ExtArgs>
+  addonCategories?: boolean | Prisma.Branch$addonCategoriesArgs<ExtArgs>
   _count?: boolean | Prisma.BranchCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["branch"]>
 
@@ -1688,6 +1851,7 @@ export type BranchInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   invoices?: boolean | Prisma.Branch$invoicesArgs<ExtArgs>
   menuOnBranches?: boolean | Prisma.Branch$menuOnBranchesArgs<ExtArgs>
   inventories?: boolean | Prisma.Branch$inventoriesArgs<ExtArgs>
+  addonCategories?: boolean | Prisma.Branch$addonCategoriesArgs<ExtArgs>
   _count?: boolean | Prisma.BranchCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type BranchIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1710,6 +1874,7 @@ export type $BranchPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     invoices: Prisma.$InvoicePayload<ExtArgs>[]
     menuOnBranches: Prisma.$MenuOnBranchPayload<ExtArgs>[]
     inventories: Prisma.$InventoryPayload<ExtArgs>[]
+    addonCategories: Prisma.$AddonCategoryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2123,6 +2288,7 @@ export interface Prisma__BranchClient<T, Null = never, ExtArgs extends runtime.T
   invoices<T extends Prisma.Branch$invoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   menuOnBranches<T extends Prisma.Branch$menuOnBranchesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$menuOnBranchesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MenuOnBranchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   inventories<T extends Prisma.Branch$inventoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$inventoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  addonCategories<T extends Prisma.Branch$addonCategoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$addonCategoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AddonCategoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2768,6 +2934,30 @@ export type Branch$inventoriesArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.InventoryScalarFieldEnum | Prisma.InventoryScalarFieldEnum[]
+}
+
+/**
+ * Branch.addonCategories
+ */
+export type Branch$addonCategoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AddonCategory
+   */
+  select?: Prisma.AddonCategorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AddonCategory
+   */
+  omit?: Prisma.AddonCategoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AddonCategoryInclude<ExtArgs> | null
+  where?: Prisma.AddonCategoryWhereInput
+  orderBy?: Prisma.AddonCategoryOrderByWithRelationInput | Prisma.AddonCategoryOrderByWithRelationInput[]
+  cursor?: Prisma.AddonCategoryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AddonCategoryScalarFieldEnum | Prisma.AddonCategoryScalarFieldEnum[]
 }
 
 /**

@@ -3,11 +3,16 @@
 
 import { prisma } from '@/lib/db'
 import { revalidatePath } from 'next/cache'
+import { auth } from "@/auth"
 
 // ၁။ ရှိသမျှ Discount အားလုံးကို ဆွဲထုတ်ယူခြင်း
 export async function getDiscounts() {
+    const session = await auth()
+    if (!session?.user?.branchId) return { success: false, error: "Unauthorized" }
+
     try {
         const discounts = await prisma.discount.findMany({
+            where: { branchId: session.user.branchId },
             orderBy: { createdAt: 'desc' }
         })
         return { success: true, data: discounts }
@@ -19,6 +24,9 @@ export async function getDiscounts() {
 
 // ၂။ Discount ပရိုမိုးရှင်းအသစ် တည်ဆောက်ခြင်း (Create)
 export async function createDiscount(formData: FormData) {
+    const session = await auth()
+    if (!session?.user?.branchId) return { success: false, error: "Unauthorized" }
+
     const name = formData.get('name') as string
     const type = formData.get('type') as 'PERCENTAGE' | 'FIXED'
     const valueStr = formData.get('value') as string
@@ -33,10 +41,11 @@ export async function createDiscount(formData: FormData) {
                 name,
                 type,
                 value: parseFloat(valueStr),
-                isActive: true
+                isActive: true,
+                branchId: session.user.branchId
             }
         })
-        revalidatePath('/discounts')
+        revalidatePath('/dashboard/store/discounts')
         return { success: true }
     } catch (error) {
         console.error("Error creating discount:", error)
@@ -46,12 +55,15 @@ export async function createDiscount(formData: FormData) {
 
 // ၃။ Discount တစ်ခုကို ပိတ်ခြင်း/ဖွင့်ခြင်း (Toggle Active Status)
 export async function toggleDiscountStatus(id: string, currentStatus: boolean) {
+    const session = await auth()
+    if (!session?.user?.branchId) return { success: false, error: "Unauthorized" }
+
     try {
         await prisma.discount.update({
-            where: { id },
+            where: { id, branchId: session.user.branchId },
             data: { isActive: !currentStatus }
         })
-        revalidatePath('/discounts')
+        revalidatePath('/dashboard/store/discounts')
         return { success: true }
     } catch (error) {
         console.error(error)
