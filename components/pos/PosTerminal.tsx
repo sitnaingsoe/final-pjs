@@ -125,22 +125,30 @@ export default function PosTerminal({
                 </div>
 
                 {/* Menu Items Grid */}
-                <div className="flex-1 overflow-y-auto p-4 lg:p-6 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pb-24 lg:pb-6">
+                <div className="flex-1 overflow-y-auto p-4 lg:p-6 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pb-24 lg:pb-6 content-start">
                     {displayItems.map(item => (
                         <div
                             key={item.id}
                             onClick={() => addToCart(item)}
-                            className="bg-slate-900 border border-slate-800 rounded-2xl p-4 cursor-pointer hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/10 transition-all flex flex-col h-full group relative overflow-hidden active:scale-95"
+                            className="bg-slate-900 border border-slate-800 rounded-2xl cursor-pointer hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/10 transition-all flex flex-col group relative overflow-hidden active:scale-95"
                         >
-                            {item.imageUrl && (
-                                <div className="absolute top-0 left-0 w-full h-24 bg-slate-800 -mx-4 -mt-4 mb-4 opacity-50 group-hover:opacity-100 transition-opacity">
-                                    <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                            {/* 🖼️ Hero Image */}
+                            {item.imageUrl ? (
+                                <div className="w-full h-40 bg-slate-800 relative">
+                                    <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-80"></div>
+                                </div>
+                            ) : (
+                                <div className="w-full h-32 bg-slate-800 flex items-center justify-center relative">
+                                    <span className="text-slate-600 text-3xl">🍽️</span>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-80"></div>
                                 </div>
                             )}
-                            <div className={`flex flex-col h-full justify-between ${item.imageUrl ? 'pt-20 relative z-10' : ''}`}>
+
+                            <div className="p-4 flex-1 flex flex-col justify-between -mt-6 relative z-10">
                                 <div>
-                                    <h3 className="text-sm font-bold text-slate-200 group-hover:text-orange-400 transition-colors line-clamp-2">{item.name}</h3>
-                                    <span className="text-3xs text-slate-500 mt-1 uppercase tracking-wider">{item.category?.name}</span>
+                                    <h3 className="text-sm font-bold text-slate-100 group-hover:text-orange-400 transition-colors line-clamp-2 drop-shadow-md">{item.name}</h3>
+                                    <span className="text-3xs text-slate-400 mt-1 uppercase tracking-wider">{item.category?.name}</span>
                                 </div>
                                 <div className="mt-4 font-black text-orange-400 font-mono">
                                     {item.price.toLocaleString()} <span className="text-3xs text-slate-500 font-normal">MMK</span>

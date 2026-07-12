@@ -9,63 +9,73 @@ export default async function SettingsPage() {
     return (
         <div className="max-w-3xl space-y-6">
             <div>
-                <h2 className="text-xl font-bold text-gray-800">ဆိုင်အထွေထွေ ဆက်တင်များ (Restaurant Settings)</h2>
-                <p className="text-sm text-gray-500">ဆိုင်၏ အချက်အလက်များနှင့် အွန်လိုင်းမှ အော်ဒါလက်ခံမည့် အခြေအနေကို ပြင်ဆင်ပါ</p>
+                <h2 className="text-2xl font-black text-slate-100 flex items-center gap-2">
+                    <span className="text-orange-500">⚙️</span> ဆိုင်အထွေထွေ ဆက်တင်များ (Settings)
+                </h2>
+                <p className="text-sm text-slate-400 mt-1">ဆိုင်၏ အချက်အလက်များနှင့် အွန်လိုင်းမှ အော်ဒါလက်ခံမည့် အခြေအနေကို ပြင်ဆင်ပါ</p>
             </div>
 
             {/* ပင်မ ဆက်တင်ဖောင်ကြီး */}
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <div className="bg-slate-900 border border-slate-800 p-8 rounded-3xl shadow-xl shadow-black/20">
                 <form
                     action={async (formData) => {
                         'use server'
                         await updateRestaurantSettings(formData)
                     }}
-                    className="space-y-6"
+                    className="space-y-8"
                 >
                     {/* ရှိပြီးသား Setting ID ကို Backend သို့ ခိုးပို့ရန် Hidden Input */}
                     <input type="hidden" name="id" value={settings?.id || ''} />
 
                     {/* ⚡ ဆိုင်ဖွင့်/ပိတ် ထိန်းချုပ်သည့် နေရာ (UX Status Box) */}
-                    <div className={`p-4 rounded-xl border flex items-center justify-between transition ${settings?.isAcceptingOrders ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
-                        }`}>
+                    <div className={`p-5 rounded-2xl border flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all ${
+                        settings?.isAcceptingOrders 
+                        ? 'bg-green-500/10 border-green-500/30' 
+                        : 'bg-red-500/10 border-red-500/30'
+                    }`}>
                         <div>
-                            <h4 className="font-bold text-sm text-gray-800">အွန်လိုင်း အော်ဒါစနစ် အခြေအနေ</h4>
-                            <p className="text-xs text-gray-500 mt-0.5">လက်ရှိတွင် ကတ်စတမ်မာများ အော်ဒါမှာယူ၍ {settings?.isAcceptingOrders ? 'ရနေပါသည်' : 'မရသေးပါ'}</p>
+                            <h4 className={`font-black text-lg flex items-center gap-2 ${settings?.isAcceptingOrders ? 'text-green-400' : 'text-red-400'}`}>
+                                <span className={`w-3 h-3 rounded-full ${settings?.isAcceptingOrders ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></span>
+                                အွန်လိုင်း အော်ဒါစနစ် အခြေအနေ
+                            </h4>
+                            <p className="text-sm text-slate-400 mt-1">လက်ရှိတွင် ကတ်စတမ်မာများ အော်ဒါမှာယူ၍ {settings?.isAcceptingOrders ? 'ရနေပါသည်' : 'မရသေးပါ'}</p>
                         </div>
 
                         {/* Native HTML Select အား Toggle Switch သဖွယ် အသုံးပြုခြင်း */}
                         <select
                             name="isAcceptingOrders"
                             defaultValue={settings?.isAcceptingOrders ? 'true' : 'false'}
-                            className={`text-xs font-bold p-2 rounded-lg border bg-white focus:outline-none ${settings?.isAcceptingOrders ? 'border-green-500 text-green-700' : 'border-red-500 text-red-700'
-                                }`}
+                            className={`text-sm font-bold p-3 rounded-xl border focus:outline-none transition-colors cursor-pointer ${
+                                settings?.isAcceptingOrders 
+                                ? 'bg-green-500/20 border-green-500/50 text-green-300 focus:border-green-400' 
+                                : 'bg-red-500/20 border-red-500/50 text-red-300 focus:border-red-400'
+                            }`}
                         >
-                            <option value="true">🟢 ဆိုင်ဖွင့်မည် (Accept Orders)</option>
-                            <option value="false">🛑 ဆိုင်ပိတ်မည် (Pause Orders)</option>
+                            <option value="true" className="bg-slate-900 text-green-400">🟢 ဆိုင်ဖွင့်မည် (Accept Orders)</option>
+                            <option value="false" className="bg-slate-900 text-red-400">🛑 ဆိုင်ပိတ်မည် (Pause Orders)</option>
                         </select>
                     </div>
 
-                    <hr className="border-gray-100" />
+                    <div className="h-px w-full bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
 
                     {/* အခြေခံ အချက်အလက်များ */}
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-xs font-semibold text-gray-500 mb-1">ဆိုင်အမည် (Restaurant Name)</label>
+                            <label className="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">ဆိုင်အမည် (Restaurant Name)</label>
                             <input
                                 type="text"
                                 name="restaurantName"
                                 defaultValue={settings?.restaurantName || 'မြန်မာ့ရသာ'}
-                                className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-orange-500"
+                                className="w-full bg-slate-950 border border-slate-700 rounded-xl p-4 text-slate-200 focus:outline-none focus:border-orange-500 transition-colors"
                                 required
                             />
                         </div>
-
                     </div>
 
                     {/* သိမ်းဆည်းမည့် ခလုတ် */}
-                    <div className="flex justify-end border-t pt-4">
-                        <button type="submit" className="bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold px-6 py-2.5 rounded-lg transition">
-                            🔄 ဆက်တင်များ ပြင်ဆင်သိမ်းဆည်းမည်
+                    <div className="flex justify-end pt-4">
+                        <button type="submit" className="bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-400 hover:to-rose-400 text-white text-sm font-black px-8 py-4 rounded-xl transition-all shadow-lg shadow-orange-500/25 flex items-center gap-2">
+                            <span>🔄</span> ဆက်တင်များ သိမ်းဆည်းမည်
                         </button>
                     </div>
 

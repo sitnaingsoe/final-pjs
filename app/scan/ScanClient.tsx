@@ -18,8 +18,12 @@ export default function AdvancedCustomerScanPage() {
     const [isOrdered, setIsOrdered] = useState(false)
     const [loading, setLoading] = useState(true)
 
+    // 🎯 View State: 'home' | 'detail' | 'cart'
+    const [currentView, setCurrentView] = useState<'home' | 'detail' | 'cart'>('home')
+
     const [activeItem, setActiveItem] = useState<any | null>(null)
     const [selectedAddons, setSelectedAddons] = useState<any[]>([])
+    const [detailQuantity, setDetailQuantity] = useState(1)
 
     const [mounted, setMounted] = useState(false)
     useEffect(() => {
@@ -43,22 +47,34 @@ export default function AdvancedCustomerScanPage() {
         loadData()
     }, [tableNumber])
 
-    // 🔑 ကာကွယ်ရေးစနစ်ပါဝင်သော ဖြန့်ချရယူသည့် ဖန်ရှင်
+    // --- HOME VIEW ACTIONS ---
     const handleItemClick = (item: any) => {
         if (!item) return
-
         const allAddons = item.addonCategories?.flatMap(
             (bridge: any) => bridge?.addonCategory?.addons || []
         ) || []
 
+        setActiveItem({ ...item, flattenAddons: allAddons })
+        setSelectedAddons([])
+        setDetailQuantity(1)
+        setCurrentView('detail') // Always go to detail view so they see the nice big image
+    }
+
+    const handleQuickAdd = (e: React.MouseEvent, item: any) => {
+        e.stopPropagation() // Prevent opening detail view
+        const allAddons = item.addonCategories?.flatMap(
+            (bridge: any) => bridge?.addonCategory?.addons || []
+        ) || []
+        
         if (allAddons.length > 0) {
-            setActiveItem({ ...item, flattenAddons: allAddons })
-            setSelectedAddons([])
+            // If has addons, force to detail view anyway
+            handleItemClick(item)
         } else {
-            addToCartDirect(item, [])
+            addToCartDirect(item, [], 1)
         }
     }
 
+    // --- DETAIL VIEW ACTIONS ---
     const toggleAddon = (addon: any) => {
         if (!addon) return
         setSelectedAddons(prev =>
@@ -70,11 +86,13 @@ export default function AdvancedCustomerScanPage() {
 
     const confirmAddonToCart = () => {
         if (!activeItem) return
-        addToCartDirect(activeItem, selectedAddons)
+        addToCartDirect(activeItem, selectedAddons, detailQuantity)
         setActiveItem(null)
+        setCurrentView('home')
     }
 
-    const addToCartDirect = (item: any, addons: any[]) => {
+    // --- CART ACTIONS ---
+    const addToCartDirect = (item: any, addons: any[], quantity: number) => {
         if (!item) return
         const addonIds = addons.map(a => a.id).sort().join(',')
         const cartId = `${item.id}-${addonIds}`
@@ -83,10 +101,10 @@ export default function AdvancedCustomerScanPage() {
             const existingIndex = prev.findIndex(c => c.cartId === cartId)
             if (existingIndex > -1) {
                 const updated = [...prev]
-                updated[existingIndex].quantity += 1
+                updated[existingIndex].quantity += quantity
                 return updated
             } else {
-                return [...prev, { cartId, menuItem: item, quantity: 1, selectedAddons: addons }]
+                return [...prev, { cartId, menuItem: item, quantity, selectedAddons: addons }]
             }
         })
     }
@@ -108,11 +126,7 @@ export default function AdvancedCustomerScanPage() {
         return sum + (((item.menuItem?.price || 0) + addonsTotal) * item.quantity)
     }, 0)
 
-    // 🛡️ Safe Array Filtering
-    const safeMenuItems = Array.isArray(menuItems) ? menuItems : []
-    const filteredMenuItems = selectedCategory === 'ALL'
-        ? safeMenuItems
-        : safeMenuItems.filter(item => item && item.categoryId === selectedCategory)
+    const totalCartItems = cart.reduce((sum, item) => sum + item.quantity, 0)
 
     const handleOrderSubmit = async () => {
         if (cart.length === 0) return
@@ -130,6 +144,12 @@ export default function AdvancedCustomerScanPage() {
         }
     }
 
+    // --- DATA FILTERS ---
+    const safeMenuItems = Array.isArray(menuItems) ? menuItems : []
+    const filteredMenuItems = selectedCategory === 'ALL'
+        ? safeMenuItems
+        : safeMenuItems.filter(item => item && item.categoryId === selectedCategory)
+
     if (!mounted) return null
     if (loading) return <div className="h-screen flex items-center justify-center text-sm font-medium">မီနူးများ တင်နေပါသည်...</div>
 
@@ -139,160 +159,273 @@ export default function AdvancedCustomerScanPage() {
                 <div className="text-5xl mb-4">🎉</div>
                 <h2 className="text-xl font-bold text-green-800">အော်ဒါ မီးဖိုချောင်သို့ ရောက်သွားပါပြီ။</h2>
                 <p className="text-sm text-green-600 mt-2">စားပွဲနံပါတ် [ {tableNumber} ] အတွက် ဟင်းပွဲများကို ပြင်ဆင်နေပါပြီ။</p>
+                <button onClick={() => { setIsOrdered(false); setCurrentView('home') }} className="mt-8 bg-green-600 text-white px-6 py-2 rounded-full font-bold shadow-lg">
+                    နောက်ထပ်မှာယူမည်
+                </button>
             </div>
         )
     }
 
     return (
-        <div className="max-w-md mx-auto bg-gray-50 min-h-screen pb-40 relative">
+        <div className="max-w-md mx-auto bg-gray-50 min-h-screen relative shadow-2xl overflow-hidden flex flex-col">
 
-            {/* Header & Categories */}
-            <header className="bg-slate-900 text-white p-5 sticky top-0 shadow-md z-40 rounded-b-2xl">
-                <div className="flex justify-between items-center mb-4">
-                    <div>
-                        <h1 className="text-lg font-bold tracking-wide text-orange-500">မြန်မာ့ရသာ</h1>
-                        <p className="text-xs text-gray-400">QR Mobile Ordering</p>
-                    </div>
-                    <div className="bg-orange-500 text-white font-bold px-4 py-1.5 rounded-full text-sm shadow">
-                        🍽️ စားပွဲ - {tableNumber}
-                    </div>
-                </div>
-
-                <div className="flex gap-2 overflow-x-auto py-1">
-                    <button
-                        onClick={() => setSelectedCategory('ALL')}
-                        className={`text-xs font-bold px-4 py-2 rounded-full whitespace-nowrap transition ${selectedCategory === 'ALL' ? 'bg-orange-500 text-white' : 'bg-slate-800 text-gray-300'
-                            }`}
-                    >
-                        အားလုံး
-                    </button>
-                    {(Array.isArray(categories) ? categories : []).map(cat => (
-                        <button
-                            key={cat.id}
-                            onClick={() => setSelectedCategory(cat.id)}
-                            className={`text-xs font-bold px-4 py-2 rounded-full whitespace-nowrap transition ${selectedCategory === cat.id ? 'bg-orange-500 text-white' : 'bg-slate-800 text-gray-300'
-                                }`}
-                        >
-                            {cat.name}
-                        </button>
-                    ))}
-                </div>
-            </header>
-
-            {/* 🍽️ မီနူးဟင်းပွဲစာရင်း */}
-            <div className="p-4 space-y-4">
-                {filteredMenuItems.map(item => {
-                    if (!item) return null
-                    return (
-                        <div key={item.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center gap-2">
-                            <div className="space-y-1 flex-1">
-                                <div className="font-bold text-gray-800 text-sm">{item.name}</div>
-                                <div className="text-xs text-gray-400 line-clamp-2">{item.description || '-'}</div>
-                                <div className="text-sm font-black text-orange-600 mt-1">{(item.price || 0).toLocaleString()} MMK</div>
-
-                                {item.addonCategories && item.addonCategories.length > 0 && (
-                                    <span className="inline-block text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium mt-1">
-                                        ➕ စိတ်ကြိုက်ပြင်ဆင်ရန် ရှိသည်
-                                    </span>
-                                )}
+            {/* =======================
+                VIEW 1: HOME
+            ======================== */}
+            {currentView === 'home' && (
+                <div className="flex-1 overflow-y-auto pb-24 animate-in fade-in duration-300">
+                    <header className="bg-slate-900 text-white p-5 sticky top-0 shadow-md z-30 rounded-b-2xl">
+                        <div className="flex justify-between items-center mb-4">
+                            <div>
+                                <h1 className="text-lg font-bold tracking-wide text-orange-500">မြန်မာ့ရသာ</h1>
+                                <p className="text-xs text-gray-400">QR Mobile Ordering</p>
                             </div>
+                            <div className="bg-orange-500 text-white font-bold px-4 py-1.5 rounded-full text-sm shadow">
+                                🍽️ စားပွဲ - {tableNumber}
+                            </div>
+                        </div>
 
+                        <div className="flex gap-2 overflow-x-auto py-1 no-scrollbar">
                             <button
-                                onClick={() => handleItemClick(item)}
-                                className="text-xs font-bold px-3 py-2 bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition whitespace-nowrap"
+                                onClick={() => setSelectedCategory('ALL')}
+                                className={`text-xs font-bold px-4 py-2 rounded-full whitespace-nowrap transition ${selectedCategory === 'ALL' ? 'bg-orange-500 text-white' : 'bg-slate-800 text-gray-300'}`}
                             >
-                                မှာယူမည်
+                                အားလုံး
+                            </button>
+                            {(Array.isArray(categories) ? categories : []).map(cat => (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => setSelectedCategory(cat.id)}
+                                    className={`text-xs font-bold px-4 py-2 rounded-full whitespace-nowrap transition ${selectedCategory === cat.id ? 'bg-orange-500 text-white' : 'bg-slate-800 text-gray-300'}`}
+                                >
+                                    {cat.name}
+                                </button>
+                            ))}
+                        </div>
+                    </header>
+
+                    <div className="p-4 space-y-4">
+                        {filteredMenuItems.map(item => {
+                            if (!item) return null
+                            return (
+                                <div key={item.id} onClick={() => handleItemClick(item)} className="bg-white rounded-2xl shadow-sm border border-gray-100 flex overflow-hidden cursor-pointer active:scale-[0.98] transition-transform">
+                                    <div className="w-28 h-28 bg-gray-100 shrink-0 relative">
+                                        {item.imageUrl ? (
+                                            <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-3xl">🍽️</div>
+                                        )}
+                                        <div className="absolute inset-0 bg-black/5"></div>
+                                    </div>
+                                    <div className="p-3 flex-1 flex flex-col justify-between">
+                                        <div>
+                                            <div className="font-bold text-gray-800 text-sm line-clamp-1">{item.name}</div>
+                                            <div className="text-[10px] text-gray-400 line-clamp-1 mt-0.5">{item.description || '-'}</div>
+                                            {item.addonCategories && item.addonCategories.length > 0 && (
+                                                <span className="inline-block text-[9px] bg-orange-50 text-orange-600 px-1.5 py-0.5 rounded font-bold mt-1 border border-orange-100">
+                                                    ➕ Add-ons ရွေးချယ်နိုင်သည်
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="flex items-center justify-between mt-2">
+                                            <div className="text-sm font-black text-orange-600">{(item.price || 0).toLocaleString()} MMK</div>
+                                            <button onClick={(e) => handleQuickAdd(e, item)} className="bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-slate-800">
+                                                + မှာမည်
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                        {filteredMenuItems.length === 0 && (
+                            <div className="text-center text-xs text-gray-400 py-10 flex flex-col items-center">
+                                <span className="text-3xl mb-2 opacity-50">🍽️</span>
+                                <span>ဟင်းပွဲများ မရှိသေးပါ</span>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Floating Cart Button on Home */}
+                    {cart.length > 0 && (
+                        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-[400px] px-4 z-40 animate-in slide-in-from-bottom-5">
+                            <button onClick={() => setCurrentView('cart')} className="w-full bg-gradient-to-r from-orange-500 to-rose-500 text-white font-bold py-4 px-6 rounded-2xl shadow-xl shadow-orange-500/30 flex justify-between items-center">
+                                <span className="flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-sm">
+                                    🛒 <span>{totalCartItems} ခု</span>
+                                </span>
+                                <span>{totalAmount.toLocaleString()} MMK <span className="text-xl ml-1">→</span></span>
                             </button>
                         </div>
-                    )
-                })}
-                {filteredMenuItems.length === 0 && (
-                    <div className="text-center text-xs text-gray-400 py-10">ဤအမျိုးအစားတွင် ဟင်းပွဲများ မရှိသေးပါ သို့မဟုတ် ဒေတာချိတ်ဆက်မှု ပြတ်တောက်နေပါသည်။</div>
-                )}
-            </div>
+                    )}
+                </div>
+            )}
 
-            {/* Add-on Selection Modal */}
-            {activeItem && (
-                <div className="fixed inset-0 bg-black/50 flex items-end justify-center z-50">
-                    <div className="bg-white w-full max-w-md rounded-t-3xl p-6 space-y-4 shadow-2xl max-h-[80vh] overflow-y-auto">
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <h3 className="font-black text-gray-800 text-base">{activeItem.name}</h3>
-                                <p className="text-xs text-orange-600 font-bold mt-0.5">+{(activeItem.price || 0).toLocaleString()} MMK</p>
-                            </div>
-                            <button onClick={() => setActiveItem(null)} className="text-gray-400 hover:text-gray-600 text-lg font-bold">✕</button>
-                        </div>
-                        <hr className="border-gray-100" />
-                        <div>
-                            <h4 className="text-xs font-bold text-gray-500 mb-2">အပိုထပ်ဆောင်း ရွေးချယ်ရန် (Add-ons)</h4>
-                            <div className="space-y-2">
-                                {(activeItem.flattenAddons || []).map((addon: any) => {
-                                    if (!addon) return null
-                                    const isChecked = !!selectedAddons.find(a => a.id === addon.id)
-                                    return (
-                                        <label key={addon.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100 cursor-pointer hover:bg-orange-50/40">
-                                            <div className="flex items-center gap-3">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={isChecked}
-                                                    onChange={() => toggleAddon(addon)}
-                                                    className="w-4 h-4 accent-orange-500"
-                                                />
-                                                <span className="text-sm font-semibold text-gray-700">{addon.name}</span>
-                                            </div>
-                                            <span className="text-xs font-bold text-gray-500">+{(addon.price || 0).toLocaleString()} MMK</span>
-                                        </label>
-                                    )
-                                })}
-                            </div>
-                        </div>
-                        <button onClick={confirmAddonToCart} className="w-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold py-3 rounded-xl transition shadow">
-                            ခြင်းတောင်းထဲသို့ ထည့်မည်
+            {/* =======================
+                VIEW 2: MENU DETAIL
+            ======================== */}
+            {currentView === 'detail' && activeItem && (
+                <div className="bg-white min-h-screen animate-in slide-in-from-right duration-300 flex flex-col z-50">
+                    {/* Detail Header / Hero Image */}
+                    <div className="relative w-full h-72 bg-gray-200 shrink-0">
+                        {activeItem.imageUrl ? (
+                            <img src={activeItem.imageUrl} alt={activeItem.name} className="w-full h-full object-cover" />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-400 to-rose-400"></div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-80"></div>
+                        <button onClick={() => setCurrentView('home')} className="absolute top-4 left-4 w-10 h-10 bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full flex items-center justify-center text-white z-10 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                         </button>
+                    </div>
+
+                    <div className="p-6 -mt-6 bg-white rounded-t-3xl relative z-10 flex-1 flex flex-col shadow-[0_-10px_20px_rgba(0,0,0,0.1)]">
+                        <div className="mb-6">
+                            <h2 className="text-2xl font-black text-gray-900 leading-tight">{activeItem.name}</h2>
+                            <p className="text-sm text-gray-500 mt-2 leading-relaxed">{activeItem.description || "ဖော်ပြချက် မရှိပါ"}</p>
+                            <p className="text-xl font-black text-orange-600 mt-3">{(activeItem.price || 0).toLocaleString()} MMK</p>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto space-y-6 pb-6">
+                            {activeItem.addonCategories?.length > 0 && (
+                                <div className="space-y-6">
+                                    {activeItem.addonCategories.map((bridge: any) => {
+                                        const categoryName = bridge?.addonCategory?.name || "Add-ons"
+                                        const addons = bridge?.addonCategory?.addons || []
+                                        if (addons.length === 0) return null
+
+                                        return (
+                                            <div key={bridge.addonCategoryId}>
+                                                <h3 className="text-sm font-bold text-gray-800 mb-3 bg-gray-100 py-1.5 px-3 rounded-lg inline-flex items-center gap-2">
+                                                    ✨ {categoryName}
+                                                </h3>
+                                                <div className="space-y-3">
+                                                    {addons.map((addon: any) => {
+                                                        const isChecked = !!selectedAddons.find(a => a.id === addon.id)
+                                                        return (
+                                                            <label key={addon.id} className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${isChecked ? 'bg-orange-50 border-orange-300' : 'bg-white border-gray-200 hover:border-orange-200'}`}>
+                                                                <div className="flex items-center gap-3">
+                                                                    <input type="checkbox" checked={isChecked} onChange={() => toggleAddon(addon)} className="w-5 h-5 accent-orange-500" />
+                                                                    <span className={`text-sm font-bold ${isChecked ? 'text-orange-900' : 'text-gray-700'}`}>{addon.name}</span>
+                                                                </div>
+                                                                <span className="text-sm font-black text-gray-500">+{(addon.price || 0).toLocaleString()} MMK</span>
+                                                            </label>
+                                                        )
+                                                    })}
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            )}
+
+                            {/* Quantity Selector */}
+                            <div className="flex items-center justify-between bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                                <span className="text-sm font-bold text-gray-700">အရေအတွက် ရွေးချယ်ရန်</span>
+                                <div className="flex items-center gap-4 bg-white p-1 rounded-xl border border-gray-200 shadow-sm">
+                                    <button onClick={() => setDetailQuantity(Math.max(1, detailQuantity - 1))} className="w-8 h-8 flex items-center justify-center text-gray-500 font-bold bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">-</button>
+                                    <span className="w-4 text-center font-black text-gray-800">{detailQuantity}</span>
+                                    <button onClick={() => setDetailQuantity(detailQuantity + 1)} className="w-8 h-8 flex items-center justify-center text-orange-500 font-bold bg-orange-100 rounded-lg hover:bg-orange-200 transition-colors">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Sticky Add to Cart Footer */}
+                        <div className="pt-4 mt-auto shrink-0 bg-white">
+                            <button onClick={confirmAddonToCart} className="w-full bg-gradient-to-r from-orange-500 to-rose-500 text-white text-base font-black py-4 rounded-2xl shadow-xl shadow-orange-500/30 active:scale-95 transition-transform flex justify-center items-center gap-2">
+                                {( (activeItem.price + selectedAddons.reduce((s,a) => s + a.price, 0)) * detailQuantity ).toLocaleString()} MMK - ခြင်းတောင်းသို့ထည့်မည်
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
 
-            {/* Floating Cart Panel */}
-            {cart.length > 0 && (
-                <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-gray-200 p-4 shadow-2xl rounded-t-3xl space-y-4 z-40 max-h-[50vh] overflow-y-auto">
-                    <div className="space-y-2 max-h-32 overflow-y-auto divide-y divide-gray-100 pr-1">
-                        <h4 className="text-xs font-bold text-gray-400">🛒 ရွေးချယ်ထားသော ဟင်းပွဲများ ({cart.length})</h4>
-                        {cart.map(c => {
-                            const addonsPrice = c.selectedAddons?.reduce((s: number, a: any) => s + (a?.price || 0), 0) || 0
-                            const perItemPrice = (c.menuItem?.price || 0) + addonsPrice
-                            return (
-                                <div key={c.cartId} className="flex justify-between items-center py-2.5 text-xs">
-                                    <div className="flex-1 pr-2">
-                                        <span className="font-bold text-gray-800">{c.menuItem?.name}</span>
-                                        {c.selectedAddons?.length > 0 && (
-                                            <span className="block text-[10px] text-orange-600">
-                                                ({c.selectedAddons.map((a: any) => a?.name).join(', ')})
-                                            </span>
-                                        )}
-                                    </div>
-                                    <div className="flex items-center gap-2 border rounded-lg bg-gray-50 p-1 mr-3">
-                                        <button onClick={() => updateCartQuantity(c.cartId, -1)} className="w-5 h-5 bg-white rounded text-gray-600 font-bold shadow-sm">-</button>
-                                        <span className="font-bold w-4 text-center">{c.quantity}</span>
-                                        <button onClick={() => updateCartQuantity(c.cartId, 1)} className="w-5 h-5 bg-orange-500 text-white rounded font-bold shadow-sm">+</button>
-                                    </div>
-                                    <span className="font-black text-slate-700">{(perItemPrice * c.quantity).toLocaleString()} MMK</span>
-                                </div>
-                            )
-                        })}
-                    </div>
-                    <div>
-                        <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="မီးဖိုချောင်သို့ မှာကြားလိုသည်များ..." className="w-full border border-gray-200 rounded-lg p-2.5 text-xs focus:outline-none focus:border-orange-500" />
-                    </div>
-                    <div className="flex justify-between items-center gap-4 border-t pt-3">
-                        <div>
-                            <p className="text-[10px] text-gray-400 font-medium">စုစုပေါင်းကျသင့်ငွေ</p>
-                            <p className="text-base font-black text-slate-900">{totalAmount.toLocaleString()} MMK</p>
+            {/* =======================
+                VIEW 3: CART VIEW
+            ======================== */}
+            {currentView === 'cart' && (
+                <div className="bg-white min-h-screen animate-in slide-in-from-right duration-300 flex flex-col z-50">
+                    <header className="bg-slate-900 text-white p-4 sticky top-0 flex items-center justify-between z-30 shadow-md rounded-b-2xl">
+                        <div className="flex items-center gap-3">
+                            <button onClick={() => setCurrentView('home')} className="w-10 h-10 flex items-center justify-center hover:bg-slate-800 rounded-full transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                            </button>
+                            <div>
+                                <h2 className="text-lg font-bold">ခြင်းတောင်း</h2>
+                                <p className="text-[10px] text-gray-400">Total {totalCartItems} Items</p>
+                            </div>
                         </div>
-                        <button onClick={handleOrderSubmit} className="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold py-3 rounded-xl transition shadow-md text-center">
-                            🚀 မီးဖိုချောင်သို့ အော်ဒါပို့မည်
-                        </button>
+                    </header>
+
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 pb-6">
+                        {cart.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                                <span className="text-6xl mb-4 opacity-50">🛒</span>
+                                <p className="font-bold text-sm text-gray-500">ခြင်းတောင်းထဲတွင် ဘာမှမရှိသေးပါ</p>
+                                <button onClick={() => setCurrentView('home')} className="mt-4 bg-orange-100 text-orange-600 px-6 py-2 rounded-full font-bold text-sm">
+                                    မီနူးများ ပြန်ကြည့်မည်
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {cart.map(c => {
+                                    const addonsPrice = c.selectedAddons?.reduce((s: number, a: any) => s + (a?.price || 0), 0) || 0
+                                    const perItemPrice = (c.menuItem?.price || 0) + addonsPrice
+                                    return (
+                                        <div key={c.cartId} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex gap-4">
+                                            {c.menuItem?.imageUrl ? (
+                                                <img src={c.menuItem.imageUrl} alt={c.menuItem.name} className="w-20 h-20 rounded-xl object-cover shrink-0 bg-gray-100" />
+                                            ) : (
+                                                <div className="w-20 h-20 rounded-xl bg-gray-100 flex items-center justify-center text-2xl shrink-0">🍽️</div>
+                                            )}
+                                            <div className="flex-1 flex flex-col justify-between">
+                                                <div>
+                                                    <div className="flex justify-between items-start gap-2">
+                                                        <h4 className="font-bold text-gray-800 text-sm line-clamp-2">{c.menuItem?.name}</h4>
+                                                    </div>
+                                                    {c.selectedAddons?.length > 0 && (
+                                                        <p className="text-[10px] text-orange-600 font-bold mt-1 leading-tight bg-orange-50 inline-block px-2 py-0.5 rounded">
+                                                            + {c.selectedAddons.map((a: any) => a?.name).join(', ')}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                                <div className="flex items-center justify-between mt-3">
+                                                    <span className="font-black text-orange-600 text-sm">{(perItemPrice * c.quantity).toLocaleString()} MMK</span>
+                                                    <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-lg p-1">
+                                                        <button onClick={() => updateCartQuantity(c.cartId, -1)} className="w-7 h-7 flex items-center justify-center text-gray-600 bg-white rounded shadow-sm font-bold hover:bg-gray-100">-</button>
+                                                        <span className="font-bold text-sm w-4 text-center">{c.quantity}</span>
+                                                        <button onClick={() => updateCartQuantity(c.cartId, 1)} className="w-7 h-7 flex items-center justify-center text-white bg-orange-500 rounded shadow-sm font-bold hover:bg-orange-600">+</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        )}
                     </div>
+
+                    {cart.length > 0 && (
+                        <div className="bg-white p-6 rounded-t-3xl shadow-[0_-10px_20px_rgba(0,0,0,0.05)] border-t border-gray-100 mt-auto shrink-0 relative z-10">
+                            <div className="mb-4">
+                                <label className="text-xs font-bold text-gray-500 mb-2 block">မှတ်ချက် (Optional)</label>
+                                <textarea 
+                                    rows={2} 
+                                    value={notes} 
+                                    onChange={(e) => setNotes(e.target.value)} 
+                                    placeholder="အပူလျှော့၊ အစပ်လျှော့..." 
+                                    className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:border-orange-500 resize-none" 
+                                />
+                            </div>
+                            
+                            <div className="flex justify-between items-end mb-6">
+                                <span className="text-sm font-bold text-gray-500">စုစုပေါင်းကျသင့်ငွေ</span>
+                                <span className="text-3xl font-black text-gray-900 tracking-tight">{totalAmount.toLocaleString()} <span className="text-sm text-gray-500 font-bold ml-1">MMK</span></span>
+                            </div>
+
+                            <button onClick={handleOrderSubmit} className="w-full bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-400 hover:to-rose-400 active:scale-95 text-white text-lg font-black py-4 rounded-2xl transition shadow-xl shadow-orange-500/30 flex justify-center items-center gap-2">
+                                🚀 မီးဖိုချောင်သို့ အော်ဒါပို့မည်
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
         </div>

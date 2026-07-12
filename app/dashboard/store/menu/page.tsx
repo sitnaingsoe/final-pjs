@@ -51,45 +51,57 @@ export default async function MenuPage() {
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                             {menuItems.map((item: any) => (
-                                <div key={item.id} className="group bg-slate-950 border border-slate-800 rounded-2xl p-5 hover:border-orange-500/30 transition-all duration-300 flex flex-col justify-between shadow-xl relative overflow-hidden">
-                                    {item.imageUrl && (
-                                        <div className="absolute top-0 left-0 w-full h-24 bg-slate-900 border-b border-slate-800 -mx-5 -mt-5 mb-5 opacity-40 group-hover:opacity-100 transition-opacity">
-                                            <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                                <div key={item.id} className="group bg-slate-950 border border-slate-800 rounded-2xl flex flex-col justify-between shadow-xl relative overflow-hidden transition-all duration-300 hover:border-orange-500/50 hover:shadow-orange-500/10 hover:shadow-2xl">
+                                    
+                                    {/* 🖼️ Hero Image */}
+                                    {item.imageUrl ? (
+                                        <div className="w-full h-40 bg-slate-900 border-b border-slate-800 relative">
+                                            <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 to-transparent opacity-80"></div>
+                                        </div>
+                                    ) : (
+                                        <div className="w-full h-32 bg-slate-900 border-b border-slate-800 flex items-center justify-center relative">
+                                            <span className="text-slate-700 text-3xl">🍽️</span>
+                                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 to-transparent opacity-80"></div>
                                         </div>
                                     )}
-                                    <div className={item.imageUrl ? "pt-20 relative z-10" : ""}>
-                                        <div className="flex justify-between items-start gap-2">
-                                            <h4 className="font-bold text-slate-200 text-sm truncate group-hover:text-orange-400 transition-colors">
-                                                {item.name}
-                                            </h4>
 
-                                            {/* 🎯 Edit & Delete Actions Dropdown/Box */}
-                                            <MenuCardActions item={item} categories={categories} addonCategories={addonCategories} />
+                                    <div className="p-5 flex-1 flex flex-col justify-between -mt-12 relative z-10">
+                                        <div>
+                                            <div className="flex justify-between items-start gap-2">
+                                                <h4 className="font-black text-slate-100 text-lg line-clamp-1 group-hover:text-orange-400 transition-colors drop-shadow-md">
+                                                    {item.name}
+                                                </h4>
+
+                                                {/* 🎯 Edit & Delete Actions Dropdown/Box */}
+                                                <MenuCardActions item={item} categories={categories} addonCategories={addonCategories} />
+                                            </div>
+
+                                            <span className="inline-block mt-2 px-2 py-0.5 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-3xs font-bold uppercase tracking-wider rounded">
+                                                {item.category?.name || 'Uncategorized'}
+                                            </span>
+
+                                            {/* 🎯 ချိတ်ဆက်ထားသော Addons Badge လေးများ ပြသခြင်း */}
+                                            {item.addonCategories?.length > 0 && (
+                                                <div className="flex flex-wrap gap-1 mt-2">
+                                                    {item.addonCategories.map((ac: any) => (
+                                                        <span key={ac.addonCategoryId} className="bg-slate-900 text-slate-400 px-1.5 py-0.5 rounded text-3xs border border-slate-800">
+                                                            ➕ {ac.addonCategory?.name}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            <p className="text-xs text-slate-400 mt-3 line-clamp-2 leading-relaxed">
+                                                {item.description || <span className="italic opacity-30 text-3xs">ဖော်ပြချက် မရှိပါ</span>}
+                                            </p>
                                         </div>
 
-                                        <span className="inline-block mt-1.5 px-2 py-0.5 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-3xs font-bold uppercase tracking-wider rounded">
-                                            {item.category?.name || 'Uncategorized'}
-                                        </span>
-
-                                        {/* 🎯 ချိတ်ဆက်ထားသော Addons Badge လေးများ ပြသခြင်း */}
-                                        {item.addonCategories?.length > 0 && (
-                                            <div className="flex flex-wrap gap-1 mt-2">
-                                                {item.addonCategories.map((ac: any) => (
-                                                    <span key={ac.addonCategoryId} className="bg-slate-900 text-slate-400 px-1.5 py-0.5 rounded text-3xs border border-slate-800">
-                                                        ➕ {ac.addonCategory?.name}
-                                                    </span>
-                                                ))}
+                                        <div className="mt-4 pt-4 border-t border-slate-800/50 flex items-end justify-between">
+                                            <span className="text-3xs text-slate-500 font-bold uppercase tracking-wider">Price</span>
+                                            <div className="text-base font-black text-orange-400 font-mono">
+                                                {item.price.toLocaleString()} <span className="text-3xs text-slate-500 font-normal">MMK</span>
                                             </div>
-                                        )}
-
-                                        <p className="text-xs text-slate-400 mt-3 line-clamp-2 leading-relaxed">
-                                            {item.description || <span className="italic opacity-30 text-3xs">ဖော်ပြချက် မရှိပါ</span>}
-                                        </p>
-                                    </div>
-                                    <div className="mt-4 pt-3 border-t border-slate-900 flex items-end justify-between">
-                                        <span className="text-3xs text-slate-500 font-bold uppercase tracking-wider">Price</span>
-                                        <div className="text-sm font-black text-orange-400 font-mono">
-                                            {item.price.toLocaleString()} <span className="text-3xs text-slate-500 font-normal">MMK</span>
                                         </div>
                                     </div>
                                 </div>

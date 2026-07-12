@@ -82,6 +82,7 @@ export async function updateMenuItem(id: string, formData: FormData, selectedAdd
     const price = parseFloat(formData.get('price') as string)
     const categoryId = formData.get('categoryId') as string
     const description = formData.get('description') as string
+    const imageFile = formData.get('image') as File | null
 
     if (!name || isNaN(price) || !categoryId) {
         return { success: false, error: "လိုအပ်သော အချက်အလက်များ အားလုံး ဖြည့်စွက်ပါ" }
@@ -96,6 +97,12 @@ export async function updateMenuItem(id: string, formData: FormData, selectedAdd
         const menuItem = await prisma.menuItem.findUnique({ where: { id }, include: { category: true } })
         if (!menuItem || menuItem.category.branchId !== session.user.branchId) return { success: false, error: "Unauthorized" }
 
+        let imageUrl = menuItem.imageUrl
+        if (imageFile && imageFile.size > 0 && imageFile.name !== 'undefined') {
+            const { uploadFileToSpaces } = await import('@/lib/s3')
+            imageUrl = await uploadFileToSpaces(imageFile, 'menu-items')
+        }
+
         // ရှိပြီးသား Addon ချိတ်ဆက်မှုဟောင်းများကို အရင်ဖြတ်တောက်သည်
         await prisma.menuItemAddonCategory.deleteMany({ where: { menuItemId: id } })
 
@@ -107,6 +114,7 @@ export async function updateMenuItem(id: string, formData: FormData, selectedAdd
                 price,
                 categoryId,
                 description,
+                imageUrl, // Update image URL if new one is uploaded
                 addonCategories: {
                     create: selectedAddonCatIds.map(addonCategoryId => ({
                         addonCategory: { connect: { id: addonCategoryId } }
