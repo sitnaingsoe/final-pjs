@@ -1,7 +1,9 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import Image from 'next/image'
 import ReceiptPrinter, { ReceiptData } from './ReceiptPrinter'
+import AddonSelectionModal from './AddonSelectionModal'
 
 type CartItem = {
     id: string; // unique local ID for cart management
@@ -9,7 +11,7 @@ type CartItem = {
     name: string;
     price: number;
     quantity: number;
-    addons: any[];
+    addons: { addonId: string, name: string, price: number }[];
 }
 
 export default function PosTerminal({ 
@@ -31,6 +33,10 @@ export default function PosTerminal({
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [receiptData, setReceiptData] = useState<ReceiptData | null>(null)
     
+    // Addon Modal State
+    const [isAddonModalOpen, setIsAddonModalOpen] = useState(false)
+    const [selectedMenuItemForAddon, setSelectedMenuItemForAddon] = useState<any>(null)
+
     // Offline Capability State
     const [isOnline, setIsOnline] = useState(true)
     const [offlineOrders, setOfflineOrders] = useState<any[]>([])
@@ -41,7 +47,7 @@ export default function PosTerminal({
 
     // Active Table Order State
     const [activeOrderId, setActiveOrderId] = useState<string | null>(null)
-    const [existingItems, setExistingItems] = useState<{name: string, quantity: number, price: number}[]>([])
+    const [existingItems, setExistingItems] = useState<{name: string, quantity: number, price: number, addons?: any[]}[]>([])
     const [existingTotal, setExistingTotal] = useState(0)
 
     // Load active order when table changes
@@ -62,7 +68,8 @@ export default function PosTerminal({
                     setExistingItems(res.data.items.map((i: any) => ({
                         name: i.menuItem.name,
                         quantity: i.quantity,
-                        price: i.price
+                        price: i.price,
+                        addons: i.addons?.map((a: any) => ({ name: a.addon.name })) || []
                     })))
                     setExistingTotal(res.data.totalAmount)
                 } else {
@@ -134,18 +141,42 @@ export default function PosTerminal({
         ? menuItems
         : menuItems.filter(item => item.categoryId === selectedCategory)
 
-    const addToCart = (item: any) => {
-        // For simplicity in this demo POS, we just add the item directly. 
-        // If addons are needed, a modal should pop up here in a full production app.
+    // Calculate discounted price
+    const getFinalPrice = (item: any) => {
+        let finalPrice = item.price;
+        if (item.discount && item.discount.isActive) {
+            if (item.discount.type === 'PERCENTAGE') {
+                finalPrice = finalPrice - (finalPrice * (item.discount.value / 100));
+            } else {
+                finalPrice = Math.max(0, finalPrice - item.discount.value);
+            }
+        }
+        return finalPrice;
+    }
+
+    const handleItemClick = (item: any) => {
+        if (item.addonCategories && item.addonCategories.length > 0) {
+            setSelectedMenuItemForAddon(item)
+            setIsAddonModalOpen(true)
+        } else {
+            addToCart(item, [])
+        }
+    }
+
+    const addToCart = (item: any, selectedAddons: any[]) => {
+        const addonsPrice = selectedAddons.reduce((sum, a) => sum + a.price, 0)
+        const finalItemPrice = getFinalPrice(item)
         const newItem: CartItem = {
             id: Math.random().toString(36).substring(7),
             menuItemId: item.id,
             name: item.name,
-            price: item.price,
+            price: finalItemPrice + addonsPrice, // Cart item price includes addon price for easy display/calculation
             quantity: 1,
-            addons: []
+            addons: selectedAddons
         }
         setCart(prev => [...prev, newItem])
+        setIsAddonModalOpen(false)
+        setSelectedMenuItemForAddon(null)
     }
 
     const updateQuantity = (id: string, delta: number) => {
@@ -175,7 +206,11 @@ export default function PosTerminal({
                 orderId: activeOrderId || undefined,
                 branchId,
                 tableId: selectedTableId,
-                items: cart.map(item => ({ menuItemId: item.menuItemId, quantity: item.quantity }))
+                items: cart.map(item => ({ 
+                    menuItemId: item.menuItemId, 
+                    quantity: item.quantity,
+                    addons: item.addons
+                }))
             })
             if (res.success) {
                 alert("✅ အော်ဒါ မီးဖိုချောင်သို့ ပို့ပြီးပါပြီ")
@@ -211,7 +246,11 @@ export default function PosTerminal({
                     orderId: activeOrderId || undefined,
                     branchId,
                     tableId: selectedTableId,
-                    items: cart.map(item => ({ menuItemId: item.menuItemId, quantity: item.quantity }))
+                    items: cart.map(item => ({ 
+                        menuItemId: item.menuItemId, 
+                        quantity: item.quantity,
+                        addons: item.addons
+                    }))
                 })
                 if (sendRes.success && sendRes.orderId) {
                     currentOrderId = sendRes.orderId
@@ -230,8 +269,16 @@ export default function PosTerminal({
                     orderId: checkRes.order.id,
                     date: checkRes.order.createdAt || new Date(),
                     items: [
-                        ...existingItems,
-                        ...cart.map(c => ({ name: c.name, price: c.price, quantity: c.quantity }))
+                        ...existingItems.map(c => ({
+                            name: c.name + (c.addons?.length ? ` (${c.addons.map((a: any) => a.name).join(', ')})` : ''),
+                            price: c.price,
+                            quantity: c.quantity
+                        })),
+                        ...cart.map(c => ({ 
+                            name: c.name + (c.addons?.length ? ` (${c.addons.map(a => a.name).join(', ')})` : ''), 
+                            price: c.price, 
+                            quantity: c.quantity 
+                        }))
                     ],
                     totalAmount: checkRes.order.totalAmount,
                     taxAmount: checkRes.order.taxAmount,
@@ -259,6 +306,15 @@ export default function PosTerminal({
     return (
         <div className="flex h-full relative">
             <ReceiptPrinter data={receiptData} />
+            <AddonSelectionModal 
+                isOpen={isAddonModalOpen}
+                onClose={() => {
+                    setIsAddonModalOpen(false);
+                    setSelectedMenuItemForAddon(null);
+                }}
+                menuItem={selectedMenuItemForAddon}
+                onAddToCart={addToCart}
+            />
             {/* === ဘယ်ဘက်ခြမ်း: Menu Items & Categories === */}
             <div className="flex-1 flex flex-col h-full bg-slate-950 overflow-hidden">
                 {/* Categories Banner */}
@@ -287,13 +343,13 @@ export default function PosTerminal({
                     {displayItems.map(item => (
                         <div
                             key={item.id}
-                            onClick={() => addToCart(item)}
+                            onClick={() => handleItemClick(item)}
                             className="bg-slate-900 border border-slate-800 rounded-2xl cursor-pointer hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/10 transition-all flex flex-col group relative overflow-hidden active:scale-95"
                         >
                             {/* 🖼️ Hero Image */}
                             {item.imageUrl ? (
                                 <div className="w-full h-40 bg-slate-800 relative">
-                                    <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                    <Image src={item.imageUrl} alt={item.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="(max-width: 768px) 50vw, 25vw" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-80"></div>
                                 </div>
                             ) : (
@@ -308,8 +364,15 @@ export default function PosTerminal({
                                     <h3 className="text-sm font-bold text-slate-100 group-hover:text-orange-400 transition-colors line-clamp-2 drop-shadow-md">{item.name}</h3>
                                     <span className="text-3xs text-slate-400 mt-1 uppercase tracking-wider">{item.category?.name}</span>
                                 </div>
-                                <div className="mt-4 font-black text-orange-400 font-mono">
-                                    {item.price.toLocaleString()} <span className="text-3xs text-slate-500 font-normal">MMK</span>
+                                <div className="mt-4 font-black font-mono">
+                                    {item.discount && item.discount.isActive ? (
+                                        <div className="flex flex-col">
+                                            <span className="text-3xs text-slate-500 line-through leading-none">{item.price.toLocaleString()} MMK</span>
+                                            <span className="text-rose-400 leading-tight">{getFinalPrice(item).toLocaleString()} <span className="text-3xs font-normal">MMK</span></span>
+                                        </div>
+                                    ) : (
+                                        <span className="text-orange-400">{item.price.toLocaleString()} <span className="text-3xs text-slate-500 font-normal">MMK</span></span>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -378,6 +441,11 @@ export default function PosTerminal({
                         <div key={`exist-${index}`} className="bg-slate-900 border border-slate-700/50 rounded-xl p-3 flex justify-between gap-3 opacity-70">
                             <div className="flex-1">
                                 <h4 className="text-sm font-bold text-slate-300 leading-tight">{item.name}</h4>
+                                {item.addons && item.addons.length > 0 && (
+                                    <p className="text-3xs text-slate-500 mt-0.5 leading-tight">
+                                        {item.addons.map((a: any) => a.name).join(', ')}
+                                    </p>
+                                )}
                                 <p className="text-xs font-mono text-slate-400 mt-1">{(item.price * item.quantity).toLocaleString()} MMK</p>
                             </div>
                             <div className="flex items-center gap-3">
@@ -390,6 +458,11 @@ export default function PosTerminal({
                         <div key={item.id} className="bg-slate-950 border border-slate-800 rounded-xl p-3 flex justify-between gap-3 animate-in fade-in slide-in-from-right-4">
                             <div className="flex-1">
                                 <h4 className="text-sm font-bold text-slate-200 leading-tight">{item.name}</h4>
+                                {item.addons && item.addons.length > 0 && (
+                                    <p className="text-3xs text-slate-400 mt-0.5 leading-tight">
+                                        {item.addons.map(a => a.name).join(', ')}
+                                    </p>
+                                )}
                                 <p className="text-xs font-mono text-orange-400 mt-1">{(item.price * item.quantity).toLocaleString()} MMK</p>
                             </div>
                             <div className="flex items-center gap-3">

@@ -58,7 +58,7 @@ export async function updateOrderStatus(orderId: string, newStatus: OrderStatus)
 export async function createPosOrder(data: {
     branchId: string;
     tableId: string | null;
-    items: { menuItemId: string, quantity: number }[];
+    items: { menuItemId: string, quantity: number, addons?: { addonId: string, price: number }[] }[];
 }) {
     const session = await auth()
     if (!session?.user?.branchId || session.user.branchId !== data.branchId) {
@@ -74,12 +74,18 @@ export async function createPosOrder(data: {
         let totalAmount = 0
         const orderItemsData = data.items.map(item => {
             const menu = menuItems.find(m => m.id === item.menuItemId)
-            const price = menu?.price || 0
-            totalAmount += price * item.quantity
+            const menuPrice = menu?.price || 0
+            const addonsPrice = item.addons?.reduce((sum, a) => sum + a.price, 0) || 0
+            const itemTotal = (menuPrice + addonsPrice) * item.quantity
+            totalAmount += itemTotal
+
             return {
                 menuItemId: item.menuItemId,
                 quantity: item.quantity,
-                price: price
+                price: menuPrice,
+                addons: item.addons && item.addons.length > 0 ? {
+                    create: item.addons.map(a => ({ addonId: a.addonId }))
+                } : undefined
             }
         })
 
@@ -126,7 +132,10 @@ export async function getActiveTableOrder(tableId: string) {
             },
             include: {
                 items: {
-                    include: { menuItem: true }
+                    include: { 
+                        menuItem: true,
+                        addons: { include: { addon: true } }
+                    }
                 }
             }
         })
@@ -140,7 +149,7 @@ export async function sendOrderToKitchen(data: {
     orderId?: string; // If undefined, create new. If string, append items.
     branchId: string;
     tableId: string | null;
-    items: { menuItemId: string, quantity: number }[];
+    items: { menuItemId: string, quantity: number, addons?: { addonId: string, price: number }[] }[];
 }) {
     const session = await auth()
     if (!session?.user?.branchId || session.user.branchId !== data.branchId) {
@@ -156,12 +165,18 @@ export async function sendOrderToKitchen(data: {
         let addedAmount = 0
         const orderItemsData = data.items.map(item => {
             const menu = menuItems.find(m => m.id === item.menuItemId)
-            const price = menu?.price || 0
-            addedAmount += price * item.quantity
+            const menuPrice = menu?.price || 0
+            const addonsPrice = item.addons?.reduce((sum, a) => sum + a.price, 0) || 0
+            const itemTotal = (menuPrice + addonsPrice) * item.quantity
+            addedAmount += itemTotal
+
             return {
                 menuItemId: item.menuItemId,
                 quantity: item.quantity,
-                price: price
+                price: menuPrice,
+                addons: item.addons && item.addons.length > 0 ? {
+                    create: item.addons.map(a => ({ addonId: a.addonId }))
+                } : undefined
             }
         })
 

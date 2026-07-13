@@ -70,3 +70,28 @@ export async function toggleDiscountStatus(id: string, currentStatus: boolean) {
         return { success: false, error: "အခြေအနေ ပြောင်းလဲ၍မရပါ" }
     }
 }
+
+// ၄။ လျှော့စျေးကို ဖျက်ပစ်ခြင်း
+export async function deleteDiscount(id: string) {
+    const session = await auth()
+    if (!session?.user?.branchId || session.user.role === 'STAFF') {
+        return { success: false, error: "Unauthorized" }
+    }
+
+    try {
+        const discount = await prisma.discount.findUnique({ where: { id } })
+        if (!discount || discount.branchId !== session.user.branchId) {
+            return { success: false, error: "Unauthorized" }
+        }
+
+        await prisma.discount.delete({ where: { id } })
+
+        revalidatePath('/dashboard/store/discounts')
+        revalidatePath('/dashboard/store/menu')
+        revalidatePath('/pos')
+        return { success: true }
+    } catch (error) {
+        console.error("Error deleting discount:", error)
+        return { success: false, error: "ဤလျှော့စျေးကို ဖျက်၍မရပါ။ အခြားနေရာများတွင် အသုံးပြုထားခြင်း ရှိ/မရှိ စစ်ဆေးပါ။" }
+    }
+}

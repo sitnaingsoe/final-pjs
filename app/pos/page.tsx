@@ -1,6 +1,7 @@
 import React from 'react'
 import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
+import { prisma } from '@/lib/db'
 import { getMenuItems } from '@/server/actions/menu'
 import { getCategories } from '@/server/actions/categories'
 import { getTables } from '@/server/actions/tables'
@@ -14,8 +15,17 @@ export default async function PosPage({
     const session = await auth()
     
     // Ensure the user is logged in and has a branchId (must be STAFF or BRANCH_ADMIN)
-    if (!session?.user?.branchId) {
+    if (!session?.user?.branchId || !session?.user?.id) {
         redirect('/login')
+    }
+
+    // 🔥 အကောင့် ယာယီပိတ်ခံထားရခြင်း (isActive: false) ရှိမရှိ စစ်ဆေးမည်
+    const dbUser = await prisma.user.findUnique({
+        where: { id: parseInt(session.user.id) },
+        select: { isActive: true }
+    })
+    if (!dbUser?.isActive) {
+        redirect('/login?error=account_deactivated')
     }
 
     const resolvedParams = await searchParams;

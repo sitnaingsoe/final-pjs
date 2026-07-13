@@ -125,8 +125,8 @@ export default async function DiscountsPage() {
                                         </div>
                                     </div>
 
-                                    <div className="mt-6 pt-4 border-t border-slate-800/60 flex items-center justify-between">
-                                        <form action={handleToggle.bind(null, disc.id, disc.isActive)} className="w-full">
+                                    <div className="mt-6 pt-4 border-t border-slate-800/60 flex items-center justify-between gap-2">
+                                        <form action={handleToggle.bind(null, disc.id, disc.isActive)} className="flex-1">
                                             <button
                                                 type="submit"
                                                 className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all border ${disc.isActive
@@ -134,7 +134,20 @@ export default async function DiscountsPage() {
                                                         : 'bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border-orange-500/30'
                                                     }`}
                                             >
-                                                {disc.isActive ? '🛑 ယာယီပိတ်မည် (Disable)' : '⚡ ပြန်ဖွင့်မည် (Activate)'}
+                                                {disc.isActive ? '🛑 ယာယီပိတ်မည်' : '⚡ ပြန်ဖွင့်မည်'}
+                                            </button>
+                                        </form>
+                                        <form action={async () => {
+                                            'use server'
+                                            const { deleteDiscount } = await import('@/server/actions/discounts')
+                                            await deleteDiscount(disc.id)
+                                        }}>
+                                            <button
+                                                type="submit"
+                                                className="p-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 rounded-xl transition-colors"
+                                                title="အပြီးဖျက်မည် (Delete)"
+                                            >
+                                                🗑️
                                             </button>
                                         </form>
                                     </div>

@@ -1,16 +1,30 @@
 // app/(auth)/login/page.tsx
 'use client'
 
-import React, { useState, useTransition } from 'react'
-import { useRouter } from 'next/navigation'
+import React, { useState, useTransition, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { loginUser } from '@/server/actions/auth' // 👈 Login Action ကို လှမ်းခေါ်ခြင်း
+import { signOut } from 'next-auth/react'
 
-export default function LoginPage() {
+function LoginForm() {
     const router = useRouter()
-    const [error, setError] = useState<string | null>(null)
+    const searchParams = useSearchParams()
+    const urlError = searchParams.get('error')
+    
+    const [error, setError] = useState<string | null>(
+        urlError === 'account_deactivated' ? "သင့်အကောင့်ကို ပိတ်ထားပါသည်။" : null
+    )
     const [isPending, startTransition] = useTransition()
     const [showPassword, setShowPassword] = useState(false)
+
+    useEffect(() => {
+        if (urlError === 'account_deactivated') {
+            // Token များကို ဖျက်ပစ်မည်
+            localStorage.removeItem('accessToken')
+            signOut({ redirect: false })
+        }
+    }, [urlError])
 
     return (
         <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
@@ -70,6 +84,8 @@ export default function LoginPage() {
                             // 💡 window.location.href ကို သုံးခြင်းဖြင့် Next.js ၏ Cache ကို ရှင်းလင်းပြီး Data အသစ်များကို သေချာဆွဲယူစေပါမည်။
                             if (res.role === 'COMPANY_HEAD') {
                                 window.location.href = '/dashboard/hq/branches'
+                            } else if (res.role === 'STAFF') {
+                                window.location.href = '/pos'
                             } else {
                                 window.location.href = '/dashboard/store/orders' // Default to orders page
                             }
@@ -146,5 +162,13 @@ export default function LoginPage() {
 
             </div>
         </div>
+    )
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-slate-900 text-white">Loading...</div>}>
+            <LoginForm />
+        </Suspense>
     )
 }

@@ -4,7 +4,7 @@
 import React, { useState, useTransition } from 'react'
 import { createMenuItem } from '@/server/actions/menu'
 
-export default function CreateMenuForm({ categories, addonCategories }: { categories: any[], addonCategories: any[] }) {
+export default function CreateMenuForm({ categories, addonCategories, discounts = [] }: { categories: any[], addonCategories: any[], discounts?: any[] }) {
     const [isOpen, setIsOpen] = useState(false)
     const [isPending, startTransition] = useTransition()
     const [selectedAddons, setSelectedAddons] = useState<string[]>([])
@@ -85,6 +85,18 @@ export default function CreateMenuForm({ categories, addonCategories }: { catego
                                 <select name="categoryId" required disabled={isPending} className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-orange-500 appearance-none transition-colors">
                                     <option value="">-- အမျိုးအစား ရွေးပါ --</option>
                                     {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+                                </select>
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <label className="block text-xs font-black text-slate-400 uppercase tracking-wider">လျှော့စျေး (Discount)</label>
+                                <select name="discountId" disabled={isPending} className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-orange-500 appearance-none transition-colors">
+                                    <option value="">-- လျှော့စျေး မရှိပါ --</option>
+                                    {discounts.map(disc => (
+                                        <option key={disc.id} value={disc.id}>
+                                            {disc.name} ({disc.type === 'PERCENTAGE' ? `${disc.value}%` : `${disc.value} MMK`} OFF)
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
 

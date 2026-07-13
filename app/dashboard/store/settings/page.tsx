@@ -1,10 +1,15 @@
 // app/(dashboard)/settings/page.tsx
 import React from 'react'
 import { getRestaurantSettings, updateRestaurantSettings } from '@/server/actions/settings'
+import { getDeletedMenuItems } from '@/server/actions/menu'
+import TrashSection from '@/components/settings/TrashSection'
 
 export default async function SettingsPage() {
     const result = await getRestaurantSettings()
     const settings = result.data
+
+    const deletedResult = await getDeletedMenuItems()
+    const deletedItems = deletedResult.data || []
 
     return (
         <div className="max-w-3xl space-y-6">
@@ -81,6 +86,9 @@ export default async function SettingsPage() {
 
                 </form>
             </div>
+
+            {/* Trash Section */}
+            <TrashSection deletedItems={deletedItems} />
         </div>
     )
 }

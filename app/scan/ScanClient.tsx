@@ -2,6 +2,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
 import { getMenuForTable, placeTableOrder } from '@/server/actions/tables'
 
@@ -121,9 +122,22 @@ export default function AdvancedCustomerScanPage() {
         )
     }
 
+    const getFinalPrice = (item: any) => {
+        if (!item) return 0;
+        let finalPrice = item.price || 0;
+        if (item.discount && item.discount.isActive) {
+            if (item.discount.type === 'PERCENTAGE') {
+                finalPrice = finalPrice - (finalPrice * (item.discount.value / 100));
+            } else {
+                finalPrice = Math.max(0, finalPrice - item.discount.value);
+            }
+        }
+        return finalPrice;
+    }
+
     const totalAmount = cart.reduce((sum, item) => {
         const addonsTotal = item.selectedAddons?.reduce((s: number, a: any) => s + (a?.price || 0), 0) || 0
-        return sum + (((item.menuItem?.price || 0) + addonsTotal) * item.quantity)
+        return sum + ((getFinalPrice(item.menuItem) + addonsTotal) * item.quantity)
     }, 0)
 
     const totalCartItems = cart.reduce((sum, item) => sum + item.quantity, 0)
@@ -211,7 +225,7 @@ export default function AdvancedCustomerScanPage() {
                                 <div key={item.id} onClick={() => handleItemClick(item)} className="bg-white rounded-2xl shadow-sm border border-gray-100 flex overflow-hidden cursor-pointer active:scale-[0.98] transition-transform">
                                     <div className="w-28 h-28 bg-gray-100 shrink-0 relative">
                                         {item.imageUrl ? (
-                                            <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                                            <Image src={item.imageUrl} alt={item.name} fill className="object-cover" sizes="(max-width: 768px) 33vw, 20vw" />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center text-3xl">🍽️</div>
                                         )}
@@ -228,7 +242,16 @@ export default function AdvancedCustomerScanPage() {
                                             )}
                                         </div>
                                         <div className="flex items-center justify-between mt-2">
-                                            <div className="text-sm font-black text-orange-600">{(item.price || 0).toLocaleString()} MMK</div>
+                                            <div className="text-sm font-black">
+                                                {item.discount && item.discount.isActive ? (
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[10px] text-gray-400 line-through leading-none">{(item.price || 0).toLocaleString()} MMK</span>
+                                                        <span className="text-orange-600 leading-tight">{getFinalPrice(item).toLocaleString()} MMK</span>
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-orange-600">{(item.price || 0).toLocaleString()} MMK</span>
+                                                )}
+                                            </div>
                                             <button onClick={(e) => handleQuickAdd(e, item)} className="bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-slate-800">
                                                 + မှာမည်
                                             </button>
@@ -267,7 +290,7 @@ export default function AdvancedCustomerScanPage() {
                     {/* Detail Header / Hero Image */}
                     <div className="relative w-full h-72 bg-gray-200 shrink-0">
                         {activeItem.imageUrl ? (
-                            <img src={activeItem.imageUrl} alt={activeItem.name} className="w-full h-full object-cover" />
+                            <Image src={activeItem.imageUrl} alt={activeItem.name} fill className="object-cover" sizes="100vw" priority />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-400 to-rose-400"></div>
                         )}
@@ -281,7 +304,17 @@ export default function AdvancedCustomerScanPage() {
                         <div className="mb-6">
                             <h2 className="text-2xl font-black text-gray-900 leading-tight">{activeItem.name}</h2>
                             <p className="text-sm text-gray-500 mt-2 leading-relaxed">{activeItem.description || "ဖော်ပြချက် မရှိပါ"}</p>
-                            <p className="text-xl font-black text-orange-600 mt-3">{(activeItem.price || 0).toLocaleString()} MMK</p>
+                            {activeItem.discount && activeItem.discount.isActive ? (
+                                <div className="mt-3 flex items-end gap-2">
+                                    <p className="text-xl font-black text-orange-600">{getFinalPrice(activeItem).toLocaleString()} MMK</p>
+                                    <p className="text-sm text-gray-400 line-through mb-0.5">{(activeItem.price || 0).toLocaleString()} MMK</p>
+                                    <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-bold mb-1 ml-2">
+                                        {activeItem.discount.type === 'PERCENTAGE' ? `${activeItem.discount.value}% OFF` : `${activeItem.discount.value} MMK OFF`}
+                                    </span>
+                                </div>
+                            ) : (
+                                <p className="text-xl font-black text-orange-600 mt-3">{(activeItem.price || 0).toLocaleString()} MMK</p>
+                            )}
                         </div>
 
                         <div className="flex-1 overflow-y-auto space-y-6 pb-6">
@@ -331,7 +364,7 @@ export default function AdvancedCustomerScanPage() {
                         {/* Sticky Add to Cart Footer */}
                         <div className="pt-4 mt-auto shrink-0 bg-white">
                             <button onClick={confirmAddonToCart} className="w-full bg-gradient-to-r from-orange-500 to-rose-500 text-white text-base font-black py-4 rounded-2xl shadow-xl shadow-orange-500/30 active:scale-95 transition-transform flex justify-center items-center gap-2">
-                                {( (activeItem.price + selectedAddons.reduce((s,a) => s + a.price, 0)) * detailQuantity ).toLocaleString()} MMK - ခြင်းတောင်းသို့ထည့်မည်
+                                {( (getFinalPrice(activeItem) + selectedAddons.reduce((s,a) => s + a.price, 0)) * detailQuantity ).toLocaleString()} MMK - ခြင်းတောင်းသို့ထည့်မည်
                             </button>
                         </div>
                     </div>
@@ -368,11 +401,11 @@ export default function AdvancedCustomerScanPage() {
                             <div className="space-y-4">
                                 {cart.map(c => {
                                     const addonsPrice = c.selectedAddons?.reduce((s: number, a: any) => s + (a?.price || 0), 0) || 0
-                                    const perItemPrice = (c.menuItem?.price || 0) + addonsPrice
+                                    const perItemPrice = getFinalPrice(c.menuItem) + addonsPrice
                                     return (
                                         <div key={c.cartId} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex gap-4">
                                             {c.menuItem?.imageUrl ? (
-                                                <img src={c.menuItem.imageUrl} alt={c.menuItem.name} className="w-20 h-20 rounded-xl object-cover shrink-0 bg-gray-100" />
+                                                <Image src={c.menuItem.imageUrl} alt={c.menuItem.name} width={80} height={80} className="w-20 h-20 rounded-xl object-cover shrink-0 bg-gray-100" />
                                             ) : (
                                                 <div className="w-20 h-20 rounded-xl bg-gray-100 flex items-center justify-center text-2xl shrink-0">🍽️</div>
                                             )}

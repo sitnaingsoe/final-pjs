@@ -11,10 +11,14 @@ export async function getMenuItems() {
 
     try {
         const data = await prisma.menuItem.findMany({
-            where: { category: { branchId: session.user.branchId } },
+            where: { 
+                category: { branchId: session.user.branchId },
+                isDeleted: false
+            },
             include: {
                 category: { select: { name: true } },
-                addonCategories: { include: { addonCategory: true } }
+                addonCategories: { include: { addonCategory: { include: { addons: true } } } },
+                discount: true
             },
             orderBy: { createdAt: 'desc' }
         })
@@ -35,6 +39,7 @@ export async function createMenuItem(formData: FormData, selectedAddonCatIds: st
     const categoryId = formData.get('categoryId') as string
     const description = formData.get('description') as string
     const imageFile = formData.get('image') as File | null
+    const discountId = formData.get('discountId') as string | null
 
     if (!name || isNaN(price) || !categoryId) {
         return { success: false, error: "လိုအပ်သော အချက်အလက်များ အားလုံး ဖြည့်စွက်ပါ" }
@@ -59,6 +64,7 @@ export async function createMenuItem(formData: FormData, selectedAddonCatIds: st
                 categoryId,
                 description,
                 imageUrl, // Store uploaded image URL
+                discountId: discountId || null,
                 addonCategories: {
                     create: selectedAddonCatIds.map(addonCategoryId => ({
                         addonCategory: { connect: { id: addonCategoryId } }
@@ -85,6 +91,7 @@ export async function updateMenuItem(id: string, formData: FormData, selectedAdd
     const categoryId = formData.get('categoryId') as string
     const description = formData.get('description') as string
     const imageFile = formData.get('image') as File | null
+    const discountId = formData.get('discountId') as string | null
 
     if (!name || isNaN(price) || !categoryId) {
         return { success: false, error: "လိုအပ်သော အချက်အလက်များ အားလုံး ဖြည့်စွက်ပါ" }
@@ -117,6 +124,7 @@ export async function updateMenuItem(id: string, formData: FormData, selectedAdd
                 categoryId,
                 description,
                 imageUrl, // Update image URL if new one is uploaded
+                discountId: discountId || null,
                 addonCategories: {
                     create: selectedAddonCatIds.map(addonCategoryId => ({
                         addonCategory: { connect: { id: addonCategoryId } }
@@ -141,11 +149,79 @@ export async function deleteMenuItem(id: string) {
         const menuItem = await prisma.menuItem.findUnique({ where: { id }, include: { category: true } })
         if (!menuItem || menuItem.category.branchId !== session.user.branchId) return { success: false, error: "Unauthorized" }
 
-        await prisma.menuItem.delete({ where: { id } })
+        await prisma.menuItem.update({ 
+            where: { id },
+            data: { isDeleted: true }
+        })
         revalidatePath('/dashboard/store/menu')
         return { success: true }
     } catch (error) {
         return { success: false, error: "ဖျက်ဆီးခြင်း မအောင်မြင်ပါ" }
+    }
+}
+
+// ၅။ ဖျက်ထားသော မီနူးများ ဆွဲထုတ်ရန် (Trash)
+export async function getDeletedMenuItems() {
+    const session = await auth()
+    if (!session?.user?.branchId) return { success: false, data: [] }
+
+    try {
+        const data = await prisma.menuItem.findMany({
+            where: { 
+                category: { branchId: session.user.branchId },
+                isDeleted: true
+            },
+            include: {
+                category: { select: { name: true } }
+            },
+            orderBy: { updatedAt: 'desc' }
+        })
+        return { success: true, data }
+    } catch (error) {
+        return { success: false, data: [] }
+    }
+}
+
+// ၆။ ဖျက်ထားသော မီနူးကို ပြန်ယူရန် (Restore)
+export async function restoreMenuItem(id: string) {
+    const session = await auth()
+    if (!session?.user?.branchId) return { success: false, error: "Unauthorized" }
+    if (session.user.role === 'STAFF') return { success: false, error: "Permission Denied" }
+
+    try {
+        const menuItem = await prisma.menuItem.findUnique({ where: { id }, include: { category: true } })
+        if (!menuItem || menuItem.category.branchId !== session.user.branchId) return { success: false, error: "Unauthorized" }
+
+        await prisma.menuItem.update({ 
+            where: { id },
+            data: { isDeleted: false }
+        })
+        revalidatePath('/dashboard/store/menu')
+        revalidatePath('/dashboard/store/settings')
+        return { success: true }
+    } catch (error) {
+        return { success: false, error: "ပြန်လည်ရယူခြင်း မအောင်မြင်ပါ" }
+    }
+}
+
+// ၇။ ဖျက်ထားသော မီနူးကို အပြီးတိုင်ဖျက်ရန် (Permanent Delete)
+export async function permanentlyDeleteMenuItem(id: string) {
+    const session = await auth()
+    if (!session?.user?.branchId) return { success: false, error: "Unauthorized" }
+    if (session.user.role === 'STAFF') return { success: false, error: "Permission Denied" }
+
+    try {
+        const menuItem = await prisma.menuItem.findUnique({ where: { id }, include: { category: true } })
+        if (!menuItem || menuItem.category.branchId !== session.user.branchId) return { success: false, error: "Unauthorized" }
+
+        await prisma.menuItem.delete({ where: { id } })
+        revalidatePath('/dashboard/store/settings')
+        return { success: true }
+    } catch (error: any) {
+        if (error.code === 'P2003') {
+            return { success: false, error: "ဤမီနူးသည် ယခင်က အော်ဒါမှာယူထားဖူးသော မှတ်တမ်းရှိနေသဖြင့် အပြီးတိုင်ဖျက်၍ မရနိုင်ပါ။ (Soft Delete အနေဖြင့်သာ အမှိုက်ပုံးထဲတွင် ထားရှိနိုင်ပါမည်)" }
+        }
+        return { success: false, error: "အပြီးတိုင်ဖျက်ခြင်း မအောင်မြင်ပါ" }
     }
 }
 

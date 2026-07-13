@@ -58,7 +58,8 @@ export async function getMenuForTable(tableNumber: string) {
         where: { category: { branchId: tableBranchId } },
         include: {
           category: { select: { name: true } },
-          addonCategories: { include: { addonCategory: { include: { addons: true } } } }
+          addonCategories: { include: { addonCategory: { include: { addons: true } } } },
+          discount: true
         }
       }),
       prisma.menuCategory.findMany({
@@ -88,14 +89,30 @@ export async function placeTableOrder(
     const menuItems = await prisma.menuItem.findMany({
       where: {
         id: { in: items.map(i => i.menuItemId) }
+      },
+      include: {
+        discount: true
       }
     })
+
+    // Calculate discounted price
+    const getFinalPrice = (item: any) => {
+        let finalPrice = item.price;
+        if (item.discount && item.discount.isActive) {
+            if (item.discount.type === 'PERCENTAGE') {
+                finalPrice = finalPrice - (finalPrice * (item.discount.value / 100));
+            } else {
+                finalPrice = Math.max(0, finalPrice - item.discount.value);
+            }
+        }
+        return finalPrice;
+    }
 
     // ၃။ 🔑 စုစုပေါင်း ကျသင့်ငွေ (Total Amount) ကို ကုဒ်ထဲမှာတင် ကြိုတင်တွက်ချက်ခြင်း
     let totalAmount = 0
     const orderItemsData = items.map(item => {
       const matchedMenu = menuItems.find(m => m.id === item.menuItemId)
-      const price = matchedMenu ? matchedMenu.price : 0
+      const price = matchedMenu ? getFinalPrice(matchedMenu) : 0
 
       // စုစုပေါင်းငွေကို ပေါင်းရိုက်ထည့်ခြင်း (Price * Quantity)
       totalAmount += price * item.quantity

@@ -11,7 +11,10 @@ export default async function DashboardRouterPage() {
 
   if (role === 'COMPANY_HEAD') {
     redirect('/dashboard/hq')
-  } else {
+  } else if (role === 'BRANCH_ADMIN') {
     redirect('/dashboard/store')
+  } else {
+    // 🎯 ဝန်ထမ်း (STAFF) ဆိုလျှင် POS Terminal ဆီသို့ တိုက်ရိုက် သွားစေမည်
+    redirect('/pos')
   }
 }

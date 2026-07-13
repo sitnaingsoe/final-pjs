@@ -13,6 +13,8 @@ export default async function StoreHomePage() {
 
   if (role === 'COMPANY_HEAD') {
     redirect('/dashboard/hq')
+  } else if (role === 'STAFF') {
+    redirect('/pos')
   }
 
   // ဆိုင်ခွဲမန်နေဂျာဆိုလျှင် ၎င်း၏ Dashboard သို့ ပို့မည်

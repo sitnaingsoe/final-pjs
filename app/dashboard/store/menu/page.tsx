@@ -1,20 +1,24 @@
 // app/dashboard/menu/page.tsx
 import React from 'react'
+import Image from 'next/image'
 import { getMenuItems, getAddonCategories } from '@/server/actions/menu'
 import { getCategories } from '@/server/actions/categories'
+import { getDiscounts } from '@/server/actions/discounts'
 import CreateMenuForm from '@/components/dashboard/CreateMenuForm'
 import MenuCardActions from '@/components/dashboard/MenuCardActions'
 
 export default async function MenuPage() {
-    const [menuResult, catResult, addonResult] = await Promise.all([
+    const [menuResult, catResult, addonResult, discResult] = await Promise.all([
         getMenuItems(),
         getCategories(),
-        getAddonCategories()
+        getAddonCategories(),
+        getDiscounts()
     ])
 
     const menuItems = menuResult.data || []
     const categories = catResult.data || []
     const addonCategories = addonResult.data || []
+    const discounts = discResult.data?.filter(d => d.isActive) || [] // Only active discounts
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
@@ -27,7 +31,7 @@ export default async function MenuPage() {
                     <p className="text-xs text-slate-400 mt-1">ဟင်းပွဲများ၊ မုန့်များနှင့် ဖျော်ရည်များကို ဤနေရာတွင် ထည့်သွင်းနိုင်ပါသည်</p>
                 </div>
                 <div className="flex items-center gap-4">
-                    <CreateMenuForm categories={categories} addonCategories={addonCategories} />
+                    <CreateMenuForm categories={categories} addonCategories={addonCategories} discounts={discounts} />
                     <div className="px-4 py-2.5 bg-slate-950 rounded-xl border border-slate-800 flex items-center gap-3 shadow-md">
                         <span className="text-xl">🍔</span>
                         <div>
@@ -56,7 +60,7 @@ export default async function MenuPage() {
                                     {/* 🖼️ Hero Image */}
                                     {item.imageUrl ? (
                                         <div className="w-full h-40 bg-slate-900 border-b border-slate-800 relative">
-                                            <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                            <Image src={item.imageUrl} alt={item.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 768px) 100vw, 33vw" />
                                             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 to-transparent opacity-80"></div>
                                         </div>
                                     ) : (

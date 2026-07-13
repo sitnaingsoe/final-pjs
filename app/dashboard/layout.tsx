@@ -29,7 +29,7 @@ export default function DashboardLayout({
             { name: "Overview Dashboard", path: "/dashboard/hq", icon: "🏢" },
             { name: "ဆိုင်ခွဲများစီမံရန် (Branches)", path: "/dashboard/hq/branches", icon: "🏪" },
             { name: "ဘေလ်မှတ်တမ်းများ (Invoices)", path: "/dashboard/hq/invoices", icon: "🧾" },
-            { name: "ဝန်ထမ်းများစီမံရန် (Staffs)", path: "/dashboard/hq/staff", icon: "👥" },         
+            { name: "ဝန်ထမ်းများစီမံရန် (Staffs)", path: "/dashboard/hq/staff", icon: "👥" },
             { name: "ဗဟိုမီနူး (Master Menu)", path: "/dashboard/hq/menu", icon: "🍔" },
             { name: "ကုန်ကြမ်းလက်ကျန် (Inventory)", path: "/dashboard/hq/inventory", icon: "⚠️" }
         ]
@@ -41,7 +41,9 @@ export default function DashboardLayout({
             { name: "အပိုပစ္စည်းများ (Addons)", path: "/dashboard/store/addons", icon: "➕" },
             { name: "လျှော့စျေး (Discounts)", path: "/dashboard/store/discounts", icon: "🏷️" },
             { name: "စားပွဲများ (Tables)", path: "/dashboard/store/tables", icon: "🍽️" },
+            { name: "ဝန်ထမ်းများ (Staffs)", path: "/dashboard/store/staff", icon: "👥" },
             { name: "ဆက်တင် (Settings)", path: "/dashboard/store/settings", icon: "⚙️" },
+
         ]
 
     // Session ဆွဲနေတုန်း UI ဗလာမဖြစ်အောင် loading ပြခြင်း
