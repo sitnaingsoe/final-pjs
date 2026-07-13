@@ -4,8 +4,12 @@
 import { prisma } from '@/lib/db' // သင့်ရဲ့ prisma client path အတိုင်း ပြင်ပေးပါ
 import bcrypt from 'bcryptjs'
 import { revalidatePath } from 'next/cache'
+import { auth } from '@/auth'
 
 export async function createBranchWithAdmin(formData: FormData) {
+    const session = await auth()
+    if (session?.user?.role !== 'COMPANY_HEAD') return { success: false, error: 'Unauthorized: Only Company Head can perform this action' }
+
     const branchName = formData.get('branchName') as string
     const address = formData.get('address') as string
     const phone = formData.get('phone') as string
@@ -76,6 +80,9 @@ export async function createBranchWithAdmin(formData: FormData) {
 }
 
 export async function updateBranch(branchId: string, formData: FormData) {
+    const session = await auth()
+    if (session?.user?.role !== 'COMPANY_HEAD') return { success: false, error: 'Unauthorized: Only Company Head can perform this action' }
+
     const name = formData.get('branchName') as string
     const address = formData.get('address') as string
     const phone = formData.get('phone') as string
@@ -95,6 +102,9 @@ export async function updateBranch(branchId: string, formData: FormData) {
 
 // 🗑️ ၂။ ဆိုင်ခွဲကို ဖျက်ချင်သည့် Action
 export async function deleteBranch(branchId: string) {
+    const session = await auth()
+    if (session?.user?.role !== 'COMPANY_HEAD') return { success: false, error: 'Unauthorized: Only Company Head can perform this action' }
+
     try {
         // လူကြီးမင်း၏ Database Cascade သတ်မှတ်ချက်အရ 
         // ဆိုင်ခွဲအောက်က User များနှင့် Order များကို အရင်ရှင်းရနိုင်ပါသည်

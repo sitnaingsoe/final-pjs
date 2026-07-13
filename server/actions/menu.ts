@@ -28,6 +28,7 @@ export async function getMenuItems() {
 export async function createMenuItem(formData: FormData, selectedAddonCatIds: string[]) {
     const session = await auth()
     if (!session?.user?.branchId) return { success: false, error: "Unauthorized" }
+    if (session.user.role === 'STAFF') return { success: false, error: "Permission Denied: Staff cannot create menus." }
 
     const name = formData.get('name') as string
     const price = parseFloat(formData.get('price') as string)
@@ -77,6 +78,7 @@ export async function createMenuItem(formData: FormData, selectedAddonCatIds: st
 export async function updateMenuItem(id: string, formData: FormData, selectedAddonCatIds: string[]) {
     const session = await auth()
     if (!session?.user?.branchId) return { success: false, error: "Unauthorized" }
+    if (session.user.role === 'STAFF') return { success: false, error: "Permission Denied: Staff cannot update menus." }
 
     const name = formData.get('name') as string
     const price = parseFloat(formData.get('price') as string)
@@ -133,6 +135,7 @@ export async function updateMenuItem(id: string, formData: FormData, selectedAdd
 export async function deleteMenuItem(id: string) {
     const session = await auth()
     if (!session?.user?.branchId) return { success: false, error: "Unauthorized" }
+    if (session.user.role === 'STAFF') return { success: false, error: "Permission Denied: Staff cannot delete menus." }
 
     try {
         const menuItem = await prisma.menuItem.findUnique({ where: { id }, include: { category: true } })

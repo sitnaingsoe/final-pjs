@@ -9,6 +9,8 @@ import { revalidatePath } from 'next/cache'
 // 🔐 ၁။ ဝန်ထမ်း၏ Password ကို ဗဟိုမှ အတင်း Reset ချပေးမည့် Action
 export async function resetStaffPassword(userId: number, formData: FormData) {
     const session = await auth()
+    if (session?.user?.role !== 'COMPANY_HEAD') return { success: false, error: 'Unauthorized: Only Company Head can perform this action' }
+    
     const companyId = session?.user?.companyId
     if (!companyId) return { success: false, error: "Unauthorized" }
 
@@ -44,6 +46,8 @@ export async function resetStaffPassword(userId: number, formData: FormData) {
 // 🚫 ၂။ ဝန်ထမ်းအကောင့်ကို ပိတ်ခြင်း/ပြန်ဖွင့်ခြင်း Action
 export async function toggleStaffStatus(userId: number, currentStatus: boolean) {
     const session = await auth()
+    if (session?.user?.role !== 'COMPANY_HEAD') return { success: false, error: 'Unauthorized: Only Company Head can perform this action' }
+    
     const companyId = session?.user?.companyId
     if (!companyId) return { success: false, error: "Unauthorized" }
 

@@ -86,7 +86,7 @@ export async function createPosOrder(data: {
         const taxAmount = totalAmount * 0.05 // 5% tax example (can be 0)
         const finalAmount = totalAmount + taxAmount
 
-        await prisma.order.create({
+        const newOrder = await prisma.order.create({
             data: {
                 branchId: data.branchId,
                 tableId: data.tableId,
@@ -102,9 +102,146 @@ export async function createPosOrder(data: {
 
         revalidatePath('/pos')
         revalidatePath('/dashboard/store/orders')
-        return { success: true }
+        return { success: true, order: newOrder }
     } catch (error) {
         console.error("Error creating POS order:", error)
         return { success: false, error: "အော်ဒါတင်၍မရပါ၊ ပြန်လည်ကြိုးစားပေးပါ" }
+    }
+}
+
+// ==========================================
+// 🚀 Table-Based POS (Option 2) Actions
+// ==========================================
+
+export async function getActiveTableOrder(tableId: string) {
+    const session = await auth()
+    if (!session?.user?.branchId) return { success: false, error: "Unauthorized" }
+
+    try {
+        const activeOrder = await prisma.order.findFirst({
+            where: {
+                tableId,
+                branchId: session.user.branchId,
+                status: { in: ['PENDING', 'CONFIRMED', 'COOKING', 'READY'] }
+            },
+            include: {
+                items: {
+                    include: { menuItem: true }
+                }
+            }
+        })
+        return { success: true, data: activeOrder }
+    } catch (error) {
+        return { success: false, error: "Error fetching active order" }
+    }
+}
+
+export async function sendOrderToKitchen(data: {
+    orderId?: string; // If undefined, create new. If string, append items.
+    branchId: string;
+    tableId: string | null;
+    items: { menuItemId: string, quantity: number }[];
+}) {
+    const session = await auth()
+    if (!session?.user?.branchId || session.user.branchId !== data.branchId) {
+        return { success: false, error: "Unauthorized" }
+    }
+
+    try {
+        // Fetch prices to calculate total
+        const menuItems = await prisma.menuItem.findMany({
+            where: { id: { in: data.items.map(i => i.menuItemId) } }
+        })
+
+        let addedAmount = 0
+        const orderItemsData = data.items.map(item => {
+            const menu = menuItems.find(m => m.id === item.menuItemId)
+            const price = menu?.price || 0
+            addedAmount += price * item.quantity
+            return {
+                menuItemId: item.menuItemId,
+                quantity: item.quantity,
+                price: price
+            }
+        })
+
+        let finalOrderId = data.orderId
+
+        if (data.orderId) {
+            // Append to existing order
+            const existingOrder = await prisma.order.findUnique({ where: { id: data.orderId } })
+            if (!existingOrder) return { success: false, error: "Order not found" }
+
+            const newTotalAmount = existingOrder.totalAmount + addedAmount
+            const newTaxAmount = newTotalAmount * 0.05
+            const newFinalAmount = newTotalAmount + newTaxAmount
+
+            await prisma.order.update({
+                where: { id: data.orderId },
+                data: {
+                    totalAmount: newTotalAmount,
+                    taxAmount: newTaxAmount,
+                    finalAmount: newFinalAmount,
+                    items: {
+                        create: orderItemsData
+                    }
+                }
+            })
+        } else {
+            // Create new order
+            const taxAmount = addedAmount * 0.05
+            const finalAmount = addedAmount + taxAmount
+
+            const newOrder = await prisma.order.create({
+                data: {
+                    branchId: data.branchId,
+                    tableId: data.tableId,
+                    status: 'PENDING',
+                    totalAmount: addedAmount,
+                    taxAmount: taxAmount,
+                    finalAmount: finalAmount,
+                    items: {
+                        create: orderItemsData
+                    }
+                }
+            })
+            finalOrderId = newOrder.id
+        }
+
+        revalidatePath('/pos')
+        revalidatePath('/dashboard/store/orders')
+        return { success: true, orderId: finalOrderId }
+    } catch (error) {
+        console.error("Error sending order to kitchen:", error)
+        return { success: false, error: "အော်ဒါတင်၍မရပါ" }
+    }
+}
+
+export async function checkoutOrder(orderId: string, paymentMethod: string = 'CASH') {
+    const session = await auth()
+    if (!session?.user?.branchId) return { success: false, error: "Unauthorized" }
+
+    try {
+        const order = await prisma.order.findUnique({
+            where: { id: orderId, branchId: session.user.branchId },
+            include: { items: { include: { menuItem: true } } }
+        })
+
+        if (!order) return { success: false, error: "Order not found" }
+
+        // Change status to delivered/paid (Depending on your flow, DELIVERED is usually end state for Orders)
+        // Also we could create an Invoice here, but let's just mark it DELIVERED for POS completion.
+        const updatedOrder = await prisma.order.update({
+            where: { id: orderId },
+            data: { status: 'DELIVERED' },
+            include: { items: { include: { menuItem: true } } }
+        })
+
+        revalidatePath('/pos')
+        revalidatePath('/dashboard/store/orders')
+        return { success: true, order: updatedOrder }
+    } catch (error) {
+        console.error("Error in checkout:", error)
+        return { success: false, error: "ဘေလ်ရှင်း၍မရပါ" }
     }
 }

@@ -28,6 +28,7 @@ export async function getCategories() {
 export async function createCategory(formData: FormData) {
     const session = await auth()
     if (!session?.user?.branchId) return { success: false, error: "Authentication လိုအပ်ပါသည်" }
+    if (session.user.role === 'STAFF') return { success: false, error: "Permission Denied: Staff cannot perform this action." }
 
     const name = formData.get('name') as string
     const description = formData.get('description') as string
@@ -51,6 +52,9 @@ export async function createCategory(formData: FormData) {
 
 // ၃။ အမျိုးအစား ပြင်ဆင်ခြင်း (Update)
 export async function updateCategory(id: string, formData: FormData) {
+    const session = await auth()
+    if (session?.user?.role === 'STAFF') return { success: false, error: "Permission Denied: Staff cannot perform this action." }
+
     const name = formData.get('name') as string
     const description = formData.get('description') as string
 
@@ -70,6 +74,9 @@ export async function updateCategory(id: string, formData: FormData) {
 
 // ၄။ အမျိုးအစား ဖျက်ဆီးခြင်း
 export async function deleteCategory(id: string) {
+    const session = await auth()
+    if (session?.user?.role === 'STAFF') return { success: false, error: "Permission Denied: Staff cannot perform this action." }
+
     try {
         await prisma.menuCategory.delete({
             where: { id }

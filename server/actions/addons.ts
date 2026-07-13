@@ -41,6 +41,7 @@ export async function createAddonCategory(formData: FormData) {
     if (!session?.user?.branchId) {
         return { success: false, error: "Authentication သို့မဟုတ် ဆိုင်ခွဲသတ်မှတ်ချက် လိုအပ်ပါသည်" }
     }
+    if (session.user.role === 'STAFF') return { success: false, error: "Permission Denied: Staff cannot perform this action." }
 
     const name = formData.get('name') as string
     const minSelectStr = formData.get('minSelect') as string
@@ -67,6 +68,9 @@ export async function createAddonCategory(formData: FormData) {
 
 // ၄။ အုပ်စုတစ်ခုချင်းစီအောက်သို့ အပိုပစ္စည်းအမှန်တကယ် ထည့်သွင်းခြင်း (Addon Create)
 export async function createAddon(formData: FormData) {
+    const session = await auth()
+    if (session?.user?.role === 'STAFF') return { success: false, error: "Permission Denied: Staff cannot perform this action." }
+
     const name = formData.get('name') as string
     const priceStr = formData.get('price') as string
     const addonCategoryId = formData.get('addonCategoryId') as string
@@ -91,6 +95,9 @@ export async function createAddon(formData: FormData) {
 
 // 🔥 ၅။ [အသစ်ဖြည့်စွက်ချက်] မီနူးဟင်းပွဲနှင့် အပိုပစ္စည်းအုပ်စုကို ကြားခံ Bridge Table ဖြင့် ချိတ်ဆက်ရန်
 export async function linkMenuWithAddonCategory(formData: FormData) {
+    const session = await auth()
+    if (session?.user?.role === 'STAFF') return { success: false, error: "Permission Denied: Staff cannot perform this action." }
+
     const menuItemId = formData.get('menuItemId') as string
     const addonCategoryId = formData.get('addonCategoryId') as string
 
@@ -121,6 +128,9 @@ export async function linkMenuWithAddonCategory(formData: FormData) {
 }
 
 export async function updateAddonCategory(id: string, formData: FormData) {
+    const session = await auth()
+    if (session?.user?.role === 'STAFF') return { success: false, error: "Permission Denied: Staff cannot perform this action." }
+
     const name = formData.get('name') as string
     const minSelect = parseInt(formData.get('minSelect') as string) || 0
     const maxSelect = parseInt(formData.get('maxSelect') as string) || 1
@@ -140,6 +150,9 @@ export async function updateAddonCategory(id: string, formData: FormData) {
 }
 
 export async function deleteAddonCategory(id: string) {
+    const session = await auth()
+    if (session?.user?.role === 'STAFF') return { success: false, error: "Permission Denied: Staff cannot perform this action." }
+
     try {
         await prisma.addonCategory.delete({ where: { id } })
         revalidatePath('/dashboard/addons')
@@ -152,6 +165,9 @@ export async function deleteAddonCategory(id: string) {
 // === 🚀 ADDON ITEM ACTIONS ===
 
 export async function updateAddon(id: string, formData: FormData) {
+    const session = await auth()
+    if (session?.user?.role === 'STAFF') return { success: false, error: "Permission Denied: Staff cannot perform this action." }
+
     const name = formData.get('name') as string
     const price = parseFloat(formData.get('price') as string)
 
@@ -170,6 +186,9 @@ export async function updateAddon(id: string, formData: FormData) {
 }
 
 export async function deleteAddon(id: string) {
+    const session = await auth()
+    if (session?.user?.role === 'STAFF') return { success: false, error: "Permission Denied: Staff cannot perform this action." }
+
     try {
         await prisma.addon.delete({ where: { id } })
         revalidatePath('/dashboard/addons')

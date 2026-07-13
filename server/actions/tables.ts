@@ -21,6 +21,7 @@ export async function createTable(formData: FormData) {
   const number = formData.get('number') as string
   const session = await auth();
   if (!session?.user?.branchId) return { success: false, data: [] }
+  if (session.user.role === 'STAFF') return { success: false, error: "Permission Denied: Staff cannot perform this action." }
 
   if (!number) return { success: false, error: "စားပွဲနံပါတ် ထည့်သွင်းပါ" }
 

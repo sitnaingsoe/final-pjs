@@ -7,6 +7,8 @@ import { revalidatePath } from 'next/cache'
 
 export async function createMasterMenu(formData: FormData, selectedBranchIds: string[]) {
     const session = await auth()
+    if (session?.user?.role !== 'COMPANY_HEAD') return { success: false, error: 'Unauthorized: Only Company Head can perform this action' }
+    
     const companyId = session?.user?.companyId
     if (!companyId) {
         return { success: false, error: "Unauthorized: No company found" }
@@ -53,6 +55,8 @@ export async function createMasterMenu(formData: FormData, selectedBranchIds: st
 
 export async function updateMasterMenu(menuId: string, formData: FormData) {
     const session = await auth()
+    if (session?.user?.role !== 'COMPANY_HEAD') return { success: false, error: 'Unauthorized: Only Company Head can perform this action' }
+    
     const companyId = session?.user?.companyId
     if (!companyId) return { success: false, error: "Unauthorized" }
 
@@ -83,6 +87,8 @@ export async function updateMasterMenu(menuId: string, formData: FormData) {
 // 👁️ ၂။ မီနူးကို ဖျက်မည့်အစား Status အပိတ်/အဖွင့် (Soft Delete) လုပ်မည့် Action
 export async function toggleMenuStatus(menuId: string, currentStatus: boolean) {
     const session = await auth()
+    if (session?.user?.role !== 'COMPANY_HEAD') return { success: false, error: 'Unauthorized: Only Company Head can perform this action' }
+    
     const companyId = session?.user?.companyId
     if (!companyId) return { success: false, error: "Unauthorized" }
 

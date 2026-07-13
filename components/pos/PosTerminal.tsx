@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import ReceiptPrinter, { ReceiptData } from './ReceiptPrinter'
 
 type CartItem = {
     id: string; // unique local ID for cart management
@@ -28,10 +29,52 @@ export default function PosTerminal({
     const [cart, setCart] = useState<CartItem[]>([])
     const [isCartOpen, setIsCartOpen] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [receiptData, setReceiptData] = useState<ReceiptData | null>(null)
     
     // Offline Capability State
     const [isOnline, setIsOnline] = useState(true)
     const [offlineOrders, setOfflineOrders] = useState<any[]>([])
+
+    // Find initial table if provided via scan
+    const initialTable = tables.find(t => t.number === initialTableNumber)
+    const [selectedTableId, setSelectedTableId] = useState<string | null>(initialTable ? initialTable.id : null)
+
+    // Active Table Order State
+    const [activeOrderId, setActiveOrderId] = useState<string | null>(null)
+    const [existingItems, setExistingItems] = useState<{name: string, quantity: number, price: number}[]>([])
+    const [existingTotal, setExistingTotal] = useState(0)
+
+    // Load active order when table changes
+    useEffect(() => {
+        const loadActiveOrder = async () => {
+            if (!selectedTableId || !isOnline) {
+                setActiveOrderId(null)
+                setExistingItems([])
+                setExistingTotal(0)
+                setCart([])
+                return;
+            }
+            try {
+                const { getActiveTableOrder } = await import('@/server/actions/orders')
+                const res = await getActiveTableOrder(selectedTableId)
+                if (res.success && res.data) {
+                    setActiveOrderId(res.data.id)
+                    setExistingItems(res.data.items.map((i: any) => ({
+                        name: i.menuItem.name,
+                        quantity: i.quantity,
+                        price: i.price
+                    })))
+                    setExistingTotal(res.data.totalAmount)
+                } else {
+                    setActiveOrderId(null)
+                    setExistingItems([])
+                    setExistingTotal(0)
+                }
+                setCart([])
+            } catch (e) {}
+        }
+        loadActiveOrder()
+    }, [selectedTableId, isOnline])
 
     // 1. Network Detection & Load Offline Orders
     useEffect(() => {
@@ -85,10 +128,7 @@ export default function PosTerminal({
         localStorage.setItem('pos_offline_orders', JSON.stringify(remainingOrders))
     }
     
-    // Find initial table if provided via scan
-    const initialTable = tables.find(t => t.number === initialTableNumber)
-    const [selectedTableId, setSelectedTableId] = useState<string | null>(initialTable ? initialTable.id : null)
-
+    
     // Filter menu items by selected category
     const displayItems = selectedCategory === 'all'
         ? menuItems
@@ -122,48 +162,95 @@ export default function PosTerminal({
         setCart(prev => prev.filter(item => item.id !== id))
     }
 
-    const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+    const cartTotalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+    const totalAmount = existingTotal + cartTotalAmount
 
-    const handleCheckout = async () => {
+    const handleSendOrder = async () => {
         if (cart.length === 0) return;
         setIsSubmitting(true)
-
-        const orderPayload = {
-            id: Math.random().toString(36).substring(7), // temporary id for offline sync tracking
-            branchId,
-            tableId: selectedTableId,
-            items: cart.map(item => ({
-                menuItemId: item.menuItemId,
-                quantity: item.quantity
-            }))
+        try {
+            if (!isOnline) throw new Error("Offline")
+            const { sendOrderToKitchen } = await import('@/server/actions/orders')
+            const res = await sendOrderToKitchen({
+                orderId: activeOrderId || undefined,
+                branchId,
+                tableId: selectedTableId,
+                items: cart.map(item => ({ menuItemId: item.menuItemId, quantity: item.quantity }))
+            })
+            if (res.success) {
+                alert("✅ အော်ဒါ မီးဖိုချောင်သို့ ပို့ပြီးပါပြီ")
+                // reload table to get updated existing order
+                const currentTable = selectedTableId
+                setSelectedTableId(null)
+                setTimeout(() => setSelectedTableId(currentTable), 50)
+            } else {
+                alert("❌ အမှားအယွင်း: " + res.error)
+            }
+        } catch (error) {
+            // handle offline for send order later, basic error for now
+            alert("⚠️ အင်တာနက်ချိတ်ဆက်မှု မရှိပါ သို့မဟုတ် အမှားအယွင်းဖြစ်ပေါ်နေပါသည်")
+        } finally {
+            setIsSubmitting(false)
         }
+    }
+
+    const handleCheckout = async () => {
+        if (cart.length === 0 && !activeOrderId) return;
+        setIsSubmitting(true)
 
         try {
-            if (!isOnline) {
-                throw new Error("Offline") // Force to catch block to save offline
+            if (!isOnline) throw new Error("Offline")
+            
+            const { sendOrderToKitchen, checkoutOrder } = await import('@/server/actions/orders')
+            
+            let currentOrderId = activeOrderId
+
+            // If there are unsent items in cart, send them first
+            if (cart.length > 0) {
+                const sendRes = await sendOrderToKitchen({
+                    orderId: activeOrderId || undefined,
+                    branchId,
+                    tableId: selectedTableId,
+                    items: cart.map(item => ({ menuItemId: item.menuItemId, quantity: item.quantity }))
+                })
+                if (sendRes.success && sendRes.orderId) {
+                    currentOrderId = sendRes.orderId
+                } else {
+                    throw new Error(sendRes.error || "Failed to save order")
+                }
             }
 
-            const { createPosOrder } = await import('@/server/actions/orders')
-            const res = await createPosOrder(orderPayload)
+            if (!currentOrderId) throw new Error("No active order to checkout")
 
-            if (res.success) {
-                alert(`✅ ဘေလ်ရှင်းရန် အောင်မြင်ပါသည်! စုစုပေါင်း: ${totalAmount} MMK`)
+            // Checkout
+            const checkRes = await checkoutOrder(currentOrderId)
+            if (checkRes.success && checkRes.order) {
+                // Print receipt
+                setReceiptData({
+                    orderId: checkRes.order.id,
+                    date: checkRes.order.createdAt || new Date(),
+                    items: [
+                        ...existingItems,
+                        ...cart.map(c => ({ name: c.name, price: c.price, quantity: c.quantity }))
+                    ],
+                    totalAmount: checkRes.order.totalAmount,
+                    taxAmount: checkRes.order.taxAmount,
+                    finalAmount: checkRes.order.finalAmount
+                })
+                setTimeout(() => window.print(), 100)
+
+                alert(`✅ ဘေလ်ရှင်းရန် အောင်မြင်ပါသည်! စုစုပေါင်း: ${checkRes.order.finalAmount} MMK`)
                 setCart([])
+                setExistingItems([])
+                setExistingTotal(0)
+                setActiveOrderId(null)
                 setIsCartOpen(false)
                 setSelectedTableId(null)
             } else {
-                alert('❌ အမှားအယွင်းရှိနေပါသည်: ' + res.error)
+                alert('❌ အမှားအယွင်းရှိနေပါသည်: ' + checkRes.error)
             }
-        } catch (error) {
-            // NETWORK ERROR or OFFLINE -> Save to offline queue
-            const updatedOfflineQueue = [...offlineOrders, orderPayload]
-            setOfflineOrders(updatedOfflineQueue)
-            localStorage.setItem('pos_offline_orders', JSON.stringify(updatedOfflineQueue))
-            
-            alert(`⚠️ အင်တာနက်မရှိသဖြင့် စက်ထဲတွင် မှတ်သားထားပါသည် (စုစုပေါင်း: ${totalAmount} MMK). လိုင်းပြန်ရပါက အလိုအလျောက် ပို့ပေးပါမည်။`)
-            setCart([])
-            setIsCartOpen(false)
-            setSelectedTableId(null)
+        } catch (error: any) {
+            alert(`⚠️ အမှားအယွင်းဖြစ်ပေါ်နေပါသည်: ${error.message}`)
         } finally {
             setIsSubmitting(false)
         }
@@ -171,6 +258,7 @@ export default function PosTerminal({
 
     return (
         <div className="flex h-full relative">
+            <ReceiptPrinter data={receiptData} />
             {/* === ဘယ်ဘက်ခြမ်း: Menu Items & Categories === */}
             <div className="flex-1 flex flex-col h-full bg-slate-950 overflow-hidden">
                 {/* Categories Banner */}
@@ -285,30 +373,42 @@ export default function PosTerminal({
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                    {cart.length === 0 ? (
-                        <div className="h-full flex flex-col items-center justify-center text-slate-500 space-y-3 opacity-60">
+                    {/* Existing Items */}
+                    {existingItems.map((item, index) => (
+                        <div key={`exist-${index}`} className="bg-slate-900 border border-slate-700/50 rounded-xl p-3 flex justify-between gap-3 opacity-70">
+                            <div className="flex-1">
+                                <h4 className="text-sm font-bold text-slate-300 leading-tight">{item.name}</h4>
+                                <p className="text-xs font-mono text-slate-400 mt-1">{(item.price * item.quantity).toLocaleString()} MMK</p>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <span className="w-8 text-center text-xs font-bold text-slate-400">Qty: {item.quantity}</span>
+                            </div>
+                        </div>
+                    ))}
+                    {/* New Items */}
+                    {cart.map((item, index) => (
+                        <div key={item.id} className="bg-slate-950 border border-slate-800 rounded-xl p-3 flex justify-between gap-3 animate-in fade-in slide-in-from-right-4">
+                            <div className="flex-1">
+                                <h4 className="text-sm font-bold text-slate-200 leading-tight">{item.name}</h4>
+                                <p className="text-xs font-mono text-orange-400 mt-1">{(item.price * item.quantity).toLocaleString()} MMK</p>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center bg-slate-900 rounded-lg border border-slate-700">
+                                    <button onClick={() => updateQuantity(item.id, -1)} className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 rounded-l-lg transition-colors">−</button>
+                                    <span className="w-8 text-center text-xs font-bold text-slate-200">{item.quantity}</span>
+                                    <button onClick={() => updateQuantity(item.id, 1)} className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 rounded-r-lg transition-colors">+</button>
+                                </div>
+                                <button onClick={() => removeItem(item.id)} className="w-8 h-8 flex items-center justify-center bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-lg transition-colors">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                    {cart.length === 0 && existingItems.length === 0 && (
+                        <div className="h-full flex flex-col items-center justify-center text-slate-500 space-y-3 opacity-60 min-h-[200px]">
                             <span className="text-5xl">🛒</span>
                             <p className="text-xs uppercase font-bold tracking-wider">ဘေလ်ရှင်းရန် မရှိသေးပါ</p>
                         </div>
-                    ) : (
-                        cart.map((item, index) => (
-                            <div key={item.id} className="bg-slate-950 border border-slate-800 rounded-xl p-3 flex justify-between gap-3 animate-in fade-in slide-in-from-right-4">
-                                <div className="flex-1">
-                                    <h4 className="text-sm font-bold text-slate-200 leading-tight">{item.name}</h4>
-                                    <p className="text-xs font-mono text-orange-400 mt-1">{(item.price * item.quantity).toLocaleString()} MMK</p>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="flex items-center bg-slate-900 rounded-lg border border-slate-700">
-                                        <button onClick={() => updateQuantity(item.id, -1)} className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 rounded-l-lg transition-colors">−</button>
-                                        <span className="w-8 text-center text-xs font-bold text-slate-200">{item.quantity}</span>
-                                        <button onClick={() => updateQuantity(item.id, 1)} className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 rounded-r-lg transition-colors">+</button>
-                                    </div>
-                                    <button onClick={() => removeItem(item.id)} className="w-8 h-8 flex items-center justify-center bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-lg transition-colors">
-                                        🗑️
-                                    </button>
-                                </div>
-                            </div>
-                        ))
                     )}
                 </div>
 
@@ -319,13 +419,22 @@ export default function PosTerminal({
                             {totalAmount.toLocaleString()} MMK
                         </span>
                     </div>
-                    <button
-                        onClick={handleCheckout}
-                        disabled={cart.length === 0 || isSubmitting}
-                        className="w-full bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-400 hover:to-rose-400 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-500 text-white text-sm font-black py-4 rounded-xl transition-all shadow-lg hover:shadow-orange-500/25 flex items-center justify-center gap-2"
-                    >
-                        {isSubmitting ? "Processing..." : "💸 ဘေလ်ရှင်းမည် (Checkout)"}
-                    </button>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={handleSendOrder}
+                            disabled={cart.length === 0 || isSubmitting}
+                            className="flex-1 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-900 disabled:text-slate-600 text-white text-xs font-bold py-3 rounded-xl transition-all shadow-lg flex items-center justify-center"
+                        >
+                            👨‍🍳 အော်ဒါပို့မည်
+                        </button>
+                        <button
+                            onClick={handleCheckout}
+                            disabled={(cart.length === 0 && !activeOrderId) || isSubmitting}
+                            className="flex-[2] bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-400 hover:to-rose-400 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-500 text-white text-sm font-black py-3 rounded-xl transition-all shadow-lg hover:shadow-orange-500/25 flex items-center justify-center gap-2"
+                        >
+                            {isSubmitting ? "Processing..." : "💸 ဘေလ်ရှင်းမည်"}
+                        </button>
+                    </div>
                 </div>
             </div>
 

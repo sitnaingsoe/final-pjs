@@ -51,7 +51,7 @@ export default function OrdersClient({ initialOrders }: { initialOrders: any[] }
     // Optimistic UI Update function
     const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
         // Optimistically update the UI immediately
-        setOrders(prev => prev.map(order => 
+        setOrders(prev => prev.map(order =>
             order.id === orderId ? { ...order, status: newStatus } : order
         ))
 
@@ -83,10 +83,10 @@ export default function OrdersClient({ initialOrders }: { initialOrders: any[] }
                     </h2>
                     <p className="text-sm text-slate-400 mt-1">အော်ဒါအသစ်ဝင်လာလျှင် အလိုအလျောက် ပြသပေးပါမည်</p>
                 </div>
-                
+
                 {/* Control Panel */}
                 <div className="flex items-center gap-3">
-                    <button 
+                    <button
                         onClick={() => setIsPolling(!isPolling)}
                         className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${isPolling ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-slate-800 text-slate-400 border border-slate-700'}`}
                     >
@@ -94,7 +94,7 @@ export default function OrdersClient({ initialOrders }: { initialOrders: any[] }
                         {isPolling ? 'Auto-Refresh (On)' : 'Auto-Refresh (Off)'}
                     </button>
 
-                    <button 
+                    <button
                         onClick={() => setSoundEnabled(!soundEnabled)}
                         className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${soundEnabled ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' : 'bg-slate-800 text-slate-400 border border-slate-700'}`}
                     >
@@ -229,7 +229,7 @@ export default function OrdersClient({ initialOrders }: { initialOrders: any[] }
                                     <span className="text-xs font-bold text-green-400 flex items-center gap-1">
                                         ✨ အသင့်ဖြစ်ပါပြီ
                                     </span>
-                                    <button onClick={() => handleStatusChange(order.id, OrderStatus.COMPLETED)} className="bg-slate-800 hover:bg-green-500 hover:text-white text-slate-400 text-xs font-bold px-4 py-2 rounded-lg transition-all border border-slate-700 hover:border-green-500">
+                                    <button onClick={() => handleStatusChange(order.id, OrderStatus.DELIVERED)} className="bg-slate-800 hover:bg-green-500 hover:text-white text-slate-400 text-xs font-bold px-4 py-2 rounded-lg transition-all border border-slate-700 hover:border-green-500">
                                         ရှင်းမည်
                                     </button>
                                 </div>
