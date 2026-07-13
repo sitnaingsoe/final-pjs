@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 type CartItem = {
     id: string; // unique local ID for cart management
@@ -28,6 +28,62 @@ export default function PosTerminal({
     const [cart, setCart] = useState<CartItem[]>([])
     const [isCartOpen, setIsCartOpen] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
+    
+    // Offline Capability State
+    const [isOnline, setIsOnline] = useState(true)
+    const [offlineOrders, setOfflineOrders] = useState<any[]>([])
+
+    // 1. Network Detection & Load Offline Orders
+    useEffect(() => {
+        setIsOnline(navigator.onLine)
+        
+        const handleOnline = () => setIsOnline(true)
+        const handleOffline = () => setIsOnline(false)
+        
+        window.addEventListener('online', handleOnline)
+        window.addEventListener('offline', handleOffline)
+        
+        // Load saved offline orders on mount
+        const saved = localStorage.getItem('pos_offline_orders')
+        if (saved) {
+            try { setOfflineOrders(JSON.parse(saved)) } catch(e){}
+        }
+
+        return () => {
+            window.removeEventListener('online', handleOnline)
+            window.removeEventListener('offline', handleOffline)
+        }
+    }, [])
+
+    // 2. Auto-Sync Offline Orders when Online
+    useEffect(() => {
+        if (isOnline && offlineOrders.length > 0) {
+            syncOfflineOrders()
+        }
+    }, [isOnline, offlineOrders])
+
+    const syncOfflineOrders = async () => {
+        if (offlineOrders.length === 0) return;
+        const { createPosOrder } = await import('@/server/actions/orders')
+        
+        let remainingOrders = [...offlineOrders]
+        
+        for (const order of offlineOrders) {
+            try {
+                const res = await createPosOrder(order)
+                if (res.success) {
+                    // Remove successfully sent order from queue
+                    remainingOrders = remainingOrders.filter(o => o.id !== order.id)
+                }
+            } catch (e) {
+                // Keep it in queue if network still fails
+                break; 
+            }
+        }
+        
+        setOfflineOrders(remainingOrders)
+        localStorage.setItem('pos_offline_orders', JSON.stringify(remainingOrders))
+    }
     
     // Find initial table if provided via scan
     const initialTable = tables.find(t => t.number === initialTableNumber)
@@ -72,17 +128,23 @@ export default function PosTerminal({
         if (cart.length === 0) return;
         setIsSubmitting(true)
 
+        const orderPayload = {
+            id: Math.random().toString(36).substring(7), // temporary id for offline sync tracking
+            branchId,
+            tableId: selectedTableId,
+            items: cart.map(item => ({
+                menuItemId: item.menuItemId,
+                quantity: item.quantity
+            }))
+        }
+
         try {
+            if (!isOnline) {
+                throw new Error("Offline") // Force to catch block to save offline
+            }
+
             const { createPosOrder } = await import('@/server/actions/orders')
-            
-            const res = await createPosOrder({
-                branchId,
-                tableId: selectedTableId,
-                items: cart.map(item => ({
-                    menuItemId: item.menuItemId,
-                    quantity: item.quantity
-                }))
-            })
+            const res = await createPosOrder(orderPayload)
 
             if (res.success) {
                 alert(`✅ ဘေလ်ရှင်းရန် အောင်မြင်ပါသည်! စုစုပေါင်း: ${totalAmount} MMK`)
@@ -93,7 +155,15 @@ export default function PosTerminal({
                 alert('❌ အမှားအယွင်းရှိနေပါသည်: ' + res.error)
             }
         } catch (error) {
-            alert('❌ အမှားအယွင်းရှိနေပါသည်')
+            // NETWORK ERROR or OFFLINE -> Save to offline queue
+            const updatedOfflineQueue = [...offlineOrders, orderPayload]
+            setOfflineOrders(updatedOfflineQueue)
+            localStorage.setItem('pos_offline_orders', JSON.stringify(updatedOfflineQueue))
+            
+            alert(`⚠️ အင်တာနက်မရှိသဖြင့် စက်ထဲတွင် မှတ်သားထားပါသည် (စုစုပေါင်း: ${totalAmount} MMK). လိုင်းပြန်ရပါက အလိုအလျောက် ပို့ပေးပါမည်။`)
+            setCart([])
+            setIsCartOpen(false)
+            setSelectedTableId(null)
         } finally {
             setIsSubmitting(false)
         }
@@ -171,9 +241,24 @@ export default function PosTerminal({
                 md:relative md:z-0
             `}>
                 <div className="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-950/50">
-                    <h2 className="text-lg font-black text-slate-200 flex items-center gap-2">
-                        <span className="text-orange-500">🛒</span> Current Order
-                    </h2>
+                    <div className="flex flex-col">
+                        <h2 className="text-lg font-black text-slate-200 flex items-center gap-2">
+                            <span className="text-orange-500">🛒</span> Current Order
+                        </h2>
+                        {/* Offline & Syncing Status Badges */}
+                        <div className="flex items-center gap-2 mt-1">
+                            {!isOnline && (
+                                <span className="text-3xs font-bold bg-red-500/20 text-red-400 px-2 py-0.5 rounded flex items-center gap-1">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> Offline
+                                </span>
+                            )}
+                            {offlineOrders.length > 0 && (
+                                <span className="text-3xs font-bold bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded flex items-center gap-1">
+                                    ⏳ Syncing ({offlineOrders.length})
+                                </span>
+                            )}
+                        </div>
+                    </div>
                     <button 
                         onClick={() => setIsCartOpen(false)}
                         className="md:hidden w-8 h-8 flex items-center justify-center rounded-lg bg-slate-800 text-slate-400"
