@@ -24,6 +24,7 @@ export const OrderStatus = {
   COOKING: 'COOKING',
   READY: 'READY',
   DELIVERED: 'DELIVERED',
+  PAID: 'PAID',
   CANCELLED: 'CANCELLED'
 } as const
 

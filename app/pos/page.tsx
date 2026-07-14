@@ -44,7 +44,7 @@ export default async function PosPage({
     const branchTables = (tablesResult.data || []).filter(t => t.branchId === session.user.branchId)
 
     return (
-        <div className="h-screen w-full bg-slate-950 text-slate-200 overflow-hidden flex flex-col">
+        <div className="h-[100dvh] w-full bg-slate-950 text-slate-200 overflow-hidden flex flex-col">
             <header className="bg-slate-900 border-b border-slate-800 p-4 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-rose-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20 text-white font-black text-xl">
@@ -60,8 +60,11 @@ export default async function PosPage({
                     </div>
                 </div>
                 <div>
-                    <a href="/dashboard" className="text-xs font-bold bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg transition-colors">
+                    <a href="/dashboard" className="text-xs font-bold bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg transition-colors hidden sm:block">
                         Dashboard သို့ ပြန်သွားရန်
+                    </a>
+                    <a href="/dashboard" className="w-10 h-10 flex items-center justify-center bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors sm:hidden text-lg">
+                        🔙
                     </a>
                 </div>
             </header>

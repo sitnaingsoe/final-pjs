@@ -5,7 +5,7 @@ import React, { useState, useTransition, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { updateMenuItem, deleteMenuItem } from '@/server/actions/menu'
 
-export default function MenuCardActions({ item, categories, addonCategories }: { item: any, categories: any[], addonCategories: any[] }) {
+export default function MenuCardActions({ item, categories, addonCategories, discounts = [] }: { item: any, categories: any[], addonCategories: any[], discounts?: any[] }) {
     const [isPending, startTransition] = useTransition()
     const [isOpen, setIsOpen] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -90,6 +90,23 @@ export default function MenuCardActions({ item, categories, addonCategories }: {
                                 {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                             </select>
                         </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="block text-xs font-bold text-slate-300">လျှော့စျေး (Discount)</label>
+                        <select name="discountId" defaultValue={item.discountId || ""} disabled={isPending} className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-orange-500 transition-colors">
+                            <option value="">-- လျှော့စျေး မရှိပါ --</option>
+                            {discounts.map(disc => (
+                                <option key={disc.id} value={disc.id}>
+                                    {disc.name} ({disc.type === 'PERCENTAGE' ? `${disc.value}%` : `${disc.value} MMK`} OFF)
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="block text-xs font-bold text-slate-300">ပါဝင်ပစ္စည်း / ဖော်ပြချက် (Description)</label>
+                        <textarea name="description" defaultValue={item.description || ""} disabled={isPending} className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-orange-500 transition-colors h-24 resize-none" placeholder="ဖော်ပြချက် ထည့်သွင်းရန်"></textarea>
                     </div>
 
                     <div className="space-y-2">

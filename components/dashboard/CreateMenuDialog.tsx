@@ -28,7 +28,7 @@ export default function CreateMenuDialog({ branches }: { branches: any[] }) {
                 setSelectedBranches([])
                 router.refresh()
             } else {
-                setError('error')
+                setError(res.error || 'သိမ်းဆည်းရာတွင် အမှားအယွင်းရှိနေပါသည်')
             }
         })
     }
@@ -54,6 +54,11 @@ export default function CreateMenuDialog({ branches }: { branches: any[] }) {
                         <form action={handleSubmit} className="space-y-4">
                             <InputField label="Menu Name (ဟင်းပွဲအမည်) *" name="name" placeholder="ဥပမာ - ကြက်သားတုတ်ထိုး" required disabled={isPending} />
                             <InputField label="Base Price (စံနှုန်းစျေးနှုန်း) *" type="number" name="basePrice" placeholder="0.00" required disabled={isPending} />
+
+                            <div className="space-y-1">
+                                <label className="block text-3xs font-black text-slate-400 uppercase tracking-wider">Menu Image (ပုံ)</label>
+                                <input type="file" name="image" accept="image/*" className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2 text-xs text-white" disabled={isPending} />
+                            </div>
 
                             <div className="space-y-1">
                                 <label className="block text-3xs font-black text-slate-400 uppercase tracking-wider">Description (အညွှန်း)</label>

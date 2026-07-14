@@ -240,6 +240,7 @@ model Order {
   notes       String?
   tableId     String?
   table       Table?      @relation(fields: [tableId], references: [id])
+  isBillRequested Boolean @default(false)
 
   // 🎯 အော်ဒါများကို ဆိုင်ခွဲအလိုက် တိုက်ရိုက် Query ထုတ်ရလွယ်ကူစေရန်
   branchId String
@@ -260,6 +261,7 @@ enum OrderStatus {
   COOKING
   READY
   DELIVERED
+  PAID
   CANCELLED
 }
 

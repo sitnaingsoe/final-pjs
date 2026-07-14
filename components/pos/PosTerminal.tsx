@@ -40,6 +40,7 @@ export default function PosTerminal({
     // Offline Capability State
     const [isOnline, setIsOnline] = useState(true)
     const [offlineOrders, setOfflineOrders] = useState<any[]>([])
+    const [billRequests, setBillRequests] = useState<any[]>([])
 
     // Find initial table if provided via scan
     const initialTable = tables.find(t => t.number === initialTableNumber)
@@ -49,6 +50,7 @@ export default function PosTerminal({
     const [activeOrderId, setActiveOrderId] = useState<string | null>(null)
     const [existingItems, setExistingItems] = useState<{name: string, quantity: number, price: number, addons?: any[]}[]>([])
     const [existingTotal, setExistingTotal] = useState(0)
+    const [isBillRequested, setIsBillRequested] = useState(false)
 
     // Load active order when table changes
     useEffect(() => {
@@ -57,6 +59,7 @@ export default function PosTerminal({
                 setActiveOrderId(null)
                 setExistingItems([])
                 setExistingTotal(0)
+                setIsBillRequested(false)
                 setCart([])
                 return;
             }
@@ -72,16 +75,37 @@ export default function PosTerminal({
                         addons: i.addons?.map((a: any) => ({ name: a.addon.name })) || []
                     })))
                     setExistingTotal(res.data.totalAmount)
+                    setIsBillRequested(res.data.isBillRequested)
                 } else {
                     setActiveOrderId(null)
                     setExistingItems([])
                     setExistingTotal(0)
+                    setIsBillRequested(false)
                 }
                 setCart([])
             } catch (e) {}
         }
         loadActiveOrder()
     }, [selectedTableId, isOnline])
+
+    // Poll for global bill requests
+    useEffect(() => {
+        if (!isOnline) return;
+        
+        const fetchRequests = async () => {
+            try {
+                const { getPendingBillRequests } = await import('@/server/actions/orders')
+                const res = await getPendingBillRequests(branchId)
+                if (res.success && res.data) {
+                    setBillRequests(res.data)
+                }
+            } catch (e) {}
+        }
+        
+        fetchRequests()
+        const intervalId = setInterval(fetchRequests, 10000)
+        return () => clearInterval(intervalId)
+    }, [branchId, isOnline])
 
     // 1. Network Detection & Load Offline Orders
     useEffect(() => {
@@ -291,6 +315,7 @@ export default function PosTerminal({
                 setExistingItems([])
                 setExistingTotal(0)
                 setActiveOrderId(null)
+                setIsBillRequested(false)
                 setIsCartOpen(false)
                 setSelectedTableId(null)
             } else {
@@ -315,6 +340,33 @@ export default function PosTerminal({
                 menuItem={selectedMenuItemForAddon}
                 onAddToCart={addToCart}
             />
+
+            {/* Bill Requests Notifications */}
+            {billRequests.length > 0 && (
+                <div className="absolute top-4 right-4 md:right-[420px] z-50 flex flex-col gap-2 w-full max-w-xs">
+                    {billRequests.map(req => (
+                        <div key={req.id} className="bg-gradient-to-r from-rose-600 to-red-600 text-white p-3 rounded-2xl shadow-2xl flex items-center justify-between gap-3 animate-in slide-in-from-top-4 border border-rose-400">
+                            <div className="flex items-center gap-3">
+                                <span className="text-2xl origin-top animate-[wiggle_1s_ease-in-out_infinite]">🔔</span>
+                                <div className="leading-tight">
+                                    <p className="font-bold text-sm">ဘေလ်တောင်းထားသည်</p>
+                                    <p className="text-xs text-rose-200 mt-0.5">စားပွဲ {req.table?.number}</p>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => {
+                                    setSelectedTableId(req.tableId)
+                                    if (window.innerWidth < 768) setIsCartOpen(true)
+                                }}
+                                className="bg-white text-rose-600 px-3 py-2 rounded-xl text-xs font-black shadow-md hover:bg-rose-50 active:scale-95 transition-all"
+                            >
+                                ကြည့်မည်
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            )}
+
             {/* === ဘယ်ဘက်ခြမ်း: Menu Items & Categories === */}
             <div className="flex-1 flex flex-col h-full bg-slate-950 overflow-hidden">
                 {/* Categories Banner */}
@@ -339,7 +391,7 @@ export default function PosTerminal({
                 </div>
 
                 {/* Menu Items Grid */}
-                <div className="flex-1 overflow-y-auto p-4 lg:p-6 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pb-24 lg:pb-6 content-start">
+                <div className="flex-1 overflow-y-auto p-4 lg:p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pb-28 lg:pb-6 content-start">
                     {displayItems.map(item => (
                         <div
                             key={item.id}
@@ -396,6 +448,11 @@ export default function PosTerminal({
                         <h2 className="text-lg font-black text-slate-200 flex items-center gap-2">
                             <span className="text-orange-500">🛒</span> Current Order
                         </h2>
+                        {isBillRequested && (
+                            <span className="text-xs bg-rose-500 text-white font-bold px-2 py-1 rounded-full animate-pulse mt-2 mb-1 inline-block text-center shadow-lg shadow-rose-500/20 border border-rose-400">
+                                🔔 ဘေလ်ရှင်းရန် တောင်းဆိုထားသည်
+                            </span>
+                        )}
                         {/* Offline & Syncing Status Badges */}
                         <div className="flex items-center gap-2 mt-1">
                             {!isOnline && (
@@ -467,9 +524,9 @@ export default function PosTerminal({
                             </div>
                             <div className="flex items-center gap-3">
                                 <div className="flex items-center bg-slate-900 rounded-lg border border-slate-700">
-                                    <button onClick={() => updateQuantity(item.id, -1)} className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 rounded-l-lg transition-colors">−</button>
-                                    <span className="w-8 text-center text-xs font-bold text-slate-200">{item.quantity}</span>
-                                    <button onClick={() => updateQuantity(item.id, 1)} className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 rounded-r-lg transition-colors">+</button>
+                                    <button onClick={() => updateQuantity(item.id, -1)} className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 rounded-l-lg transition-colors text-lg">−</button>
+                                    <span className="w-6 text-center text-xs font-bold text-slate-200">{item.quantity}</span>
+                                    <button onClick={() => updateQuantity(item.id, 1)} className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 rounded-r-lg transition-colors text-lg">+</button>
                                 </div>
                                 <button onClick={() => removeItem(item.id)} className="w-8 h-8 flex items-center justify-center bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-lg transition-colors">
                                     🗑️
@@ -495,14 +552,14 @@ export default function PosTerminal({
                     <div className="flex gap-2">
                         <button
                             onClick={handleSendOrder}
-                            disabled={cart.length === 0 || isSubmitting}
+                            disabled={(cart.length === 0 || isSubmitting) ? true : undefined}
                             className="flex-1 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-900 disabled:text-slate-600 text-white text-xs font-bold py-3 rounded-xl transition-all shadow-lg flex items-center justify-center"
                         >
                             👨‍🍳 အော်ဒါပို့မည်
                         </button>
                         <button
                             onClick={handleCheckout}
-                            disabled={(cart.length === 0 && !activeOrderId) || isSubmitting}
+                            disabled={((cart.length === 0 && !activeOrderId) || isSubmitting) ? true : undefined}
                             className="flex-[2] bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-400 hover:to-rose-400 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-500 text-white text-sm font-black py-3 rounded-xl transition-all shadow-lg hover:shadow-orange-500/25 flex items-center justify-center gap-2"
                         >
                             {isSubmitting ? "Processing..." : "💸 ဘေလ်ရှင်းမည်"}
@@ -513,7 +570,7 @@ export default function PosTerminal({
 
             {/* Mobile View Cart FAB */}
             {!isCartOpen && (
-                <div className="md:hidden fixed bottom-6 left-6 right-6 z-30">
+                <div className="md:hidden fixed bottom-6 left-4 right-4 z-30 pb-[env(safe-area-inset-bottom)]">
                     <button
                         onClick={() => setIsCartOpen(true)}
                         className="w-full bg-gradient-to-r from-orange-500 to-rose-500 text-white text-sm font-black py-4 rounded-2xl shadow-2xl shadow-orange-500/30 flex justify-between items-center px-6"

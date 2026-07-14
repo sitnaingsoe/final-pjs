@@ -1,24 +1,26 @@
 // app/dashboard/menu/page.tsx
 import React from 'react'
 import Image from 'next/image'
-import { getMenuItems, getAddonCategories } from '@/server/actions/menu'
+import { getMenuItems, getAddonCategories, getBranchMasterMenus } from '@/server/actions/menu'
 import { getCategories } from '@/server/actions/categories'
 import { getDiscounts } from '@/server/actions/discounts'
 import CreateMenuForm from '@/components/dashboard/CreateMenuForm'
 import MenuCardActions from '@/components/dashboard/MenuCardActions'
 
 export default async function MenuPage() {
-    const [menuResult, catResult, addonResult, discResult] = await Promise.all([
+    const [menuResult, catResult, addonResult, discResult, masterMenuResult] = await Promise.all([
         getMenuItems(),
         getCategories(),
         getAddonCategories(),
-        getDiscounts()
+        getDiscounts(),
+        getBranchMasterMenus()
     ])
 
     const menuItems = menuResult.data || []
     const categories = catResult.data || []
     const addonCategories = addonResult.data || []
     const discounts = discResult.data?.filter(d => d.isActive) || [] // Only active discounts
+    const masterMenus = masterMenuResult.data || []
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
@@ -64,7 +66,7 @@ export default async function MenuPage() {
                                             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 to-transparent opacity-80"></div>
                                         </div>
                                     ) : (
-                                        <div className="w-full h-32 bg-slate-900 border-b border-slate-800 flex items-center justify-center relative">
+                                        <div className="w-full h-40 bg-slate-900 border-b border-slate-800 flex items-center justify-center relative">
                                             <span className="text-slate-700 text-3xl">🍽️</span>
                                             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 to-transparent opacity-80"></div>
                                         </div>
@@ -78,7 +80,7 @@ export default async function MenuPage() {
                                                 </h4>
 
                                                 {/* 🎯 Edit & Delete Actions Dropdown/Box */}
-                                                <MenuCardActions item={item} categories={categories} addonCategories={addonCategories} />
+                                                <MenuCardActions item={item} categories={categories} addonCategories={addonCategories} discounts={discounts} />
                                             </div>
 
                                             <span className="inline-block mt-2 px-2 py-0.5 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-3xs font-bold uppercase tracking-wider rounded">
@@ -114,6 +116,68 @@ export default async function MenuPage() {
                     )}
                 </div>
 
+                {/* (ဂ) ဗဟိုမှ ဖြန့်ဝေထားသော Master Menus များ */}
+                {masterMenus.length > 0 && (
+                    <div className="mt-12">
+                        <div className="mb-6">
+                            <h3 className="text-lg font-black text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                                👑 Master Menus
+                            </h3>
+                            <p className="text-xs text-slate-500">ဗဟိုရုံးချုပ်မှ သတ်မှတ်ထားသော စံနှုန်းဟင်းပွဲများ</p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            {masterMenus.map((mb: any) => (
+                                <div key={mb.menuId} className="group bg-slate-900 border border-slate-700/50 rounded-2xl flex flex-col justify-between shadow-lg relative overflow-hidden">
+                                    {/* Master Menu Badge */}
+                                    <div className="absolute top-2 left-2 bg-orange-500 text-white text-3xs font-bold px-2 py-1 rounded z-20 shadow-md">
+                                        MASTER MENU
+                                    </div>
+                                    {!mb.isAvailable && (
+                                        <div className="absolute top-2 right-2 bg-red-500 text-white text-3xs font-bold px-2 py-1 rounded z-20 shadow-md">
+                                            UNAVAILABLE
+                                        </div>
+                                    )}
+
+                                    {/* 🖼️ Hero Image */}
+                                    {mb.menu.image ? (
+                                        <div className="w-full h-40 bg-slate-800 border-b border-slate-700/50 relative">
+                                            <Image src={mb.menu.image} alt={mb.menu.name} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-80"></div>
+                                        </div>
+                                    ) : (
+                                        <div className="w-full h-40 bg-slate-800 border-b border-slate-700/50 flex items-center justify-center relative">
+                                            <span className="text-slate-600 text-3xl">🍽️</span>
+                                            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-80"></div>
+                                        </div>
+                                    )}
+
+                                    <div className="p-5 flex-1 flex flex-col justify-between -mt-12 relative z-10">
+                                        <div>
+                                            <h4 className="font-black text-slate-100 text-lg line-clamp-1 drop-shadow-md">
+                                                {mb.menu.name}
+                                            </h4>
+
+                                            <span className="inline-block mt-2 px-2 py-0.5 bg-slate-800 text-slate-400 text-3xs font-bold uppercase tracking-wider rounded border border-slate-700">
+                                                Global Item
+                                            </span>
+
+                                            <p className="text-xs text-slate-400 mt-3 line-clamp-2 leading-relaxed">
+                                                {mb.menu.description || <span className="italic opacity-30 text-3xs">ဖော်ပြချက် မရှိပါ</span>}
+                                            </p>
+                                        </div>
+
+                                        <div className="mt-4 pt-4 border-t border-slate-800/50 flex items-end justify-between">
+                                            <span className="text-3xs text-slate-500 font-bold uppercase tracking-wider">Base Price</span>
+                                            <div className="text-base font-black text-slate-300 font-mono">
+                                                {mb.menu.basePrice.toLocaleString()} <span className="text-3xs text-slate-500 font-normal">MMK</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     )

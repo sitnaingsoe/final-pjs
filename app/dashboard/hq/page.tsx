@@ -67,7 +67,11 @@ export default async function HQHomePage({ searchParams }: PageProps) {
     revenue: branch.invoices.reduce((sum, inv) => sum + inv.finalAmount, 0)
   }))
 
-  const chartData = branchTableData.map(b => ({ name: b.name, revenue: b.revenue }))
+  const chartData = branchTableData.map(b => ({ 
+    name: b.name, 
+    revenue: b.revenue,
+    orders: b.totalOrders
+  }))
   const dashboardPayload = { totalBranches, totalOrders, totalRevenue, branchTableData, chartData }
 
   return (

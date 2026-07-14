@@ -49,6 +49,7 @@ export type OrderMinAggregateOutputType = {
   finalAmount: number | null
   notes: string | null
   tableId: string | null
+  isBillRequested: boolean | null
   branchId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -64,6 +65,7 @@ export type OrderMaxAggregateOutputType = {
   finalAmount: number | null
   notes: string | null
   tableId: string | null
+  isBillRequested: boolean | null
   branchId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -79,6 +81,7 @@ export type OrderCountAggregateOutputType = {
   finalAmount: number
   notes: number
   tableId: number
+  isBillRequested: number
   branchId: number
   createdAt: number
   updatedAt: number
@@ -110,6 +113,7 @@ export type OrderMinAggregateInputType = {
   finalAmount?: true
   notes?: true
   tableId?: true
+  isBillRequested?: true
   branchId?: true
   createdAt?: true
   updatedAt?: true
@@ -125,6 +129,7 @@ export type OrderMaxAggregateInputType = {
   finalAmount?: true
   notes?: true
   tableId?: true
+  isBillRequested?: true
   branchId?: true
   createdAt?: true
   updatedAt?: true
@@ -140,6 +145,7 @@ export type OrderCountAggregateInputType = {
   finalAmount?: true
   notes?: true
   tableId?: true
+  isBillRequested?: true
   branchId?: true
   createdAt?: true
   updatedAt?: true
@@ -242,6 +248,7 @@ export type OrderGroupByOutputType = {
   finalAmount: number
   notes: string | null
   tableId: string | null
+  isBillRequested: boolean
   branchId: string
   createdAt: Date
   updatedAt: Date
@@ -280,6 +287,7 @@ export type OrderWhereInput = {
   finalAmount?: Prisma.FloatFilter<"Order"> | number
   notes?: Prisma.StringNullableFilter<"Order"> | string | null
   tableId?: Prisma.StringNullableFilter<"Order"> | string | null
+  isBillRequested?: Prisma.BoolFilter<"Order"> | boolean
   branchId?: Prisma.StringFilter<"Order"> | string
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
@@ -299,6 +307,7 @@ export type OrderOrderByWithRelationInput = {
   finalAmount?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   tableId?: Prisma.SortOrderInput | Prisma.SortOrder
+  isBillRequested?: Prisma.SortOrder
   branchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -321,6 +330,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   finalAmount?: Prisma.FloatFilter<"Order"> | number
   notes?: Prisma.StringNullableFilter<"Order"> | string | null
   tableId?: Prisma.StringNullableFilter<"Order"> | string | null
+  isBillRequested?: Prisma.BoolFilter<"Order"> | boolean
   branchId?: Prisma.StringFilter<"Order"> | string
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
@@ -340,6 +350,7 @@ export type OrderOrderByWithAggregationInput = {
   finalAmount?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   tableId?: Prisma.SortOrderInput | Prisma.SortOrder
+  isBillRequested?: Prisma.SortOrder
   branchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -363,6 +374,7 @@ export type OrderScalarWhereWithAggregatesInput = {
   finalAmount?: Prisma.FloatWithAggregatesFilter<"Order"> | number
   notes?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   tableId?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
+  isBillRequested?: Prisma.BoolWithAggregatesFilter<"Order"> | boolean
   branchId?: Prisma.StringWithAggregatesFilter<"Order"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
@@ -377,6 +389,7 @@ export type OrderCreateInput = {
   taxAmount: number
   finalAmount: number
   notes?: string | null
+  isBillRequested?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   table?: Prisma.TableCreateNestedOneWithoutOrdersInput
@@ -394,6 +407,7 @@ export type OrderUncheckedCreateInput = {
   finalAmount: number
   notes?: string | null
   tableId?: string | null
+  isBillRequested?: boolean
   branchId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -408,6 +422,7 @@ export type OrderUpdateInput = {
   taxAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   finalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isBillRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   table?: Prisma.TableUpdateOneWithoutOrdersNestedInput
@@ -425,6 +440,7 @@ export type OrderUncheckedUpdateInput = {
   finalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tableId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isBillRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -441,6 +457,7 @@ export type OrderCreateManyInput = {
   finalAmount: number
   notes?: string | null
   tableId?: string | null
+  isBillRequested?: boolean
   branchId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -454,6 +471,7 @@ export type OrderUpdateManyMutationInput = {
   taxAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   finalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isBillRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -467,6 +485,7 @@ export type OrderUncheckedUpdateManyInput = {
   finalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tableId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isBillRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -492,6 +511,7 @@ export type OrderCountOrderByAggregateInput = {
   finalAmount?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   tableId?: Prisma.SortOrder
+  isBillRequested?: Prisma.SortOrder
   branchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -514,6 +534,7 @@ export type OrderMaxOrderByAggregateInput = {
   finalAmount?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   tableId?: Prisma.SortOrder
+  isBillRequested?: Prisma.SortOrder
   branchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -529,6 +550,7 @@ export type OrderMinOrderByAggregateInput = {
   finalAmount?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   tableId?: Prisma.SortOrder
+  isBillRequested?: Prisma.SortOrder
   branchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -699,6 +721,7 @@ export type OrderCreateWithoutBranchInput = {
   taxAmount: number
   finalAmount: number
   notes?: string | null
+  isBillRequested?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   table?: Prisma.TableCreateNestedOneWithoutOrdersInput
@@ -715,6 +738,7 @@ export type OrderUncheckedCreateWithoutBranchInput = {
   finalAmount: number
   notes?: string | null
   tableId?: string | null
+  isBillRequested?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   invoiceId?: string | null
@@ -759,6 +783,7 @@ export type OrderScalarWhereInput = {
   finalAmount?: Prisma.FloatFilter<"Order"> | number
   notes?: Prisma.StringNullableFilter<"Order"> | string | null
   tableId?: Prisma.StringNullableFilter<"Order"> | string | null
+  isBillRequested?: Prisma.BoolFilter<"Order"> | boolean
   branchId?: Prisma.StringFilter<"Order"> | string
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
@@ -773,6 +798,7 @@ export type OrderCreateWithoutTableInput = {
   taxAmount: number
   finalAmount: number
   notes?: string | null
+  isBillRequested?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutOrdersInput
@@ -788,6 +814,7 @@ export type OrderUncheckedCreateWithoutTableInput = {
   taxAmount: number
   finalAmount: number
   notes?: string | null
+  isBillRequested?: boolean
   branchId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -829,6 +856,7 @@ export type OrderCreateWithoutItemsInput = {
   taxAmount: number
   finalAmount: number
   notes?: string | null
+  isBillRequested?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   table?: Prisma.TableCreateNestedOneWithoutOrdersInput
@@ -845,6 +873,7 @@ export type OrderUncheckedCreateWithoutItemsInput = {
   finalAmount: number
   notes?: string | null
   tableId?: string | null
+  isBillRequested?: boolean
   branchId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -874,6 +903,7 @@ export type OrderUpdateWithoutItemsInput = {
   taxAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   finalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isBillRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   table?: Prisma.TableUpdateOneWithoutOrdersNestedInput
@@ -890,6 +920,7 @@ export type OrderUncheckedUpdateWithoutItemsInput = {
   finalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tableId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isBillRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -904,6 +935,7 @@ export type OrderCreateWithoutInvoiceInput = {
   taxAmount: number
   finalAmount: number
   notes?: string | null
+  isBillRequested?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   table?: Prisma.TableCreateNestedOneWithoutOrdersInput
@@ -920,6 +952,7 @@ export type OrderUncheckedCreateWithoutInvoiceInput = {
   finalAmount: number
   notes?: string | null
   tableId?: string | null
+  isBillRequested?: boolean
   branchId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -961,6 +994,7 @@ export type OrderCreateManyBranchInput = {
   finalAmount: number
   notes?: string | null
   tableId?: string | null
+  isBillRequested?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   invoiceId?: string | null
@@ -973,6 +1007,7 @@ export type OrderUpdateWithoutBranchInput = {
   taxAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   finalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isBillRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   table?: Prisma.TableUpdateOneWithoutOrdersNestedInput
@@ -989,6 +1024,7 @@ export type OrderUncheckedUpdateWithoutBranchInput = {
   finalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tableId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isBillRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1004,6 +1040,7 @@ export type OrderUncheckedUpdateManyWithoutBranchInput = {
   finalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tableId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isBillRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1017,6 +1054,7 @@ export type OrderCreateManyTableInput = {
   taxAmount: number
   finalAmount: number
   notes?: string | null
+  isBillRequested?: boolean
   branchId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1030,6 +1068,7 @@ export type OrderUpdateWithoutTableInput = {
   taxAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   finalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isBillRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutOrdersNestedInput
@@ -1045,6 +1084,7 @@ export type OrderUncheckedUpdateWithoutTableInput = {
   taxAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   finalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isBillRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1060,6 +1100,7 @@ export type OrderUncheckedUpdateManyWithoutTableInput = {
   taxAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   finalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isBillRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1075,6 +1116,7 @@ export type OrderCreateManyInvoiceInput = {
   finalAmount: number
   notes?: string | null
   tableId?: string | null
+  isBillRequested?: boolean
   branchId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1087,6 +1129,7 @@ export type OrderUpdateWithoutInvoiceInput = {
   taxAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   finalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isBillRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   table?: Prisma.TableUpdateOneWithoutOrdersNestedInput
@@ -1103,6 +1146,7 @@ export type OrderUncheckedUpdateWithoutInvoiceInput = {
   finalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tableId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isBillRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1118,6 +1162,7 @@ export type OrderUncheckedUpdateManyWithoutInvoiceInput = {
   finalAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tableId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isBillRequested?: Prisma.BoolFieldUpdateOperationsInput | boolean
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1163,6 +1208,7 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   finalAmount?: boolean
   notes?: boolean
   tableId?: boolean
+  isBillRequested?: boolean
   branchId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1183,6 +1229,7 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   finalAmount?: boolean
   notes?: boolean
   tableId?: boolean
+  isBillRequested?: boolean
   branchId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1201,6 +1248,7 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   finalAmount?: boolean
   notes?: boolean
   tableId?: boolean
+  isBillRequested?: boolean
   branchId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1219,13 +1267,14 @@ export type OrderSelectScalar = {
   finalAmount?: boolean
   notes?: boolean
   tableId?: boolean
+  isBillRequested?: boolean
   branchId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   invoiceId?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderNumber" | "status" | "totalAmount" | "taxAmount" | "finalAmount" | "notes" | "tableId" | "branchId" | "createdAt" | "updatedAt" | "invoiceId", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderNumber" | "status" | "totalAmount" | "taxAmount" | "finalAmount" | "notes" | "tableId" | "isBillRequested" | "branchId" | "createdAt" | "updatedAt" | "invoiceId", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   table?: boolean | Prisma.Order$tableArgs<ExtArgs>
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
@@ -1261,6 +1310,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     finalAmount: number
     notes: string | null
     tableId: string | null
+    isBillRequested: boolean
     branchId: string
     createdAt: Date
     updatedAt: Date
@@ -1700,6 +1750,7 @@ export interface OrderFieldRefs {
   readonly finalAmount: Prisma.FieldRef<"Order", 'Float'>
   readonly notes: Prisma.FieldRef<"Order", 'String'>
   readonly tableId: Prisma.FieldRef<"Order", 'String'>
+  readonly isBillRequested: Prisma.FieldRef<"Order", 'Boolean'>
   readonly branchId: Prisma.FieldRef<"Order", 'String'>
   readonly createdAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Order", 'DateTime'>

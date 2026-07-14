@@ -267,6 +267,7 @@ export const OrderScalarFieldEnum = {
   finalAmount: 'finalAmount',
   notes: 'notes',
   tableId: 'tableId',
+  isBillRequested: 'isBillRequested',
   branchId: 'branchId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',

@@ -10,6 +10,9 @@ interface ChartData {
 }
 
 export default function RevenueChart({ data }: { data: ChartData[] }) {
+    const [mounted, setMounted] = React.useState(false)
+    React.useEffect(() => { setMounted(true) }, [])
+
     return (
         <div className="bg-slate-950 border border-slate-800 p-6 rounded-2xl shadow-xl space-y-4">
             <div>
@@ -18,19 +21,23 @@ export default function RevenueChart({ data }: { data: ChartData[] }) {
             </div>
 
             {/* Recharts Container */}
-            <div className="w-full h-64 text-2xs font-mono">
-                <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                        <XAxis dataKey="name" stroke="#64748b" />
-                        <YAxis stroke="#64748b" />
-                        <Tooltip
-                            contentStyle={{ backgroundColor: '#020617', borderColor: '#334155', borderRadius: '12px' }}
-                            itemStyle={{ color: '#f97316', fontWeight: 'bold' }}
-                        />
-                        <Bar dataKey="revenue" fill="#f97316" radius={[6, 6, 0, 0]} />
-                    </BarChart>
-                </ResponsiveContainer>
+            <div className="w-full h-64 text-2xs font-mono flex items-center justify-center">
+                {!mounted ? (
+                    <div className="text-slate-500 animate-pulse">Loading Chart...</div>
+                ) : (
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                            <XAxis dataKey="name" stroke="#64748b" />
+                            <YAxis stroke="#64748b" />
+                            <Tooltip
+                                contentStyle={{ backgroundColor: '#020617', borderColor: '#334155', borderRadius: '12px' }}
+                                itemStyle={{ color: '#f97316', fontWeight: 'bold' }}
+                            />
+                            <Bar dataKey="revenue" fill="#f97316" radius={[6, 6, 0, 0]} />
+                        </BarChart>
+                    </ResponsiveContainer>
+                )}
             </div>
         </div>
     )

@@ -128,7 +128,7 @@ export async function getActiveTableOrder(tableId: string) {
             where: {
                 tableId,
                 branchId: session.user.branchId,
-                status: { in: ['PENDING', 'CONFIRMED', 'COOKING', 'READY'] }
+                status: { in: ['PENDING', 'CONFIRMED', 'COOKING', 'READY', 'DELIVERED'] }
             },
             include: {
                 items: {
@@ -142,6 +142,28 @@ export async function getActiveTableOrder(tableId: string) {
         return { success: true, data: activeOrder }
     } catch (error) {
         return { success: false, error: "Error fetching active order" }
+    }
+}
+
+export async function getPendingBillRequests(branchId: string) {
+    const session = await auth()
+    if (!session?.user?.branchId || session.user.branchId !== branchId) {
+        return { success: false, error: "Unauthorized" }
+    }
+
+    try {
+        const requests = await prisma.order.findMany({
+            where: {
+                branchId,
+                isBillRequested: true,
+                status: { in: ['PENDING', 'CONFIRMED', 'COOKING', 'READY', 'DELIVERED'] }
+            },
+            include: { table: true },
+            orderBy: { updatedAt: 'asc' }
+        })
+        return { success: true, data: requests }
+    } catch (error) {
+        return { success: false, error: "Error fetching bill requests" }
     }
 }
 
@@ -244,11 +266,11 @@ export async function checkoutOrder(orderId: string, paymentMethod: string = 'CA
 
         if (!order) return { success: false, error: "Order not found" }
 
-        // Change status to delivered/paid (Depending on your flow, DELIVERED is usually end state for Orders)
-        // Also we could create an Invoice here, but let's just mark it DELIVERED for POS completion.
+        // Change status to PAID
+        // Also we could create an Invoice here.
         const updatedOrder = await prisma.order.update({
             where: { id: orderId },
-            data: { status: 'DELIVERED' },
+            data: { status: 'PAID' },
             include: { items: { include: { menuItem: true } } }
         })
 

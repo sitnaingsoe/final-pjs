@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
-import { getMenuForTable, placeTableOrder } from '@/server/actions/tables'
+import { getMenuForTable, placeTableOrder, getActiveOrderForTableNumber, requestBillForTable } from '@/server/actions/tables'
 
 export default function AdvancedCustomerScanPage() {
     const searchParams = useSearchParams()
@@ -19,8 +19,10 @@ export default function AdvancedCustomerScanPage() {
     const [isOrdered, setIsOrdered] = useState(false)
     const [loading, setLoading] = useState(true)
 
-    // 🎯 View State: 'home' | 'detail' | 'cart'
-    const [currentView, setCurrentView] = useState<'home' | 'detail' | 'cart'>('home')
+    // 🎯 View State: 'home' | 'detail' | 'cart' | 'status'
+    const [currentView, setCurrentView] = useState<'home' | 'detail' | 'cart' | 'status'>('home')
+    const [activeOrder, setActiveOrder] = useState<any | null>(null)
+    const [isRequestingBill, setIsRequestingBill] = useState(false)
 
     const [activeItem, setActiveItem] = useState<any | null>(null)
     const [selectedAddons, setSelectedAddons] = useState<any[]>([])
@@ -39,6 +41,10 @@ export default function AdvancedCustomerScanPage() {
                     setMenuItems(res.menuItems || [])
                     setCategories(res.categories || [])
                 }
+                const orderRes = await getActiveOrderForTableNumber(tableNumber)
+                if (orderRes && orderRes.success) {
+                    setActiveOrder(orderRes.data)
+                }
             } catch (err) {
                 console.error("Data loading error:", err)
             } finally {
@@ -46,6 +52,16 @@ export default function AdvancedCustomerScanPage() {
             }
         }
         loadData()
+
+        // Poll for order status every 10 seconds
+        const intervalId = setInterval(async () => {
+            const orderRes = await getActiveOrderForTableNumber(tableNumber)
+            if (orderRes && orderRes.success) {
+                setActiveOrder(orderRes.data)
+            }
+        }, 10000)
+
+        return () => clearInterval(intervalId)
     }, [tableNumber])
 
     // --- HOME VIEW ACTIONS ---
@@ -147,14 +163,34 @@ export default function AdvancedCustomerScanPage() {
         const orderItems = cart.map(item => ({
             menuItemId: item.menuItem.id,
             quantity: item.quantity,
+            addons: item.selectedAddons?.map((a: any) => ({ addonId: a.id, price: a.price }))
         }))
 
         const res = await placeTableOrder(tableNumber, orderItems, notes)
         if (res.success) {
             setIsOrdered(true)
             setCart([])
+            const orderRes = await getActiveOrderForTableNumber(tableNumber)
+            if (orderRes && orderRes.success) {
+                setActiveOrder(orderRes.data)
+            }
         } else {
             alert(res.error)
+        }
+    }
+
+    const handleRequestBill = async () => {
+        setIsRequestingBill(true)
+        const res = await requestBillForTable(tableNumber)
+        setIsRequestingBill(false)
+        if (res.success) {
+            alert('ဘေလ်တောင်းဆိုမှု အောင်မြင်ပါသည်။ ခေတ္တစောင့်ဆိုင်းပေးပါ။')
+            const orderRes = await getActiveOrderForTableNumber(tableNumber)
+            if (orderRes && orderRes.success) {
+                setActiveOrder(orderRes.data)
+            }
+        } else {
+            alert(res.error || 'ဘေလ်တောင်း၍မရပါ')
         }
     }
 
@@ -268,17 +304,34 @@ export default function AdvancedCustomerScanPage() {
                         )}
                     </div>
 
-                    {/* Floating Cart Button on Home */}
-                    {cart.length > 0 && (
-                        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-[400px] px-4 z-40 animate-in slide-in-from-bottom-5">
+                    {/* Floating Buttons on Home */}
+                    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-[400px] px-4 z-40 flex flex-col gap-3 animate-in slide-in-from-bottom-5">
+                        {activeOrder && (
+                            <div className="flex gap-2">
+                                <button onClick={() => setCurrentView('status')} className="flex-1 bg-slate-800 text-white font-bold py-3 px-4 rounded-2xl shadow-lg flex justify-between items-center border border-slate-700">
+                                    <span className="flex items-center gap-2">
+                                        🧾 <span className="hidden sm:inline">အော်ဒါ</span>
+                                    </span>
+                                    <span className="text-xs bg-slate-700 px-2 py-1 rounded-full">{activeOrder.status}</span>
+                                </button>
+                                <button 
+                                    onClick={handleRequestBill}
+                                    disabled={isRequestingBill || activeOrder.isBillRequested}
+                                    className="flex-1 bg-orange-600 hover:bg-orange-500 disabled:bg-slate-300 disabled:text-slate-500 text-white font-bold py-3 px-4 rounded-2xl shadow-lg flex justify-center items-center gap-1 transition"
+                                >
+                                    {isRequestingBill ? 'တောင်းနေပါသည်' : activeOrder.isBillRequested ? 'ဘေလ်တောင်းထားသည်' : '💸 ဘေလ်တောင်းမည်'}
+                                </button>
+                            </div>
+                        )}
+                        {cart.length > 0 && (
                             <button onClick={() => setCurrentView('cart')} className="w-full bg-gradient-to-r from-orange-500 to-rose-500 text-white font-bold py-4 px-6 rounded-2xl shadow-xl shadow-orange-500/30 flex justify-between items-center">
                                 <span className="flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-sm">
                                     🛒 <span>{totalCartItems} ခု</span>
                                 </span>
                                 <span>{totalAmount.toLocaleString()} MMK <span className="text-xl ml-1">→</span></span>
                             </button>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             )}
 
@@ -459,6 +512,61 @@ export default function AdvancedCustomerScanPage() {
                             </button>
                         </div>
                     )}
+                </div>
+            )}
+
+            {/* =======================
+                VIEW 4: ORDER STATUS
+            ======================== */}
+            {currentView === 'status' && activeOrder && (
+                <div className="bg-white min-h-screen animate-in slide-in-from-right duration-300 flex flex-col z-50">
+                    <header className="bg-slate-900 text-white p-4 sticky top-0 flex items-center justify-between z-30 shadow-md rounded-b-2xl">
+                        <div className="flex items-center gap-3">
+                            <button onClick={() => setCurrentView('home')} className="w-10 h-10 flex items-center justify-center hover:bg-slate-800 rounded-full transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                            </button>
+                            <div>
+                                <h2 className="text-lg font-bold">ငါ့ရဲ့အော်ဒါများ</h2>
+                                <p className="text-[10px] text-gray-400">Order Status: {activeOrder.status}</p>
+                            </div>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 pb-6">
+                        <div className="space-y-4">
+                            {activeOrder.items?.map((item: any) => {
+                                const addonsPrice = item.addons?.reduce((s: number, a: any) => s + (a?.addon?.price || 0), 0) || 0
+                                const perItemPrice = item.price + addonsPrice
+                                return (
+                                    <div key={item.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex gap-4">
+                                        <div className="flex-1 flex flex-col justify-between">
+                                            <div>
+                                                <div className="flex justify-between items-start gap-2">
+                                                    <h4 className="font-bold text-gray-800 text-sm line-clamp-2">{item.menuItem?.name}</h4>
+                                                    <span className="font-bold text-sm text-gray-500">x{item.quantity}</span>
+                                                </div>
+                                                {item.addons?.length > 0 && (
+                                                    <p className="text-[10px] text-orange-600 font-bold mt-1 leading-tight bg-orange-50 inline-block px-2 py-0.5 rounded">
+                                                        + {item.addons.map((a: any) => a?.addon?.name).join(', ')}
+                                                    </p>
+                                                )}
+                                            </div>
+                                            <div className="mt-3">
+                                                <span className="font-black text-slate-800 text-sm">{(perItemPrice * item.quantity).toLocaleString()} MMK</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-t-3xl shadow-[0_-10px_20px_rgba(0,0,0,0.05)] border-t border-gray-100 mt-auto shrink-0 relative z-10">
+                        <div className="flex justify-between items-end mb-2">
+                            <span className="text-sm font-bold text-gray-500">စုစုပေါင်းကျသင့်ငွေ</span>
+                            <span className="text-3xl font-black text-gray-900 tracking-tight">{activeOrder.totalAmount?.toLocaleString()} <span className="text-sm text-gray-500 font-bold ml-1">MMK</span></span>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

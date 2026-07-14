@@ -88,7 +88,7 @@ export default function AddonSelectionModal({ isOpen, onClose, menuItem, onAddTo
                 </div>
 
                 {/* Body - Addon Categories */}
-                <div className="p-5 overflow-y-auto max-h-[60vh] space-y-6">
+                <div className="p-5 overflow-y-auto max-h-[75vh] md:max-h-[60vh] space-y-6">
                     {addonCategories.map((cat: any) => {
                         const isRequired = cat.isRequired || (cat.minSelect && cat.minSelect > 0);
                         const selectedCount = (selectedAddons[cat.id] || []).length;

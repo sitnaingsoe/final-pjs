@@ -2,7 +2,8 @@
 'use client' // ဂရပ်ပါဝင်၍ Client Component အဖြစ် ထားနိုင်သည်
 
 import React from 'react'
-import RevenueChart from './RevenueChart' // 👈 ဂရပ်ကို ဒီထဲမှာ လှမ်းပြပါမယ်
+import RevenueChart from './RevenueChart'
+import BranchStatusChart from './BranchStatusChart'
 
 interface CompanyDashboardProps {
     data: {
@@ -21,8 +22,11 @@ export default function CompanyHeadDashboard({ data }: CompanyDashboardProps) {
     return (
         <div className="space-y-6 text-white">
 
-            {/* 📊 ၁။ ဂရပ်ကို ထိပ်ဆုံးတွင် ပြသခြင်း */}
-            <RevenueChart data={chartData} />
+            {/* 📊 ၁။ ဂရပ်များကို ထိပ်ဆုံးတွင် ပြသခြင်း */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+                <RevenueChart data={chartData} />
+                <BranchStatusChart data={chartData} />
+            </div>
 
             {/* 💰 ၂။ Top Cards Metrics */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
