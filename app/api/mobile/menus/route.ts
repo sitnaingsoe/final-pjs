@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
     // Flattening the items out if needed, but keeping the grouped structure is also fine.
     // We'll return both a flat list of items and a list of categories for flexibility in the mobile app.
 
-    const flatMenuItems = categories.flatMap(c => 
+    const flatMenuItems = categories.flatMap(c =>
       c.menuItems.map(item => ({
         ...item,
         branchName: c.branch?.name

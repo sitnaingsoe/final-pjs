@@ -36,7 +36,7 @@ export default function CategoryCardActions({ cat }: { cat: any }) {
             {/* ✏️ Edit Button */}
             <button
                 onClick={() => setIsOpen(true)}
-                className="p-1.5 text-slate-400 hover:text-orange-400 hover:bg-orange-500/10 rounded-lg transition"
+                className="p-1.5 text-gray-500 hover:text-gray-800 hover:bg-black/10 rounded-lg transition"
                 title="ပြင်ဆင်မည်"
             >
                 ✏️
@@ -46,7 +46,7 @@ export default function CategoryCardActions({ cat }: { cat: any }) {
             <button
                 onClick={handleDeleteClick}
                 disabled={isPending}
-                className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition disabled:opacity-50"
+                className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-400/10 rounded-lg transition disabled:opacity-50"
                 title="ဖျက်မည်"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -58,25 +58,25 @@ export default function CategoryCardActions({ cat }: { cat: any }) {
             {isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 text-left">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !isPending && setIsOpen(false)}></div>
-                    <div className="bg-slate-950 border border-slate-800 p-5 rounded-2xl w-full max-w-sm relative z-10 shadow-2xl space-y-4">
+                    <div className="bg-white border border-gray-200 p-5 rounded-2xl w-full max-w-sm relative z-10 shadow-2xl space-y-4">
                         <div>
-                            <h3 className="text-xs font-black text-orange-500 uppercase">✏️ Edit Category</h3>
-                            <p className="text-3xs text-slate-500 font-bold mt-0.5">အုပ်စုအမည်နှင့် ဖော်ပြချက် ပြင်ဆင်ရန်</p>
+                            <h3 className="text-xs font-black text-black uppercase">✏️ Edit Category</h3>
+                            <p className="text-3xs text-gray-400 font-bold mt-0.5">အုပ်စုအမည်နှင့် ဖော်ပြချက် ပြင်ဆင်ရန်</p>
                         </div>
 
-                        {error && <div className="text-3xs text-red-400 bg-red-950/20 p-2 rounded-lg">⚠️ {error}</div>}
+                        {error && <div className="text-3xs text-red-600 bg-red-950/20 p-2 rounded-lg">⚠️ {error}</div>}
 
                         <form action={handleUpdate} className="space-y-4">
                             <InputField label="Category Name" name="name" defaultValue={cat.name} required disabled={isPending} />
 
                             <div className="space-y-1">
-                                <label className="block text-3xs font-black text-slate-400 uppercase tracking-wider">Description</label>
-                                <textarea name="description" defaultValue={cat.description || ''} className="w-full h-16 bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-orange-500 text-white placeholder-slate-600 resize-none" disabled={isPending}></textarea>
+                                <label className="block text-3xs font-black text-gray-500 uppercase tracking-wider">Description</label>
+                                <textarea name="description" defaultValue={cat.description || ''} className="w-full h-16 bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-xs focus:outline-none focus:border-black text-black placeholder-slate-600 resize-none" disabled={isPending}></textarea>
                             </div>
 
-                            <div className="flex justify-end gap-2 pt-2 border-t border-slate-900">
-                                <button type="button" onClick={() => setIsOpen(false)} className="bg-slate-900 border border-slate-800 text-slate-300 px-3 py-1.5 rounded-xl text-3xs font-bold">Cancel</button>
-                                <button type="submit" disabled={isPending} className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded-xl text-3xs font-bold">
+                            <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                                <button type="button" onClick={() => setIsOpen(false)} className="bg-gray-50 border border-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-3xs font-bold">Cancel</button>
+                                <button type="submit" disabled={isPending} className="bg-black hover:bg-gray-800 text-white px-3 py-1.5 rounded-xl text-3xs font-bold">
                                     {isPending ? "Saving..." : "Save Changes"}
                                 </button>
                             </div>

@@ -106,11 +106,13 @@ export async function linkMenuWithAddonCategory(formData: FormData) {
     }
 
     try {
-        // 🔑 MenuItemAddonCategory Bridge Table ထဲသို့ ဆက်ဆံရေး Link သွင်းခြင်း
-        await prisma.menuItemAddonCategory.create({
+        // 🔑 Connect MenuItem with AddonCategory directly using implicit relation
+        await prisma.menuItem.update({
+            where: { id: menuItemId },
             data: {
-                menuItemId,
-                addonCategoryId
+                addonCategories: {
+                    connect: { id: addonCategoryId }
+                }
             }
         })
 

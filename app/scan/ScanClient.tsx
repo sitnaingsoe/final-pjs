@@ -224,13 +224,13 @@ export default function AdvancedCustomerScanPage() {
             ======================== */}
             {currentView === 'home' && (
                 <div className="flex-1 overflow-y-auto pb-24 animate-in fade-in duration-300">
-                    <header className="bg-slate-900 text-white p-5 sticky top-0 shadow-md z-30 rounded-b-2xl">
+                    <header className="bg-gray-50 text-black p-5 sticky top-0 shadow-md z-30 rounded-b-2xl">
                         <div className="flex justify-between items-center mb-4">
                             <div>
-                                <h1 className="text-lg font-bold tracking-wide text-orange-500">မြန်မာ့ရသာ</h1>
+                                <h1 className="text-lg font-bold tracking-wide text-black">မြန်မာ့ရသာ</h1>
                                 <p className="text-xs text-gray-400">QR Mobile Ordering</p>
                             </div>
-                            <div className="bg-orange-500 text-white font-bold px-4 py-1.5 rounded-full text-sm shadow">
+                            <div className="bg-black text-white font-bold px-4 py-1.5 rounded-full text-sm shadow">
                                 🍽️ စားပွဲ - {tableNumber}
                             </div>
                         </div>
@@ -238,7 +238,7 @@ export default function AdvancedCustomerScanPage() {
                         <div className="flex gap-2 overflow-x-auto py-1 no-scrollbar">
                             <button
                                 onClick={() => setSelectedCategory('ALL')}
-                                className={`text-xs font-bold px-4 py-2 rounded-full whitespace-nowrap transition ${selectedCategory === 'ALL' ? 'bg-orange-500 text-white' : 'bg-slate-800 text-gray-300'}`}
+                                className={`text-xs font-bold px-4 py-2 rounded-full whitespace-nowrap transition ${selectedCategory === 'ALL' ? 'bg-black text-white' : 'bg-gray-200 text-gray-300'}`}
                             >
                                 အားလုံး
                             </button>
@@ -246,7 +246,7 @@ export default function AdvancedCustomerScanPage() {
                                 <button
                                     key={cat.id}
                                     onClick={() => setSelectedCategory(cat.id)}
-                                    className={`text-xs font-bold px-4 py-2 rounded-full whitespace-nowrap transition ${selectedCategory === cat.id ? 'bg-orange-500 text-white' : 'bg-slate-800 text-gray-300'}`}
+                                    className={`text-xs font-bold px-4 py-2 rounded-full whitespace-nowrap transition ${selectedCategory === cat.id ? 'bg-black text-white' : 'bg-gray-200 text-gray-300'}`}
                                 >
                                     {cat.name}
                                 </button>
@@ -288,7 +288,7 @@ export default function AdvancedCustomerScanPage() {
                                                     <span className="text-orange-600">{(item.price || 0).toLocaleString()} MMK</span>
                                                 )}
                                             </div>
-                                            <button onClick={(e) => handleQuickAdd(e, item)} className="bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-slate-800">
+                                            <button onClick={(e) => handleQuickAdd(e, item)} className="bg-gray-50 text-black text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-gray-100">
                                                 + မှာမည်
                                             </button>
                                         </div>
@@ -308,7 +308,7 @@ export default function AdvancedCustomerScanPage() {
                     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-[400px] px-4 z-40 flex flex-col gap-3 animate-in slide-in-from-bottom-5">
                         {activeOrder && (
                             <div className="flex gap-2">
-                                <button onClick={() => setCurrentView('status')} className="flex-1 bg-slate-800 text-white font-bold py-3 px-4 rounded-2xl shadow-lg flex justify-between items-center border border-slate-700">
+                                <button onClick={() => setCurrentView('status')} className="flex-1 bg-gray-200 text-black font-bold py-3 px-4 rounded-2xl shadow-lg flex justify-between items-center border border-gray-300">
                                     <span className="flex items-center gap-2">
                                         🧾 <span className="hidden sm:inline">အော်ဒါ</span>
                                     </span>
@@ -317,14 +317,14 @@ export default function AdvancedCustomerScanPage() {
                                 <button 
                                     onClick={handleRequestBill}
                                     disabled={isRequestingBill || activeOrder.isBillRequested}
-                                    className="flex-1 bg-orange-600 hover:bg-orange-500 disabled:bg-slate-300 disabled:text-slate-500 text-white font-bold py-3 px-4 rounded-2xl shadow-lg flex justify-center items-center gap-1 transition"
+                                    className="flex-1 bg-gray-900 hover:bg-black disabled:bg-slate-300 disabled:text-gray-400 text-white font-bold py-3 px-4 rounded-2xl shadow-lg flex justify-center items-center gap-1 transition"
                                 >
                                     {isRequestingBill ? 'တောင်းနေပါသည်' : activeOrder.isBillRequested ? 'ဘေလ်တောင်းထားသည်' : '💸 ဘေလ်တောင်းမည်'}
                                 </button>
                             </div>
                         )}
                         {cart.length > 0 && (
-                            <button onClick={() => setCurrentView('cart')} className="w-full bg-gradient-to-r from-orange-500 to-rose-500 text-white font-bold py-4 px-6 rounded-2xl shadow-xl shadow-orange-500/30 flex justify-between items-center">
+                            <button onClick={() => setCurrentView('cart')} className="w-full bg-gradient-to-r from-orange-500 to-rose-500 text-black font-bold py-4 px-6 rounded-2xl shadow-xl shadow-orange-500/30 flex justify-between items-center">
                                 <span className="flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-sm">
                                     🛒 <span>{totalCartItems} ခု</span>
                                 </span>
@@ -345,7 +345,7 @@ export default function AdvancedCustomerScanPage() {
                         {activeItem.imageUrl ? (
                             <Image src={activeItem.imageUrl} alt={activeItem.name} fill className="object-cover" sizes="100vw" priority />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-400 to-rose-400"></div>
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-500"></div>
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-80"></div>
                         <button onClick={() => setCurrentView('home')} className="absolute top-4 left-4 w-10 h-10 bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full flex items-center justify-center text-white z-10 transition">
@@ -409,14 +409,14 @@ export default function AdvancedCustomerScanPage() {
                                 <div className="flex items-center gap-4 bg-white p-1 rounded-xl border border-gray-200 shadow-sm">
                                     <button onClick={() => setDetailQuantity(Math.max(1, detailQuantity - 1))} className="w-8 h-8 flex items-center justify-center text-gray-500 font-bold bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">-</button>
                                     <span className="w-4 text-center font-black text-gray-800">{detailQuantity}</span>
-                                    <button onClick={() => setDetailQuantity(detailQuantity + 1)} className="w-8 h-8 flex items-center justify-center text-orange-500 font-bold bg-orange-100 rounded-lg hover:bg-orange-200 transition-colors">+</button>
+                                    <button onClick={() => setDetailQuantity(detailQuantity + 1)} className="w-8 h-8 flex items-center justify-center text-black font-bold bg-orange-100 rounded-lg hover:bg-orange-200 transition-colors">+</button>
                                 </div>
                             </div>
                         </div>
 
                         {/* Sticky Add to Cart Footer */}
                         <div className="pt-4 mt-auto shrink-0 bg-white">
-                            <button onClick={confirmAddonToCart} className="w-full bg-gradient-to-r from-orange-500 to-rose-500 text-white text-base font-black py-4 rounded-2xl shadow-xl shadow-orange-500/30 active:scale-95 transition-transform flex justify-center items-center gap-2">
+                            <button onClick={confirmAddonToCart} className="w-full bg-gradient-to-r from-orange-500 to-rose-500 text-black text-base font-black py-4 rounded-2xl shadow-xl shadow-orange-500/30 active:scale-95 transition-transform flex justify-center items-center gap-2">
                                 {( (getFinalPrice(activeItem) + selectedAddons.reduce((s,a) => s + a.price, 0)) * detailQuantity ).toLocaleString()} MMK - ခြင်းတောင်းသို့ထည့်မည်
                             </button>
                         </div>
@@ -429,9 +429,9 @@ export default function AdvancedCustomerScanPage() {
             ======================== */}
             {currentView === 'cart' && (
                 <div className="bg-white min-h-screen animate-in slide-in-from-right duration-300 flex flex-col z-50">
-                    <header className="bg-slate-900 text-white p-4 sticky top-0 flex items-center justify-between z-30 shadow-md rounded-b-2xl">
+                    <header className="bg-gray-50 text-black p-4 sticky top-0 flex items-center justify-between z-30 shadow-md rounded-b-2xl">
                         <div className="flex items-center gap-3">
-                            <button onClick={() => setCurrentView('home')} className="w-10 h-10 flex items-center justify-center hover:bg-slate-800 rounded-full transition">
+                            <button onClick={() => setCurrentView('home')} className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full transition">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                             </button>
                             <div>
@@ -478,7 +478,7 @@ export default function AdvancedCustomerScanPage() {
                                                     <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-lg p-1">
                                                         <button onClick={() => updateCartQuantity(c.cartId, -1)} className="w-7 h-7 flex items-center justify-center text-gray-600 bg-white rounded shadow-sm font-bold hover:bg-gray-100">-</button>
                                                         <span className="font-bold text-sm w-4 text-center">{c.quantity}</span>
-                                                        <button onClick={() => updateCartQuantity(c.cartId, 1)} className="w-7 h-7 flex items-center justify-center text-white bg-orange-500 rounded shadow-sm font-bold hover:bg-orange-600">+</button>
+                                                        <button onClick={() => updateCartQuantity(c.cartId, 1)} className="w-7 h-7 flex items-center justify-center text-white bg-black rounded shadow-sm font-bold hover:bg-gray-800">+</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -498,7 +498,7 @@ export default function AdvancedCustomerScanPage() {
                                     value={notes} 
                                     onChange={(e) => setNotes(e.target.value)} 
                                     placeholder="အပူလျှော့၊ အစပ်လျှော့..." 
-                                    className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:border-orange-500 resize-none" 
+                                    className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:border-black resize-none" 
                                 />
                             </div>
                             
@@ -507,7 +507,7 @@ export default function AdvancedCustomerScanPage() {
                                 <span className="text-3xl font-black text-gray-900 tracking-tight">{totalAmount.toLocaleString()} <span className="text-sm text-gray-500 font-bold ml-1">MMK</span></span>
                             </div>
 
-                            <button onClick={handleOrderSubmit} className="w-full bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-400 hover:to-rose-400 active:scale-95 text-white text-lg font-black py-4 rounded-2xl transition shadow-xl shadow-orange-500/30 flex justify-center items-center gap-2">
+                            <button onClick={handleOrderSubmit} className="w-full bg-gradient-to-r from-orange-500 to-rose-500 hover:from-gray-800 hover:to-gray-500 active:scale-95 text-black text-lg font-black py-4 rounded-2xl transition shadow-xl shadow-orange-500/30 flex justify-center items-center gap-2">
                                 🚀 မီးဖိုချောင်သို့ အော်ဒါပို့မည်
                             </button>
                         </div>
@@ -520,9 +520,9 @@ export default function AdvancedCustomerScanPage() {
             ======================== */}
             {currentView === 'status' && activeOrder && (
                 <div className="bg-white min-h-screen animate-in slide-in-from-right duration-300 flex flex-col z-50">
-                    <header className="bg-slate-900 text-white p-4 sticky top-0 flex items-center justify-between z-30 shadow-md rounded-b-2xl">
+                    <header className="bg-gray-50 text-black p-4 sticky top-0 flex items-center justify-between z-30 shadow-md rounded-b-2xl">
                         <div className="flex items-center gap-3">
-                            <button onClick={() => setCurrentView('home')} className="w-10 h-10 flex items-center justify-center hover:bg-slate-800 rounded-full transition">
+                            <button onClick={() => setCurrentView('home')} className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full transition">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                             </button>
                             <div>

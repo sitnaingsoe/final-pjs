@@ -176,7 +176,6 @@ export type CompanyWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   branches?: Prisma.BranchListRelationFilter
   users?: Prisma.UserListRelationFilter
-  menus?: Prisma.MenuListRelationFilter
 }
 
 export type CompanyOrderByWithRelationInput = {
@@ -186,7 +185,6 @@ export type CompanyOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   branches?: Prisma.BranchOrderByRelationAggregateInput
   users?: Prisma.UserOrderByRelationAggregateInput
-  menus?: Prisma.MenuOrderByRelationAggregateInput
 }
 
 export type CompanyWhereUniqueInput = Prisma.AtLeast<{
@@ -199,7 +197,6 @@ export type CompanyWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   branches?: Prisma.BranchListRelationFilter
   users?: Prisma.UserListRelationFilter
-  menus?: Prisma.MenuListRelationFilter
 }, "id">
 
 export type CompanyOrderByWithAggregationInput = {
@@ -229,7 +226,6 @@ export type CompanyCreateInput = {
   updatedAt?: Date | string
   branches?: Prisma.BranchCreateNestedManyWithoutCompanyInput
   users?: Prisma.UserCreateNestedManyWithoutCompanyInput
-  menus?: Prisma.MenuCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateInput = {
@@ -239,7 +235,6 @@ export type CompanyUncheckedCreateInput = {
   updatedAt?: Date | string
   branches?: Prisma.BranchUncheckedCreateNestedManyWithoutCompanyInput
   users?: Prisma.UserUncheckedCreateNestedManyWithoutCompanyInput
-  menus?: Prisma.MenuUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUpdateInput = {
@@ -249,7 +244,6 @@ export type CompanyUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branches?: Prisma.BranchUpdateManyWithoutCompanyNestedInput
   users?: Prisma.UserUpdateManyWithoutCompanyNestedInput
-  menus?: Prisma.MenuUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateInput = {
@@ -259,7 +253,6 @@ export type CompanyUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branches?: Prisma.BranchUncheckedUpdateManyWithoutCompanyNestedInput
   users?: Prisma.UserUncheckedUpdateManyWithoutCompanyNestedInput
-  menus?: Prisma.MenuUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateManyInput = {
@@ -352,29 +345,12 @@ export type CompanyUpdateOneWithoutUsersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutUsersInput, Prisma.CompanyUpdateWithoutUsersInput>, Prisma.CompanyUncheckedUpdateWithoutUsersInput>
 }
 
-export type CompanyCreateNestedOneWithoutMenusInput = {
-  create?: Prisma.XOR<Prisma.CompanyCreateWithoutMenusInput, Prisma.CompanyUncheckedCreateWithoutMenusInput>
-  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutMenusInput
-  connect?: Prisma.CompanyWhereUniqueInput
-}
-
-export type CompanyUpdateOneWithoutMenusNestedInput = {
-  create?: Prisma.XOR<Prisma.CompanyCreateWithoutMenusInput, Prisma.CompanyUncheckedCreateWithoutMenusInput>
-  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutMenusInput
-  upsert?: Prisma.CompanyUpsertWithoutMenusInput
-  disconnect?: Prisma.CompanyWhereInput | boolean
-  delete?: Prisma.CompanyWhereInput | boolean
-  connect?: Prisma.CompanyWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutMenusInput, Prisma.CompanyUpdateWithoutMenusInput>, Prisma.CompanyUncheckedUpdateWithoutMenusInput>
-}
-
 export type CompanyCreateWithoutBranchesInput = {
   id?: string
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserCreateNestedManyWithoutCompanyInput
-  menus?: Prisma.MenuCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutBranchesInput = {
@@ -383,7 +359,6 @@ export type CompanyUncheckedCreateWithoutBranchesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutCompanyInput
-  menus?: Prisma.MenuUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutBranchesInput = {
@@ -408,7 +383,6 @@ export type CompanyUpdateWithoutBranchesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUpdateManyWithoutCompanyNestedInput
-  menus?: Prisma.MenuUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutBranchesInput = {
@@ -417,7 +391,6 @@ export type CompanyUncheckedUpdateWithoutBranchesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutCompanyNestedInput
-  menus?: Prisma.MenuUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutUsersInput = {
@@ -426,7 +399,6 @@ export type CompanyCreateWithoutUsersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   branches?: Prisma.BranchCreateNestedManyWithoutCompanyInput
-  menus?: Prisma.MenuCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutUsersInput = {
@@ -435,7 +407,6 @@ export type CompanyUncheckedCreateWithoutUsersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   branches?: Prisma.BranchUncheckedCreateNestedManyWithoutCompanyInput
-  menus?: Prisma.MenuUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutUsersInput = {
@@ -460,7 +431,6 @@ export type CompanyUpdateWithoutUsersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branches?: Prisma.BranchUpdateManyWithoutCompanyNestedInput
-  menus?: Prisma.MenuUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutUsersInput = {
@@ -469,59 +439,6 @@ export type CompanyUncheckedUpdateWithoutUsersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branches?: Prisma.BranchUncheckedUpdateManyWithoutCompanyNestedInput
-  menus?: Prisma.MenuUncheckedUpdateManyWithoutCompanyNestedInput
-}
-
-export type CompanyCreateWithoutMenusInput = {
-  id?: string
-  name: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  branches?: Prisma.BranchCreateNestedManyWithoutCompanyInput
-  users?: Prisma.UserCreateNestedManyWithoutCompanyInput
-}
-
-export type CompanyUncheckedCreateWithoutMenusInput = {
-  id?: string
-  name: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  branches?: Prisma.BranchUncheckedCreateNestedManyWithoutCompanyInput
-  users?: Prisma.UserUncheckedCreateNestedManyWithoutCompanyInput
-}
-
-export type CompanyCreateOrConnectWithoutMenusInput = {
-  where: Prisma.CompanyWhereUniqueInput
-  create: Prisma.XOR<Prisma.CompanyCreateWithoutMenusInput, Prisma.CompanyUncheckedCreateWithoutMenusInput>
-}
-
-export type CompanyUpsertWithoutMenusInput = {
-  update: Prisma.XOR<Prisma.CompanyUpdateWithoutMenusInput, Prisma.CompanyUncheckedUpdateWithoutMenusInput>
-  create: Prisma.XOR<Prisma.CompanyCreateWithoutMenusInput, Prisma.CompanyUncheckedCreateWithoutMenusInput>
-  where?: Prisma.CompanyWhereInput
-}
-
-export type CompanyUpdateToOneWithWhereWithoutMenusInput = {
-  where?: Prisma.CompanyWhereInput
-  data: Prisma.XOR<Prisma.CompanyUpdateWithoutMenusInput, Prisma.CompanyUncheckedUpdateWithoutMenusInput>
-}
-
-export type CompanyUpdateWithoutMenusInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  branches?: Prisma.BranchUpdateManyWithoutCompanyNestedInput
-  users?: Prisma.UserUpdateManyWithoutCompanyNestedInput
-}
-
-export type CompanyUncheckedUpdateWithoutMenusInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  branches?: Prisma.BranchUncheckedUpdateManyWithoutCompanyNestedInput
-  users?: Prisma.UserUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 
@@ -532,13 +449,11 @@ export type CompanyUncheckedUpdateWithoutMenusInput = {
 export type CompanyCountOutputType = {
   branches: number
   users: number
-  menus: number
 }
 
 export type CompanyCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branches?: boolean | CompanyCountOutputTypeCountBranchesArgs
   users?: boolean | CompanyCountOutputTypeCountUsersArgs
-  menus?: boolean | CompanyCountOutputTypeCountMenusArgs
 }
 
 /**
@@ -565,13 +480,6 @@ export type CompanyCountOutputTypeCountUsersArgs<ExtArgs extends runtime.Types.E
   where?: Prisma.UserWhereInput
 }
 
-/**
- * CompanyCountOutputType without action
- */
-export type CompanyCountOutputTypeCountMenusArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.MenuWhereInput
-}
-
 
 export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -580,7 +488,6 @@ export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   updatedAt?: boolean
   branches?: boolean | Prisma.Company$branchesArgs<ExtArgs>
   users?: boolean | Prisma.Company$usersArgs<ExtArgs>
-  menus?: boolean | Prisma.Company$menusArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["company"]>
 
@@ -609,7 +516,6 @@ export type CompanyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type CompanyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branches?: boolean | Prisma.Company$branchesArgs<ExtArgs>
   users?: boolean | Prisma.Company$usersArgs<ExtArgs>
-  menus?: boolean | Prisma.Company$menusArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CompanyIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -620,7 +526,6 @@ export type $CompanyPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     branches: Prisma.$BranchPayload<ExtArgs>[]
     users: Prisma.$UserPayload<ExtArgs>[]
-    menus: Prisma.$MenuPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1023,7 +928,6 @@ export interface Prisma__CompanyClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   branches<T extends Prisma.Company$branchesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$branchesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   users<T extends Prisma.Company$usersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$usersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  menus<T extends Prisma.Company$menusArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$menusArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MenuPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1495,30 +1399,6 @@ export type Company$usersArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.UserScalarFieldEnum | Prisma.UserScalarFieldEnum[]
-}
-
-/**
- * Company.menus
- */
-export type Company$menusArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Menu
-   */
-  select?: Prisma.MenuSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Menu
-   */
-  omit?: Prisma.MenuOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.MenuInclude<ExtArgs> | null
-  where?: Prisma.MenuWhereInput
-  orderBy?: Prisma.MenuOrderByWithRelationInput | Prisma.MenuOrderByWithRelationInput[]
-  cursor?: Prisma.MenuWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.MenuScalarFieldEnum | Prisma.MenuScalarFieldEnum[]
 }
 
 /**

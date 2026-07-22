@@ -37,21 +37,14 @@ export async function createBranchWithAdmin(formData: FormData) {
         // 2. Prisma Transaction သုံးပြီး Branch, Setting နှင့် User ကို တစ်ခါတည်း တွဲဆောက်မည်
         await prisma.$transaction(async (tx) => {
 
-            // (က) Branch အသစ်ဆောက်ခြင်း
+            // (က) Branch အသစ်ဆောက်ခြင်း (Default Settings များကို တစ်ခါတည်း သတ်မှတ်သည်)
             const newBranch = await tx.branch.create({
                 data: {
                     name: branchName,
                     address,
                     phone,
                     companyId,
-                }
-            })
-
-            // (ခ) ၎င်း Branch အတွက် Default System Setting တစ်ခါတည်း ဆောက်ပေးခြင်း
-            await tx.setting.create({
-                data: {
                     restaurantName: branchName,
-                    branchId: newBranch.id,
                     currency: "MMK",
                     taxRate: 5.0
                 }
@@ -111,7 +104,6 @@ export async function deleteBranch(branchId: string) {
         await prisma.$transaction([
             prisma.user.deleteMany({ where: { branchId } }),
             prisma.order.deleteMany({ where: { branchId } }),
-            prisma.invoice.deleteMany({ where: { branchId } }),
             prisma.branch.delete({ where: { id: branchId } })
         ])
 

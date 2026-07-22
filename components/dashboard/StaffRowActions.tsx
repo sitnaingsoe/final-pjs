@@ -41,7 +41,7 @@ export default function StaffRowActions({ staff }: { staff: any }) {
             {/* 🔑 Reset Pass ခလုတ် */}
             <button
                 onClick={() => setIsOpen(true)}
-                className="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 px-2 py-1 rounded-md text-3xs font-bold transition"
+                className="bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 px-2 py-1 rounded-md text-3xs font-bold transition"
             >
                 🔑 Reset Pass
             </button>
@@ -51,8 +51,8 @@ export default function StaffRowActions({ staff }: { staff: any }) {
                 onClick={handleStatusToggle}
                 disabled={isPending}
                 className={`px-2 py-1 rounded-md text-3xs font-bold transition border ${staff.isActive !== false
-                    ? 'bg-red-950/20 border-red-900 text-red-400 hover:bg-red-900/30'
-                    : 'bg-green-950/20 border-green-800 text-green-400 hover:bg-green-900/30'
+                    ? 'bg-red-950/20 border-red-900 text-red-600 hover:bg-red-900/30'
+                    : 'bg-green-950/20 border-green-200 text-green-600 hover:bg-green-900/30'
                     }`}
             >
                 {staff.isActive !== false ? "🚫 Suspend" : "✅ Unsuspend"}
@@ -62,13 +62,13 @@ export default function StaffRowActions({ staff }: { staff: any }) {
             {isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 text-left">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !isPending && setIsOpen(false)}></div>
-                    <div className="bg-slate-950 border border-slate-800 p-5 rounded-2xl w-full max-w-sm relative z-10 shadow-2xl space-y-4">
+                    <div className="bg-white border border-gray-200 p-5 rounded-2xl w-full max-w-sm relative z-10 shadow-2xl space-y-4">
                         <div>
-                            <h3 className="text-xs font-black text-orange-500 uppercase">🔑 Force Password Reset</h3>
-                            <p className="text-3xs text-slate-500 font-bold mt-0.5">{staff.name} အတွက် လျှို့ဝှက်နံပါတ်အသစ် သတ်မှတ်ရန်</p>
+                            <h3 className="text-xs font-black text-black uppercase">🔑 Force Password Reset</h3>
+                            <p className="text-3xs text-gray-400 font-bold mt-0.5">{staff.name} အတွက် လျှို့ဝှက်နံပါတ်အသစ် သတ်မှတ်ရန်</p>
                         </div>
 
-                        {error && <div className="text-3xs text-red-400 bg-red-950/20 p-2 rounded-lg">{error}</div>}
+                        {error && <div className="text-3xs text-red-600 bg-red-950/20 p-2 rounded-lg">{error}</div>}
 
                         <form action={handlePasswordReset} className="space-y-4">
                             <InputField
@@ -80,9 +80,9 @@ export default function StaffRowActions({ staff }: { staff: any }) {
                                 disabled={isPending}
                             />
 
-                            <div className="flex justify-end gap-2 pt-2 border-t border-slate-900">
-                                <button type="button" onClick={() => setIsOpen(false)} className="bg-slate-900 border border-slate-800 text-slate-300 px-3 py-1.5 rounded-xl text-3xs font-bold">Cancel</button>
-                                <button type="submit" disabled={isPending} className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded-xl text-3xs font-bold">
+                            <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                                <button type="button" onClick={() => setIsOpen(false)} className="bg-gray-50 border border-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-3xs font-bold">Cancel</button>
+                                <button type="submit" disabled={isPending} className="bg-black hover:bg-gray-800 text-white px-3 py-1.5 rounded-xl text-3xs font-bold">
                                     {isPending ? "Updating..." : "Confirm Change"}
                                 </button>
                             </div>

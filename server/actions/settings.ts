@@ -6,9 +6,22 @@ import { auth } from '@/auth'
 import { revalidatePath } from 'next/cache'
 
 export async function getRestaurantSettings() {
+    const session = await auth()
+    const branchId = session?.user?.branchId
+    if (!branchId) return { success: false, error: "Unauthorized: No branch linked to user" }
+
     try {
-        const settings = await prisma.setting.findFirst()
-        return { success: true, data: settings }
+        const branch = await prisma.branch.findUnique({
+            where: { id: branchId },
+            select: {
+                id: true,
+                restaurantName: true,
+                isAcceptingOrders: true,
+                currency: true,
+                taxRate: true
+            }
+        })
+        return { success: true, data: branch }
     } catch (error) {
         console.error("Error fetching settings:", error)
         return { success: false, error: "ဆက်တင်များ ဆွဲထုတ်၍ မရပါ" }
@@ -22,15 +35,13 @@ export async function updateRestaurantSettings(formData: FormData) {
     const branchId = session?.user?.branchId
     if (!branchId) return { success: false, error: "Unauthorized" }
 
-    const id = formData.get('id') as string // ရှိပြီးသားဆိုရင် id ပါလာမည်
     const restaurantName = formData.get('restaurantName') as string
     const isAcceptingOrders = formData.get('isAcceptingOrders') === 'true'
 
     try {
-        await prisma.setting.upsert({
-            where: { branchId },
-            update: { restaurantName, isAcceptingOrders },
-            create: { id: id || undefined, restaurantName, isAcceptingOrders, branchId }
+        await prisma.branch.update({
+            where: { id: branchId },
+            data: { restaurantName, isAcceptingOrders }
         })
 
         revalidatePath('/settings')

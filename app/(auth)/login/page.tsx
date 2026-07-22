@@ -27,19 +27,19 @@ function LoginForm() {
     }, [urlError])
 
     return (
-        <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-            <div className="bg-slate-950 p-8 rounded-2xl shadow-2xl border border-slate-800 w-full max-w-md space-y-6">
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+            <div className="bg-white p-8 rounded-2xl shadow-2xl border border-gray-200 w-full max-w-md space-y-6">
 
                 {/* Header */}
                 <div className="text-center space-y-2">
                     <div className="text-3xl">🔑</div>
-                    <h1 className="text-xl font-black text-white uppercase tracking-wider">Sign In</h1>
-                    <p className="text-xs text-slate-400">BiteCraft Restaurant OS စနစ်ထဲသို့ ဝင်ရောက်ရန်</p>
+                    <h1 className="text-xl font-black text-black uppercase tracking-wider">Sign In</h1>
+                    <p className="text-xs text-gray-500">BiteCraft Restaurant OS စနစ်ထဲသို့ ဝင်ရောက်ရန်</p>
                 </div>
 
                 {/* Error Alert */}
                 {error && (
-                    <div className="bg-red-950/50 border border-red-800 text-red-400 text-xs p-3.5 rounded-xl font-medium">
+                    <div className="bg-red-50 border border-red-200 text-red-600 text-xs p-3.5 rounded-xl font-medium">
                         ⚠️ {error}
                     </div>
                 )}
@@ -96,12 +96,12 @@ function LoginForm() {
 
                     {/* Email Input */}
                     <div>
-                        <label className="block text-xs font-bold text-slate-400 mb-1.5">အီးမေးလ် (Email Address)</label>
+                        <label className="block text-xs font-bold text-gray-500 mb-1.5">အီးမေးလ် (Email Address)</label>
                         <input
                             type="email"
                             name="email"
                             placeholder="name@company.com"
-                            className="w-full border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition bg-slate-900 text-white placeholder-slate-500"
+                            className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition bg-gray-50 text-black placeholder-gray-400"
                             required
                             disabled={isPending}
                         />
@@ -110,8 +110,8 @@ function LoginForm() {
                     {/* Password Input */}
                     <div>
                         <div className="flex justify-between items-center mb-1.5">
-                            <label className="block text-xs font-bold text-slate-400">လျှို့ဝှက်နံပါတ် (Password)</label>
-                            <Link href="/forgot-password" className="text-xs text-orange-500 hover:underline">
+                            <label className="block text-xs font-bold text-gray-500">လျှို့ဝှက်နံပါတ် (Password)</label>
+                            <Link href="/forgot-password" className="text-xs text-black hover:underline">
                                 Forgot?
                             </Link>
                         </div>
@@ -120,14 +120,14 @@ function LoginForm() {
                                 type={showPassword ? 'text' : 'password'}
                                 name="password"
                                 placeholder="••••••••"
-                                className="w-full border border-slate-800 rounded-xl p-3 pr-11 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition bg-slate-900 text-white placeholder-slate-500"
+                                className="w-full border border-gray-200 rounded-xl p-3 pr-11 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition bg-gray-50 text-black placeholder-gray-400"
                                 required
                                 disabled={isPending}
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-orange-400 transition text-base select-none"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800 transition text-base select-none"
                                 tabIndex={-1}
                                 aria-label={showPassword ? 'Hide password' : 'Show password'}
                             >
@@ -140,7 +140,7 @@ function LoginForm() {
                     <button
                         type="submit"
                         disabled={isPending}
-                        className="w-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold py-3.5 rounded-xl transition shadow-md disabled:bg-slate-800 disabled:text-slate-500 flex items-center justify-center gap-2 mt-2"
+                        className="w-full bg-black hover:bg-gray-800 text-white text-sm font-bold py-3.5 rounded-xl transition shadow-md disabled:bg-gray-200 disabled:text-gray-400 flex items-center justify-center gap-2 mt-2"
                     >
                         {isPending ? (
                             <>
@@ -154,9 +154,9 @@ function LoginForm() {
                 </form>
 
                 {/* Register Link */}
-                <div className="text-center pt-2 border-t border-slate-900">
-                    <Link href="/register" className="text-xs text-slate-400 hover:text-white transition">
-                        လုပ်ငန်းအသစ် စတင်မှာလား? <span className="text-orange-500 font-bold hover:underline">ကုမ္ပဏီအကောင့်ဆောက်ရန်</span>
+                <div className="text-center pt-2 border-t border-gray-100">
+                    <Link href="/register" className="text-xs text-gray-500 hover:text-black transition">
+                        လုပ်ငန်းအသစ် စတင်မှာလား? <span className="text-black font-bold hover:underline">ကုမ္ပဏီအကောင့်ဆောက်ရန်</span>
                     </Link>
                 </div>
 
@@ -167,7 +167,7 @@ function LoginForm() {
 
 export default function LoginPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-slate-900 text-white">Loading...</div>}>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-50 text-black">Loading...</div>}>
             <LoginForm />
         </Suspense>
     )

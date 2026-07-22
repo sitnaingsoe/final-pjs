@@ -2,7 +2,7 @@
 CREATE TYPE "UserRole" AS ENUM ('COMPANY_HEAD', 'BRANCH_ADMIN', 'STAFF');
 
 -- CreateEnum
-CREATE TYPE "OrderStatus" AS ENUM ('PENDING', 'CONFIRMED', 'COOKING', 'READY', 'DELIVERED', 'CANCELLED');
+CREATE TYPE "OrderStatus" AS ENUM ('PENDING', 'CONFIRMED', 'COOKING', 'READY', 'DELIVERED', 'PAID', 'CANCELLED');
 
 -- CreateEnum
 CREATE TYPE "PaymentStatus" AS ENUM ('UNPAID', 'PAID', 'REFUNDED');
@@ -24,6 +24,10 @@ CREATE TABLE "Branch" (
     "address" TEXT,
     "phone" TEXT,
     "companyId" TEXT NOT NULL,
+    "restaurantName" TEXT NOT NULL DEFAULT '',
+    "currency" TEXT NOT NULL DEFAULT 'MMK',
+    "taxRate" DOUBLE PRECISION NOT NULL DEFAULT 5.0,
+    "isAcceptingOrders" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -38,6 +42,10 @@ CREATE TABLE "User" (
     "password" TEXT NOT NULL,
     "role" "UserRole" NOT NULL DEFAULT 'STAFF',
     "branchId" TEXT,
+    "companyId" TEXT,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -54,16 +62,15 @@ CREATE TABLE "PasswordResetToken" (
 );
 
 -- CreateTable
-CREATE TABLE "Setting" (
+CREATE TABLE "RefreshToken" (
     "id" TEXT NOT NULL,
-    "restaurantName" TEXT NOT NULL,
-    "currency" TEXT NOT NULL DEFAULT 'MMK',
-    "taxRate" DOUBLE PRECISION NOT NULL DEFAULT 5.0,
-    "isAcceptingOrders" BOOLEAN NOT NULL DEFAULT true,
-    "branchId" TEXT NOT NULL,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "token" TEXT NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "expires" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "isRevoked" BOOLEAN NOT NULL DEFAULT false,
 
-    CONSTRAINT "Setting_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "RefreshToken_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -87,6 +94,7 @@ CREATE TABLE "MenuItem" (
     "price" DOUBLE PRECISION NOT NULL,
     "imageUrl" TEXT,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
     "categoryId" TEXT NOT NULL,
     "discountId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -101,18 +109,11 @@ CREATE TABLE "AddonCategory" (
     "name" TEXT NOT NULL,
     "minSelect" INTEGER NOT NULL DEFAULT 0,
     "maxSelect" INTEGER NOT NULL DEFAULT 1,
+    "branchId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "AddonCategory_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "MenuItemAddonCategory" (
-    "menuItemId" TEXT NOT NULL,
-    "addonCategoryId" TEXT NOT NULL,
-
-    CONSTRAINT "MenuItemAddonCategory_pkey" PRIMARY KEY ("menuItemId","addonCategoryId")
 );
 
 -- CreateTable
@@ -121,6 +122,7 @@ CREATE TABLE "Addon" (
     "name" TEXT NOT NULL,
     "price" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "branchId" TEXT,
     "addonCategoryId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -167,10 +169,14 @@ CREATE TABLE "Order" (
     "finalAmount" DOUBLE PRECISION NOT NULL,
     "notes" TEXT,
     "tableId" TEXT,
+    "isBillRequested" BOOLEAN NOT NULL DEFAULT false,
     "branchId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "invoiceId" TEXT,
+    "invoiceNumber" TEXT,
+    "paymentMethod" TEXT,
+    "paymentStatus" "PaymentStatus" NOT NULL DEFAULT 'UNPAID',
+    "discountAmount" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
 
     CONSTRAINT "Order_pkey" PRIMARY KEY ("id")
 );
@@ -196,20 +202,11 @@ CREATE TABLE "OrderItemAddon" (
 );
 
 -- CreateTable
-CREATE TABLE "Invoice" (
-    "id" TEXT NOT NULL,
-    "invoiceNumber" TEXT NOT NULL,
-    "paymentMethod" TEXT NOT NULL,
-    "paymentStatus" "PaymentStatus" NOT NULL DEFAULT 'UNPAID',
-    "subTotal" DOUBLE PRECISION NOT NULL,
-    "taxAmount" DOUBLE PRECISION NOT NULL,
-    "discountAmount" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
-    "finalAmount" DOUBLE PRECISION NOT NULL,
-    "branchId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+CREATE TABLE "_AddonCategoryToMenuItem" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL,
 
-    CONSTRAINT "Invoice_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "_AddonCategoryToMenuItem_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 -- CreateIndex
@@ -222,7 +219,7 @@ CREATE UNIQUE INDEX "PasswordResetToken_token_key" ON "PasswordResetToken"("toke
 CREATE UNIQUE INDEX "PasswordResetToken_email_token_key" ON "PasswordResetToken"("email", "token");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Setting_branchId_key" ON "Setting"("branchId");
+CREATE UNIQUE INDEX "RefreshToken_token_key" ON "RefreshToken"("token");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Table_number_branchId_key" ON "Table"("number", "branchId");
@@ -231,7 +228,10 @@ CREATE UNIQUE INDEX "Table_number_branchId_key" ON "Table"("number", "branchId")
 CREATE UNIQUE INDEX "Order_orderNumber_key" ON "Order"("orderNumber");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Invoice_invoiceNumber_key" ON "Invoice"("invoiceNumber");
+CREATE UNIQUE INDEX "Order_invoiceNumber_key" ON "Order"("invoiceNumber");
+
+-- CreateIndex
+CREATE INDEX "_AddonCategoryToMenuItem_B_index" ON "_AddonCategoryToMenuItem"("B");
 
 -- AddForeignKey
 ALTER TABLE "Branch" ADD CONSTRAINT "Branch_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -240,7 +240,10 @@ ALTER TABLE "Branch" ADD CONSTRAINT "Branch_companyId_fkey" FOREIGN KEY ("compan
 ALTER TABLE "User" ADD CONSTRAINT "User_branchId_fkey" FOREIGN KEY ("branchId") REFERENCES "Branch"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Setting" ADD CONSTRAINT "Setting_branchId_fkey" FOREIGN KEY ("branchId") REFERENCES "Branch"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "User" ADD CONSTRAINT "User_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RefreshToken" ADD CONSTRAINT "RefreshToken_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "MenuCategory" ADD CONSTRAINT "MenuCategory_branchId_fkey" FOREIGN KEY ("branchId") REFERENCES "Branch"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -252,10 +255,10 @@ ALTER TABLE "MenuItem" ADD CONSTRAINT "MenuItem_categoryId_fkey" FOREIGN KEY ("c
 ALTER TABLE "MenuItem" ADD CONSTRAINT "MenuItem_discountId_fkey" FOREIGN KEY ("discountId") REFERENCES "Discount"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "MenuItemAddonCategory" ADD CONSTRAINT "MenuItemAddonCategory_menuItemId_fkey" FOREIGN KEY ("menuItemId") REFERENCES "MenuItem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "AddonCategory" ADD CONSTRAINT "AddonCategory_branchId_fkey" FOREIGN KEY ("branchId") REFERENCES "Branch"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "MenuItemAddonCategory" ADD CONSTRAINT "MenuItemAddonCategory_addonCategoryId_fkey" FOREIGN KEY ("addonCategoryId") REFERENCES "AddonCategory"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Addon" ADD CONSTRAINT "Addon_branchId_fkey" FOREIGN KEY ("branchId") REFERENCES "Branch"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Addon" ADD CONSTRAINT "Addon_addonCategoryId_fkey" FOREIGN KEY ("addonCategoryId") REFERENCES "AddonCategory"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -273,9 +276,6 @@ ALTER TABLE "Order" ADD CONSTRAINT "Order_tableId_fkey" FOREIGN KEY ("tableId") 
 ALTER TABLE "Order" ADD CONSTRAINT "Order_branchId_fkey" FOREIGN KEY ("branchId") REFERENCES "Branch"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Order" ADD CONSTRAINT "Order_invoiceId_fkey" FOREIGN KEY ("invoiceId") REFERENCES "Invoice"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -288,4 +288,7 @@ ALTER TABLE "OrderItemAddon" ADD CONSTRAINT "OrderItemAddon_orderItemId_fkey" FO
 ALTER TABLE "OrderItemAddon" ADD CONSTRAINT "OrderItemAddon_addonId_fkey" FOREIGN KEY ("addonId") REFERENCES "Addon"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_branchId_fkey" FOREIGN KEY ("branchId") REFERENCES "Branch"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_AddonCategoryToMenuItem" ADD CONSTRAINT "_AddonCategoryToMenuItem_A_fkey" FOREIGN KEY ("A") REFERENCES "AddonCategory"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_AddonCategoryToMenuItem" ADD CONSTRAINT "_AddonCategoryToMenuItem_B_fkey" FOREIGN KEY ("B") REFERENCES "MenuItem"("id") ON DELETE CASCADE ON UPDATE CASCADE;

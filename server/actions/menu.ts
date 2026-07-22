@@ -17,28 +17,10 @@ export async function getMenuItems() {
             },
             include: {
                 category: { select: { name: true } },
-                addonCategories: { include: { addonCategory: { include: { addons: true } } } },
+                addonCategories: { include: { addons: true } },
                 discount: true
             },
             orderBy: { createdAt: 'desc' }
-        })
-        return { success: true, data }
-    } catch (error) {
-        return { success: false, data: [] }
-    }
-}
-
-// ၁.၁။ သက်ဆိုင်ရာဆိုင်ခွဲအတွက် ချထားပေးသော Master Menus များကို ဆွဲထုတ်ခြင်း
-export async function getBranchMasterMenus() {
-    const session = await auth()
-    if (!session?.user?.branchId) return { success: false, data: [] }
-
-    try {
-        const data = await prisma.menuOnBranch.findMany({
-            where: { branchId: session.user.branchId },
-            include: {
-                menu: true
-            }
         })
         return { success: true, data }
     } catch (error) {
@@ -84,9 +66,7 @@ export async function createMenuItem(formData: FormData, selectedAddonCatIds: st
                 imageUrl, // Store uploaded image URL
                 discountId: discountId || null,
                 addonCategories: {
-                    create: selectedAddonCatIds.map(addonCategoryId => ({
-                        addonCategory: { connect: { id: addonCategoryId } }
-                    }))
+                    connect: selectedAddonCatIds.map(id => ({ id }))
                 }
             }
         })
@@ -130,9 +110,6 @@ export async function updateMenuItem(id: string, formData: FormData, selectedAdd
             imageUrl = await uploadFileToSpaces(imageFile, 'menu-items')
         }
 
-        // ရှိပြီးသား Addon ချိတ်ဆက်မှုဟောင်းများကို အရင်ဖြတ်တောက်သည်
-        await prisma.menuItemAddonCategory.deleteMany({ where: { menuItemId: id } })
-
         // အချက်အလက်အသစ်များနှင့် Addon အသစ်များကို အစားထိုးပြင်ဆင်သည်
         await prisma.menuItem.update({
             where: { id },
@@ -144,9 +121,7 @@ export async function updateMenuItem(id: string, formData: FormData, selectedAdd
                 imageUrl, // Update image URL if new one is uploaded
                 discountId: discountId || null,
                 addonCategories: {
-                    create: selectedAddonCatIds.map(addonCategoryId => ({
-                        addonCategory: { connect: { id: addonCategoryId } }
-                    }))
+                    set: selectedAddonCatIds.map(id => ({ id }))
                 }
             }
         })

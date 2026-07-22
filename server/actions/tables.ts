@@ -58,7 +58,7 @@ export async function getMenuForTable(tableNumber: string) {
         where: { category: { branchId: tableBranchId } },
         include: {
           category: { select: { name: true } },
-          addonCategories: { include: { addonCategory: { include: { addons: true } } } },
+          addonCategories: { include: { addons: true } },
           discount: true
         }
       }),

@@ -17,8 +17,7 @@ model Company {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   branches  Branch[] // One-to-Many
-  users     User[]   // One-to-Many (COMPANY_HEAD users linked directly to Company)
-  menus     Menu[]   // One-to-Many (Master Menus belong to Company)
+  users     User[] // One-to-Many (COMPANY_HEAD users linked directly to Company)
 }
 
 model Branch {
@@ -31,19 +30,21 @@ model Branch {
 
   // ဆိုင်ခွဲတစ်ခုချင်းစီအောက်တွင် သီးသန့်ရှိမည့် ဒေတာများ
   users          User[]
-  settings       Setting?
   menuCategories MenuCategory[]
   tables         Table[]
   orders         Order[]
   discounts      Discount[]
-  invoices       Invoice[] // 💡 Invoice နှင့် ချိတ်ဆက်မှု အဆင်ပြေစေရန်
 
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  menuOnBranches MenuOnBranch[]
-  inventories    Inventory[]
+  // Merged from Setting model
+  restaurantName    String   @default("")
+  currency          String   @default("MMK")
+  taxRate           Float    @default(5.0)
+  isAcceptingOrders Boolean  @default(true)
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
   addonCategories AddonCategory[]
-  addons         Addon[]
+  addons          Addon[]
 }
 
 // =================================================================
@@ -55,13 +56,11 @@ model User {
   email    String   @unique
   name     String?
   password String
-  role     UserRole @default(STAFF) // 💡 ပိုမိုစနစ်ကျစေရန် အောက်က Enum နှင့် ချိတ်ပေးထားပါသည်
+  role     UserRole @default(STAFF)
 
-  // 🎯 ဝန်ထမ်း သို့မဟုတ် Admin သည် မည်  Boolean  @default(true)
   branchId String?
   branch   Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
 
-  // 🎯 ပိုင်ရှင် (COMPANY_HEAD) သည် Company နှင့် တိုက်ရိုက်ချိတ်ဆက်မည်
   companyId String?
   company   Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
@@ -73,7 +72,6 @@ model User {
   updatedAt DateTime @default(now()) @updatedAt
 }
 
-// 💡 Role များကို စနစ်တကျ ထိန်းချုပ်ရန် Enum သုံးခြင်း
 enum UserRole {
   COMPANY_HEAD
   BRANCH_ADMIN
@@ -101,25 +99,7 @@ model RefreshToken {
 }
 
 // =================================================================
-// ⚙️ ၃။ SYSTEM SETTINGS (BRANCH SPECIFIC)
-// =================================================================
-
-model Setting {
-  id                String  @id @default(cuid())
-  restaurantName    String
-  currency          String  @default("MMK")
-  taxRate           Float   @default(5.0)
-  isAcceptingOrders Boolean @default(true)
-
-  // 🎯 ဆိုင်ခွဲအလိုက် Setting သီးခြားစီထားခြင်း (One-to-One)
-  branchId String @unique
-  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
-
-  updatedAt DateTime @updatedAt
-}
-
-// =================================================================
-// 🍔 ၄။ MENU & CATEGORIES (BRANCH SPECIFIC)
+// 🍔 ၃။ MENU & CATEGORIES (BRANCH SPECIFIC)
 // =================================================================
 
 model MenuCategory {
@@ -129,7 +109,6 @@ model MenuCategory {
   isActive    Boolean    @default(true)
   menuItems   MenuItem[]
 
-  // 🎯 မီနူးအမျိုးအစားများသည် မည်သည့်ဆိုင်ခွဲအတွက်လဲ
   branchId String
   branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
 
@@ -138,57 +117,47 @@ model MenuCategory {
 }
 
 model MenuItem {
-  id              String                  @id @default(cuid())
+  id              String         @id @default(cuid())
   name            String
   description     String?
   price           Float
   imageUrl        String?
-  isActive        Boolean                 @default(true)
-  isDeleted       Boolean                 @default(false)
+  isActive        Boolean        @default(true)
+  isDeleted       Boolean        @default(false)
   categoryId      String
-  category        MenuCategory            @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  addonCategories MenuItemAddonCategory[]
-  orderItems      OrderItem[]
+  category        MenuCategory   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  addonCategories AddonCategory[] // Implicit Many-to-Many
   discountId      String?
-  discount        Discount?               @relation(fields: [discountId], references: [id], onDelete: SetNull)
-  createdAt       DateTime                @default(now())
-  updatedAt       DateTime                @updatedAt
+  discount        Discount?      @relation(fields: [discountId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model AddonCategory {
-  id        String                  @id @default(cuid())
+  id        String     @id @default(cuid())
   name      String
-  minSelect Int                     @default(0)
-  maxSelect Int                     @default(1)
+  minSelect Int        @default(0)
+  maxSelect Int        @default(1)
   branchId  String
-  branch    Branch                  @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  branch    Branch     @relation(fields: [branchId], references: [id], onDelete: Cascade)
   addons    Addon[]
-  menuItems MenuItemAddonCategory[]
-  createdAt DateTime                @default(now())
-  updatedAt DateTime                @updatedAt
-}
-
-model MenuItemAddonCategory {
-  menuItemId      String
-  addonCategoryId String
-  menuItem        MenuItem      @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
-  addonCategory   AddonCategory @relation(fields: [addonCategoryId], references: [id], onDelete: Cascade)
-
-  @@id([menuItemId, addonCategoryId])
+  menuItems MenuItem[] // Implicit Many-to-Many
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
 model Addon {
-  id              String           @id @default(cuid())
+  id              String        @id @default(cuid())
   name            String
-  price           Float            @default(0.0)
-  isActive        Boolean          @default(true)
+  price           Float         @default(0.0)
+  isActive        Boolean       @default(true)
   branchId        String?
-  branch          Branch?          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  branch          Branch?       @relation(fields: [branchId], references: [id], onDelete: Cascade)
   addonCategoryId String
-  addonCategory   AddonCategory    @relation(fields: [addonCategoryId], references: [id], onDelete: Cascade)
-  orderItemAddons OrderItemAddon[]
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  addonCategory   AddonCategory @relation(fields: [addonCategoryId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 }
 
 model Discount {
@@ -201,7 +170,6 @@ model Discount {
   isActive  Boolean    @default(true)
   menuItems MenuItem[]
 
-  // 🎯 လျှော့စျေးများကို ဆိုင်ခွဲအလိုက် သီးခြားသတ်မှတ်ရန်
   branchId String
   branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
 
@@ -210,7 +178,7 @@ model Discount {
 }
 
 // =================================================================
-// 🪑 ၅။ TABLES & ORDERS (BRANCH SPECIFIC)
+// 🪑 ၄။ TABLES & ORDERS (BRANCH SPECIFIC)
 // =================================================================
 
 model Table {
@@ -219,7 +187,6 @@ model Table {
   qrUrl    String?
   isActive Boolean @default(true)
 
-  // 🎯 စားပွဲဝိုင်းများသည် မည်သည့်ဆိုင်ခွဲမှလဲ
   branchId String
   branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
 
@@ -231,28 +198,30 @@ model Table {
 }
 
 model Order {
-  id          String      @id @default(cuid())
-  orderNumber Int         @unique @default(autoincrement())
-  status      OrderStatus @default(PENDING)
-  totalAmount Float
-  taxAmount   Float
-  finalAmount Float
-  notes       String?
-  tableId     String?
-  table       Table?      @relation(fields: [tableId], references: [id])
-  isBillRequested Boolean @default(false)
+  id              String      @id @default(cuid())
+  orderNumber     Int         @unique @default(autoincrement())
+  status          OrderStatus @default(PENDING)
+  totalAmount     Float
+  taxAmount       Float
+  finalAmount     Float
+  notes           String?
+  tableId         String?
+  table           Table?      @relation(fields: [tableId], references: [id])
+  isBillRequested Boolean     @default(false)
 
-  // 🎯 အော်ဒါများကို ဆိုင်ခွဲအလိုက် တိုက်ရိုက် Query ထုတ်ရလွယ်ကူစေရန်
   branchId String
   branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
 
-  items     OrderItem[]
+  // 🎯 Consolidating all order items and addons in this single JSON column
+  items     Json
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 
-  // 💡 Order ဖက်ကနေ Invoice ဆီကို သေချာပြန်ညွှန်းပေးထားပါတယ် (Many-to-One)
-  invoiceId String?
-  invoice   Invoice? @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  // Merged from Invoice model
+  invoiceNumber   String?       @unique // e.g., INV-2026-0001
+  paymentMethod   String?       // CASH, KPAY, CB_PAY, CREDIT_CARD
+  paymentStatus   PaymentStatus @default(UNPAID)
+  discountAmount  Float         @default(0.0)
 }
 
 enum OrderStatus {
@@ -265,99 +234,8 @@ enum OrderStatus {
   CANCELLED
 }
 
-model OrderItem {
-  id         String           @id @default(cuid())
-  orderId    String
-  order      Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  menuItemId String
-  menuItem   MenuItem         @relation(fields: [menuItemId], references: [id])
-  quantity   Int
-  price      Float
-  addons     OrderItemAddon[]
-}
-
-model OrderItemAddon {
-  id          String    @id @default(cuid())
-  orderItemId String
-  orderItem   OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
-  addonId     String
-  addon       Addon     @relation(fields: [addonId], references: [id])
-}
-
-// =================================================================
-// 🧾 ၆။ INVOICE & PAYMENT MANAGEMENT
-// =================================================================
-
-model Invoice {
-  id            String        @id @default(cuid())
-  invoiceNumber String        @unique // ဥပမာ - INV-2026-0001
-  paymentMethod String // CASH, KPAY, CB_PAY, CREDIT_CARD
-  paymentStatus PaymentStatus @default(UNPAID)
-
-  subTotal       Float
-  taxAmount      Float
-  discountAmount Float @default(0.0)
-  finalAmount    Float
-
-  // 🎯 ဆိုင်ခွဲအလိုက် ဝင်ငွေခွဲခြားရန်
-  branchId String
-  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
-
-  // 🎯 တစ်ခါတည်း ငွေပေါင်းရှင်းနိုင်ရန် အော်ဒါများကို Link ချိတ်ခြင်း (One-to-Many)
-  orders Order[] // 💡 Order မော်ဒယ်မှာ invoiceId ရှိလို့ ဒီဘက်မှာ array အနေနဲ့ လက်ခံရပါတယ်
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 enum PaymentStatus {
   UNPAID
   PAID
   REFUNDED
-}
-
-model Menu {
-  id          String  @id @default(cuid())
-  name        String
-  description String?
-  basePrice   Float // ဗဟိုမှ သတ်မှတ်ထားသော စံနှုန်းစျေးနှုန်း
-  image       String?
-  isActive    Boolean @default(true)
-
-  // 🎯 Master Menu များသည် ကုမ္ပဏီတစ်ခုစီအတွက် သီးသန့်ဖြစ်သည်
-  companyId   String?
-  company     Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
-
-  // ဆိုင်ခွဲများနှင့် ချိတ်ဆက်မည့် Relationship
-  branches MenuOnBranch[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-}
-
-// 🎯 ဆိုင်ခွဲတစ်ခုချင်းစီမှာ မီနူးတစ်ခုချင်းစီကို အပိတ်/အဖွင့် လုပ်ရန် ကြားခံ Table (Junction Table)
-model MenuOnBranch {
-  menuId   String
-  branchId String
-  menu     Menu   @relation(fields: [menuId], references: [id], onDelete: Cascade)
-  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
-
-  isAvailable Boolean @default(true) // ဆိုင်ခွဲအလိုက် ဒီမီနူးကို ခေတ္တကုန်နေလို့ ပိတ်ထားတာမျိုး လုပ်ရန်
-
-  @@id([menuId, branchId])
-}
-
-model Inventory {
-  id           String @id @default(cuid())
-  name         String // ကုန်ကြမ်းအမည် (ဥပမာ - ကော်ဖီစေ့၊ သကြား၊ ထုပ်ပိုးဗူး)
-  quantity     Float // လက်ရှိလက်ကျန်ပမာဏ
-  unit         String // အလေးချိန်ယူနစ် (ဥပမာ - kg, pcs, bags)
-  minThreshold Float // အနည်းဆုံးရှိရမည့် သတ်မှတ်ချက် (ဒီထက်နည်းရင် Alert တက်မည်)
-
-  // မည်သည့်ဆိုင်ခွဲက ကုန်ကြမ်းလဲဆိုတာ တွဲဖက်ခြင်း
-  branchId String
-  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
 }

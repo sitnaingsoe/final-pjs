@@ -14,16 +14,16 @@ export default function RevenueChart({ data }: { data: ChartData[] }) {
     React.useEffect(() => { setMounted(true) }, [])
 
     return (
-        <div className="bg-slate-950 border border-slate-800 p-6 rounded-2xl shadow-xl space-y-4">
+        <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-xl space-y-4">
             <div>
-                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200">📊 Branch Revenue Analytics</h3>
-                <p className="text-3xs text-slate-500 font-bold uppercase mt-0.5">ဆိုင်ခွဲများအလိုက် ရောင်းအားနှိုင်းယှဉ်ချက် ဂရပ်</p>
+                <h3 className="text-sm font-bold uppercase tracking-wider text-gray-800">📊 Branch Revenue Analytics</h3>
+                <p className="text-3xs text-gray-400 font-bold uppercase mt-0.5">ဆိုင်ခွဲများအလိုက် ရောင်းအားနှိုင်းယှဉ်ချက် ဂရပ်</p>
             </div>
 
             {/* Recharts Container */}
             <div className="w-full h-64 text-2xs font-mono flex items-center justify-center">
                 {!mounted ? (
-                    <div className="text-slate-500 animate-pulse">Loading Chart...</div>
+                    <div className="text-gray-400 animate-pulse">Loading Chart...</div>
                 ) : (
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>

@@ -47,7 +47,7 @@ export default function BranchRowActions({ branch }: { branch: any }) {
             {/* 📝 Edit Button */}
             <button
                 onClick={() => setIsEditOpen(true)}
-                className="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 px-2.5 py-1.5 rounded-lg text-3xs font-bold transition"
+                className="bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 px-2.5 py-1.5 rounded-lg text-3xs font-bold transition"
             >
                 ✏️ Edit
             </button>
@@ -56,7 +56,7 @@ export default function BranchRowActions({ branch }: { branch: any }) {
             <button
                 onClick={handleDelete}
                 disabled={isPending}
-                className="bg-red-950/30 hover:bg-red-900/50 border border-red-900/50 text-red-400 px-2.5 py-1.5 rounded-lg text-3xs font-bold transition disabled:opacity-50"
+                className="bg-red-950/30 hover:bg-red-900/50 border border-red-900/50 text-red-600 px-2.5 py-1.5 rounded-lg text-3xs font-bold transition disabled:opacity-50"
             >
                 🗑️ Delete
             </button>
@@ -65,22 +65,22 @@ export default function BranchRowActions({ branch }: { branch: any }) {
             {isEditOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 text-left">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => !isPending && setIsEditOpen(false)}></div>
-                    <div className="bg-slate-950 border border-slate-800 p-6 rounded-2xl w-full max-w-md relative z-10 shadow-2xl space-y-4">
-                        <div className="border-b border-slate-900 pb-2">
-                            <h3 className="text-sm font-black text-orange-500 uppercase">📝 Edit Branch Profile</h3>
-                            <p className="text-3xs text-slate-500 font-bold uppercase">ဆိုင်ခွဲအချက်အလက်များ ပြင်ဆင်ခြင်း</p>
+                    <div className="bg-white border border-gray-200 p-6 rounded-2xl w-full max-w-md relative z-10 shadow-2xl space-y-4">
+                        <div className="border-b border-gray-100 pb-2">
+                            <h3 className="text-sm font-black text-black uppercase">📝 Edit Branch Profile</h3>
+                            <p className="text-3xs text-gray-400 font-bold uppercase">ဆိုင်ခွဲအချက်အလက်များ ပြင်ဆင်ခြင်း</p>
                         </div>
 
-                        {error && <div className="text-3xs text-red-400 bg-red-950/20 border border-red-900 p-2 rounded-lg">{error}</div>}
+                        {error && <div className="text-3xs text-red-600 bg-red-950/20 border border-red-900 p-2 rounded-lg">{error}</div>}
 
                         <form action={handleUpdate} className="space-y-4">
                             <InputField label="Branch Name" name="branchName" defaultValue={branch.name} required disabled={isPending} />
                             <InputField label="Address" name="address" defaultValue={branch.address || ''} disabled={isPending} />
                             <InputField label="Phone" name="phone" defaultValue={branch.phone || ''} disabled={isPending} />
 
-                            <div className="flex justify-end gap-2 pt-2 border-t border-slate-900">
-                                <button type="button" onClick={() => setIsEditOpen(false)} className="bg-slate-900 border border-slate-800 text-slate-300 px-4 py-2 rounded-xl text-xs font-bold">Cancel</button>
-                                <button type="submit" disabled={isPending} className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-xs font-bold">
+                            <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                                <button type="button" onClick={() => setIsEditOpen(false)} className="bg-gray-50 border border-gray-200 text-gray-700 px-4 py-2 rounded-xl text-xs font-bold">Cancel</button>
+                                <button type="submit" disabled={isPending} className="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-xl text-xs font-bold">
                                     {isPending ? "Saving..." : "Save Changes"}
                                 </button>
                             </div>

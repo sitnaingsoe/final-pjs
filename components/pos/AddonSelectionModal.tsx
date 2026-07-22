@@ -78,11 +78,11 @@ export default function AddonSelectionModal({ isOpen, onClose, menuItem, onAddTo
 
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="bg-gray-50 border border-gray-300 rounded-2xl w-full max-w-lg shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
                 {/* Header */}
-                <div className="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-950">
-                    <h2 className="text-xl font-black text-slate-100">{menuItem.name}</h2>
-                    <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">
+                <div className="p-5 border-b border-gray-200 flex justify-between items-center bg-white">
+                    <h2 className="text-xl font-black text-gray-900">{menuItem.name}</h2>
+                    <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-500 hover:bg-slate-700 transition-colors">
                         ✕
                     </button>
                 </div>
@@ -97,11 +97,11 @@ export default function AddonSelectionModal({ isOpen, onClose, menuItem, onAddTo
                         return (
                             <div key={cat.id} className="space-y-3">
                                 <div className="flex justify-between items-baseline">
-                                    <h3 className="font-bold text-slate-200 flex items-center gap-2">
+                                    <h3 className="font-bold text-gray-800 flex items-center gap-2">
                                         {cat.name}
-                                        {isRequired && <span className="text-3xs bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded uppercase">Required</span>}
+                                        {isRequired && <span className="text-3xs bg-black/20 text-gray-800 px-2 py-0.5 rounded uppercase">Required</span>}
                                     </h3>
-                                    <span className="text-xs text-slate-500">
+                                    <span className="text-xs text-gray-400">
                                         {cat.maxSelect === 1 ? 'Choose 1' : 
                                          cat.maxSelect ? `Choose up to ${cat.maxSelect}` : 'Choose multiple'}
                                     </span>
@@ -114,18 +114,18 @@ export default function AddonSelectionModal({ isOpen, onClose, menuItem, onAddTo
                                         const isRadio = cat.maxSelect === 1;
 
                                         return (
-                                            <label key={addon.id} className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors ${isChecked ? 'bg-orange-500/10 border-orange-500/50' : 'bg-slate-950 border-slate-800 hover:border-slate-700'}`}>
+                                            <label key={addon.id} className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors ${isChecked ? 'bg-black/10 border-black/50' : 'bg-white border-gray-200 hover:border-gray-300'}`}>
                                                 <div className="flex items-center gap-3">
-                                                    <div className={`w-5 h-5 flex items-center justify-center border ${isRadio ? 'rounded-full' : 'rounded'} ${isChecked ? 'bg-orange-500 border-orange-500' : 'bg-slate-900 border-slate-600'}`}>
-                                                        {isChecked && !isRadio && <span className="text-white text-xs">✓</span>}
+                                                    <div className={`w-5 h-5 flex items-center justify-center border ${isRadio ? 'rounded-full' : 'rounded'} ${isChecked ? 'bg-black border-black' : 'bg-gray-50 border-slate-600'}`}>
+                                                        {isChecked && !isRadio && <span className="text-black text-xs">✓</span>}
                                                         {isChecked && isRadio && <div className="w-2 h-2 bg-white rounded-full"></div>}
                                                     </div>
-                                                    <span className="text-sm font-medium text-slate-200">{addon.name}</span>
+                                                    <span className="text-sm font-medium text-gray-800">{addon.name}</span>
                                                 </div>
                                                 {addon.price > 0 ? (
-                                                    <span className="text-xs font-mono text-slate-400">+{addon.price.toLocaleString()} MMK</span>
+                                                    <span className="text-xs font-mono text-gray-500">+{addon.price.toLocaleString()} MMK</span>
                                                 ) : (
-                                                    <span className="text-xs text-slate-500">Free</span>
+                                                    <span className="text-xs text-gray-400">Free</span>
                                                 )}
                                                 <input 
                                                     type={isRadio ? "radio" : "checkbox"} 
@@ -138,7 +138,7 @@ export default function AddonSelectionModal({ isOpen, onClose, menuItem, onAddTo
                                     })}
                                 </div>
                                 {hasError && (
-                                    <p className="text-xs text-red-400 mt-1">
+                                    <p className="text-xs text-red-600 mt-1">
                                         Please select at least {cat.minSelect || 1} option(s).
                                     </p>
                                 )}
@@ -148,11 +148,11 @@ export default function AddonSelectionModal({ isOpen, onClose, menuItem, onAddTo
                 </div>
 
                 {/* Footer */}
-                <div className="p-5 border-t border-slate-800 bg-slate-950 shrink-0">
+                <div className="p-5 border-t border-gray-200 bg-white shrink-0">
                     <button 
                         onClick={handleAdd}
                         disabled={!isValid}
-                        className="w-full bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-400 hover:to-rose-400 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-500 text-white font-black py-4 rounded-xl transition-all shadow-lg hover:shadow-orange-500/25 flex items-center justify-between px-6"
+                        className="w-full bg-gradient-to-r from-orange-500 to-rose-500 hover:from-gray-800 hover:to-gray-500 disabled:from-slate-800 disabled:to-slate-800 disabled:text-gray-400 text-black font-black py-4 rounded-xl transition-all shadow-lg hover:shadow-orange-500/25 flex items-center justify-between px-6"
                     >
                         <span>Add to Cart</span>
                         <span className="font-mono text-lg">{calculateTotalPrice().toLocaleString()} MMK</span>

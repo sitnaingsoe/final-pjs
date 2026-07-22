@@ -44,26 +44,26 @@ export default async function PosPage({
     const branchTables = (tablesResult.data || []).filter(t => t.branchId === session.user.branchId)
 
     return (
-        <div className="h-[100dvh] w-full bg-slate-950 text-slate-200 overflow-hidden flex flex-col">
-            <header className="bg-slate-900 border-b border-slate-800 p-4 flex items-center justify-between shrink-0">
+        <div className="h-[100dvh] w-full bg-white text-gray-800 overflow-hidden flex flex-col">
+            <header className="bg-gray-50 border-b border-gray-200 p-4 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-rose-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20 text-white font-black text-xl">
+                    <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-rose-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20 text-black font-black text-xl">
                         B
                     </div>
                     <div>
-                        <h1 className="font-black text-lg tracking-wider uppercase text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-rose-400">
+                        <h1 className="font-black text-lg tracking-wider uppercase text-transparent bg-clip-text bg-gradient-to-r from-gray-800 to-gray-500">
                             BiteCraft POS
                         </h1>
-                        <p className="text-3xs text-slate-500 font-bold uppercase tracking-wider">
+                        <p className="text-3xs text-gray-400 font-bold uppercase tracking-wider">
                             Cashier Terminal • {session.user.name || 'Staff'}
                         </p>
                     </div>
                 </div>
                 <div>
-                    <a href="/dashboard" className="text-xs font-bold bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg transition-colors hidden sm:block">
+                    <a href="/dashboard" className="text-xs font-bold bg-gray-200 hover:bg-slate-700 px-4 py-2 rounded-lg transition-colors hidden sm:block">
                         Dashboard သို့ ပြန်သွားရန်
                     </a>
-                    <a href="/dashboard" className="w-10 h-10 flex items-center justify-center bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors sm:hidden text-lg">
+                    <a href="/dashboard" className="w-10 h-10 flex items-center justify-center bg-gray-200 hover:bg-slate-700 rounded-lg transition-colors sm:hidden text-lg">
                         🔙
                     </a>
                 </div>

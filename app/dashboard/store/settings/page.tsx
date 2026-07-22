@@ -14,14 +14,14 @@ export default async function SettingsPage() {
     return (
         <div className="max-w-3xl space-y-6">
             <div>
-                <h2 className="text-2xl font-black text-slate-100 flex items-center gap-2">
-                    <span className="text-orange-500">⚙️</span> ဆိုင်အထွေထွေ ဆက်တင်များ (Settings)
+                <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
+                    <span className="text-black">⚙️</span> ဆိုင်အထွေထွေ ဆက်တင်များ (Settings)
                 </h2>
-                <p className="text-sm text-slate-400 mt-1">ဆိုင်၏ အချက်အလက်များနှင့် အွန်လိုင်းမှ အော်ဒါလက်ခံမည့် အခြေအနေကို ပြင်ဆင်ပါ</p>
+                <p className="text-sm text-gray-500 mt-1">ဆိုင်၏ အချက်အလက်များနှင့် အွန်လိုင်းမှ အော်ဒါလက်ခံမည့် အခြေအနေကို ပြင်ဆင်ပါ</p>
             </div>
 
             {/* ပင်မ ဆက်တင်ဖောင်ကြီး */}
-            <div className="bg-slate-900 border border-slate-800 p-8 rounded-3xl shadow-xl shadow-black/20">
+            <div className="bg-gray-50 border border-gray-200 p-8 rounded-3xl shadow-xl shadow-black/20">
                 <form
                     action={async (formData) => {
                         'use server'
@@ -39,11 +39,11 @@ export default async function SettingsPage() {
                         : 'bg-red-500/10 border-red-500/30'
                     }`}>
                         <div>
-                            <h4 className={`font-black text-lg flex items-center gap-2 ${settings?.isAcceptingOrders ? 'text-green-400' : 'text-red-400'}`}>
+                            <h4 className={`font-black text-lg flex items-center gap-2 ${settings?.isAcceptingOrders ? 'text-green-600' : 'text-red-600'}`}>
                                 <span className={`w-3 h-3 rounded-full ${settings?.isAcceptingOrders ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></span>
                                 အွန်လိုင်း အော်ဒါစနစ် အခြေအနေ
                             </h4>
-                            <p className="text-sm text-slate-400 mt-1">လက်ရှိတွင် ကတ်စတမ်မာများ အော်ဒါမှာယူ၍ {settings?.isAcceptingOrders ? 'ရနေပါသည်' : 'မရသေးပါ'}</p>
+                            <p className="text-sm text-gray-500 mt-1">လက်ရှိတွင် ကတ်စတမ်မာများ အော်ဒါမှာယူ၍ {settings?.isAcceptingOrders ? 'ရနေပါသည်' : 'မရသေးပါ'}</p>
                         </div>
 
                         {/* Native HTML Select အား Toggle Switch သဖွယ် အသုံးပြုခြင်း */}
@@ -56,8 +56,8 @@ export default async function SettingsPage() {
                                 : 'bg-red-500/20 border-red-500/50 text-red-300 focus:border-red-400'
                             }`}
                         >
-                            <option value="true" className="bg-slate-900 text-green-400">🟢 ဆိုင်ဖွင့်မည် (Accept Orders)</option>
-                            <option value="false" className="bg-slate-900 text-red-400">🛑 ဆိုင်ပိတ်မည် (Pause Orders)</option>
+                            <option value="true" className="bg-gray-50 text-green-600">🟢 ဆိုင်ဖွင့်မည် (Accept Orders)</option>
+                            <option value="false" className="bg-gray-50 text-red-600">🛑 ဆိုင်ပိတ်မည် (Pause Orders)</option>
                         </select>
                     </div>
 
@@ -66,12 +66,12 @@ export default async function SettingsPage() {
                     {/* အခြေခံ အချက်အလက်များ */}
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">ဆိုင်အမည် (Restaurant Name)</label>
+                            <label className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">ဆိုင်အမည် (Restaurant Name)</label>
                             <input
                                 type="text"
                                 name="restaurantName"
                                 defaultValue={settings?.restaurantName || 'မြန်မာ့ရသာ'}
-                                className="w-full bg-slate-950 border border-slate-700 rounded-xl p-4 text-slate-200 focus:outline-none focus:border-orange-500 transition-colors"
+                                className="w-full bg-white border border-gray-300 rounded-xl p-4 text-gray-800 focus:outline-none focus:border-black transition-colors"
                                 required
                             />
                         </div>
@@ -79,7 +79,7 @@ export default async function SettingsPage() {
 
                     {/* သိမ်းဆည်းမည့် ခလုတ် */}
                     <div className="flex justify-end pt-4">
-                        <button type="submit" className="bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-400 hover:to-rose-400 text-white text-sm font-black px-8 py-4 rounded-xl transition-all shadow-lg shadow-orange-500/25 flex items-center gap-2">
+                        <button type="submit" className="bg-gradient-to-r from-orange-500 to-rose-500 hover:from-gray-800 hover:to-gray-500 text-black text-sm font-black px-8 py-4 rounded-xl transition-all shadow-lg shadow-orange-500/25 flex items-center gap-2">
                             <span>🔄</span> ဆက်တင်များ သိမ်းဆည်းမည်
                         </button>
                     </div>

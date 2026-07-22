@@ -345,7 +345,7 @@ export default function PosTerminal({
             {billRequests.length > 0 && (
                 <div className="absolute top-4 right-4 md:right-[420px] z-50 flex flex-col gap-2 w-full max-w-xs">
                     {billRequests.map(req => (
-                        <div key={req.id} className="bg-gradient-to-r from-rose-600 to-red-600 text-white p-3 rounded-2xl shadow-2xl flex items-center justify-between gap-3 animate-in slide-in-from-top-4 border border-rose-400">
+                        <div key={req.id} className="bg-gradient-to-r from-rose-600 to-red-600 text-black p-3 rounded-2xl shadow-2xl flex items-center justify-between gap-3 animate-in slide-in-from-top-4 border border-rose-400">
                             <div className="flex items-center gap-3">
                                 <span className="text-2xl origin-top animate-[wiggle_1s_ease-in-out_infinite]">🔔</span>
                                 <div className="leading-tight">
@@ -368,13 +368,13 @@ export default function PosTerminal({
             )}
 
             {/* === ဘယ်ဘက်ခြမ်း: Menu Items & Categories === */}
-            <div className="flex-1 flex flex-col h-full bg-slate-950 overflow-hidden">
+            <div className="flex-1 flex flex-col h-full bg-white overflow-hidden">
                 {/* Categories Banner */}
-                <div className="p-4 bg-slate-900/50 border-b border-slate-800 overflow-x-auto no-scrollbar shrink-0">
+                <div className="p-4 bg-gray-50/50 border-b border-gray-200 overflow-x-auto no-scrollbar shrink-0">
                     <div className="flex gap-3">
                         <button
                             onClick={() => setSelectedCategory('all')}
-                            className={`whitespace-nowrap px-5 py-2.5 rounded-full text-xs font-bold transition-all ${selectedCategory === 'all' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/25' : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-slate-200'}`}
+                            className={`whitespace-nowrap px-5 py-2.5 rounded-full text-xs font-bold transition-all ${selectedCategory === 'all' ? 'bg-black text-white shadow-lg shadow-orange-500/25' : 'bg-gray-200 text-gray-500 hover:bg-slate-700 hover:text-gray-800'}`}
                         >
                             အားလုံး (All)
                         </button>
@@ -382,7 +382,7 @@ export default function PosTerminal({
                             <button
                                 key={cat.id}
                                 onClick={() => setSelectedCategory(cat.id)}
-                                className={`whitespace-nowrap px-5 py-2.5 rounded-full text-xs font-bold transition-all ${selectedCategory === cat.id ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/25' : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-slate-200'}`}
+                                className={`whitespace-nowrap px-5 py-2.5 rounded-full text-xs font-bold transition-all ${selectedCategory === cat.id ? 'bg-black text-white shadow-lg shadow-orange-500/25' : 'bg-gray-200 text-gray-500 hover:bg-slate-700 hover:text-gray-800'}`}
                             >
                                 {cat.name}
                             </button>
@@ -396,41 +396,41 @@ export default function PosTerminal({
                         <div
                             key={item.id}
                             onClick={() => handleItemClick(item)}
-                            className="bg-slate-900 border border-slate-800 rounded-2xl cursor-pointer hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/10 transition-all flex flex-col group relative overflow-hidden active:scale-95"
+                            className="bg-gray-50 border border-gray-200 rounded-2xl cursor-pointer hover:border-black hover:shadow-lg hover:shadow-black/10 transition-all flex flex-col group relative overflow-hidden active:scale-95"
                         >
                             {/* 🖼️ Hero Image */}
                             {item.imageUrl ? (
-                                <div className="w-full h-40 bg-slate-800 relative">
+                                <div className="w-full h-40 bg-gray-200 relative">
                                     <Image src={item.imageUrl} alt={item.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="(max-width: 768px) 50vw, 25vw" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-80"></div>
                                 </div>
                             ) : (
-                                <div className="w-full h-32 bg-slate-800 flex items-center justify-center relative">
-                                    <span className="text-slate-600 text-3xl">🍽️</span>
+                                <div className="w-full h-32 bg-gray-200 flex items-center justify-center relative">
+                                    <span className="text-gray-300 text-3xl">🍽️</span>
                                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-80"></div>
                                 </div>
                             )}
 
                             <div className="p-4 flex-1 flex flex-col justify-between -mt-6 relative z-10">
                                 <div>
-                                    <h3 className="text-sm font-bold text-slate-100 group-hover:text-orange-400 transition-colors line-clamp-2 drop-shadow-md">{item.name}</h3>
-                                    <span className="text-3xs text-slate-400 mt-1 uppercase tracking-wider">{item.category?.name}</span>
+                                    <h3 className="text-sm font-bold text-gray-900 group-hover:text-gray-800 transition-colors line-clamp-2 drop-shadow-md">{item.name}</h3>
+                                    <span className="text-3xs text-gray-500 mt-1 uppercase tracking-wider">{item.category?.name}</span>
                                 </div>
                                 <div className="mt-4 font-black font-mono">
                                     {item.discount && item.discount.isActive ? (
                                         <div className="flex flex-col">
-                                            <span className="text-3xs text-slate-500 line-through leading-none">{item.price.toLocaleString()} MMK</span>
+                                            <span className="text-3xs text-gray-400 line-through leading-none">{item.price.toLocaleString()} MMK</span>
                                             <span className="text-rose-400 leading-tight">{getFinalPrice(item).toLocaleString()} <span className="text-3xs font-normal">MMK</span></span>
                                         </div>
                                     ) : (
-                                        <span className="text-orange-400">{item.price.toLocaleString()} <span className="text-3xs text-slate-500 font-normal">MMK</span></span>
+                                        <span className="text-gray-800">{item.price.toLocaleString()} <span className="text-3xs text-gray-400 font-normal">MMK</span></span>
                                     )}
                                 </div>
                             </div>
                         </div>
                     ))}
                     {displayItems.length === 0 && (
-                        <div className="col-span-full h-40 flex items-center justify-center text-sm text-slate-500">
+                        <div className="col-span-full h-40 flex items-center justify-center text-sm text-gray-400">
                             မီနူးများ မရှိသေးပါ
                         </div>
                     )}
@@ -439,24 +439,24 @@ export default function PosTerminal({
 
             {/* === ညာဘက်ခြမ်း: Shopping Cart (Desktop Sidebar / Mobile Bottom Sheet) === */}
             <div className={`
-                fixed inset-y-0 right-0 z-40 w-full md:w-[400px] bg-slate-900 border-l border-slate-800 shadow-2xl flex flex-col transition-transform duration-300 ease-in-out
+                fixed inset-y-0 right-0 z-40 w-full md:w-[400px] bg-gray-50 border-l border-gray-200 shadow-2xl flex flex-col transition-transform duration-300 ease-in-out
                 ${isCartOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
                 md:relative md:z-0
             `}>
-                <div className="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-950/50">
+                <div className="p-5 border-b border-gray-200 flex justify-between items-center bg-white/50">
                     <div className="flex flex-col">
-                        <h2 className="text-lg font-black text-slate-200 flex items-center gap-2">
-                            <span className="text-orange-500">🛒</span> Current Order
+                        <h2 className="text-lg font-black text-gray-800 flex items-center gap-2">
+                            <span className="text-black">🛒</span> Current Order
                         </h2>
                         {isBillRequested && (
-                            <span className="text-xs bg-rose-500 text-white font-bold px-2 py-1 rounded-full animate-pulse mt-2 mb-1 inline-block text-center shadow-lg shadow-rose-500/20 border border-rose-400">
+                            <span className="text-xs bg-rose-500 text-black font-bold px-2 py-1 rounded-full animate-pulse mt-2 mb-1 inline-block text-center shadow-lg shadow-rose-500/20 border border-rose-400">
                                 🔔 ဘေလ်ရှင်းရန် တောင်းဆိုထားသည်
                             </span>
                         )}
                         {/* Offline & Syncing Status Badges */}
                         <div className="flex items-center gap-2 mt-1">
                             {!isOnline && (
-                                <span className="text-3xs font-bold bg-red-500/20 text-red-400 px-2 py-0.5 rounded flex items-center gap-1">
+                                <span className="text-3xs font-bold bg-red-500/20 text-red-600 px-2 py-0.5 rounded flex items-center gap-1">
                                     <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> Offline
                                 </span>
                             )}
@@ -469,19 +469,19 @@ export default function PosTerminal({
                     </div>
                     <button 
                         onClick={() => setIsCartOpen(false)}
-                        className="md:hidden w-8 h-8 flex items-center justify-center rounded-lg bg-slate-800 text-slate-400"
+                        className="md:hidden w-8 h-8 flex items-center justify-center rounded-lg bg-gray-200 text-gray-500"
                     >
                         ✕
                     </button>
                 </div>
 
                 {/* Table Selector */}
-                <div className="p-4 border-b border-slate-800 bg-slate-900">
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">စားပွဲ ရွေးချယ်ရန် (Table)</label>
+                <div className="p-4 border-b border-gray-200 bg-gray-50">
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">စားပွဲ ရွေးချယ်ရန် (Table)</label>
                     <select 
                         value={selectedTableId || ''} 
                         onChange={(e) => setSelectedTableId(e.target.value || null)}
-                        className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-orange-500 transition-colors"
+                        className="w-full bg-white border border-gray-300 rounded-xl p-3 text-sm text-gray-800 focus:outline-none focus:border-black transition-colors"
                     >
                         <option value="">ပါဆယ် (Takeaway)</option>
                         {tables.map(table => (
@@ -495,38 +495,38 @@ export default function PosTerminal({
                 <div className="flex-1 overflow-y-auto p-4 space-y-3">
                     {/* Existing Items */}
                     {existingItems.map((item, index) => (
-                        <div key={`exist-${index}`} className="bg-slate-900 border border-slate-700/50 rounded-xl p-3 flex justify-between gap-3 opacity-70">
+                        <div key={`exist-${index}`} className="bg-gray-50 border border-gray-300/50 rounded-xl p-3 flex justify-between gap-3 opacity-70">
                             <div className="flex-1">
-                                <h4 className="text-sm font-bold text-slate-300 leading-tight">{item.name}</h4>
+                                <h4 className="text-sm font-bold text-gray-700 leading-tight">{item.name}</h4>
                                 {item.addons && item.addons.length > 0 && (
-                                    <p className="text-3xs text-slate-500 mt-0.5 leading-tight">
+                                    <p className="text-3xs text-gray-400 mt-0.5 leading-tight">
                                         {item.addons.map((a: any) => a.name).join(', ')}
                                     </p>
                                 )}
-                                <p className="text-xs font-mono text-slate-400 mt-1">{(item.price * item.quantity).toLocaleString()} MMK</p>
+                                <p className="text-xs font-mono text-gray-500 mt-1">{(item.price * item.quantity).toLocaleString()} MMK</p>
                             </div>
                             <div className="flex items-center gap-3">
-                                <span className="w-8 text-center text-xs font-bold text-slate-400">Qty: {item.quantity}</span>
+                                <span className="w-8 text-center text-xs font-bold text-gray-500">Qty: {item.quantity}</span>
                             </div>
                         </div>
                     ))}
                     {/* New Items */}
                     {cart.map((item, index) => (
-                        <div key={item.id} className="bg-slate-950 border border-slate-800 rounded-xl p-3 flex justify-between gap-3 animate-in fade-in slide-in-from-right-4">
+                        <div key={item.id} className="bg-white border border-gray-200 rounded-xl p-3 flex justify-between gap-3 animate-in fade-in slide-in-from-right-4">
                             <div className="flex-1">
-                                <h4 className="text-sm font-bold text-slate-200 leading-tight">{item.name}</h4>
+                                <h4 className="text-sm font-bold text-gray-800 leading-tight">{item.name}</h4>
                                 {item.addons && item.addons.length > 0 && (
-                                    <p className="text-3xs text-slate-400 mt-0.5 leading-tight">
+                                    <p className="text-3xs text-gray-500 mt-0.5 leading-tight">
                                         {item.addons.map(a => a.name).join(', ')}
                                     </p>
                                 )}
-                                <p className="text-xs font-mono text-orange-400 mt-1">{(item.price * item.quantity).toLocaleString()} MMK</p>
+                                <p className="text-xs font-mono text-gray-800 mt-1">{(item.price * item.quantity).toLocaleString()} MMK</p>
                             </div>
                             <div className="flex items-center gap-3">
-                                <div className="flex items-center bg-slate-900 rounded-lg border border-slate-700">
-                                    <button onClick={() => updateQuantity(item.id, -1)} className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 rounded-l-lg transition-colors text-lg">−</button>
-                                    <span className="w-6 text-center text-xs font-bold text-slate-200">{item.quantity}</span>
-                                    <button onClick={() => updateQuantity(item.id, 1)} className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 rounded-r-lg transition-colors text-lg">+</button>
+                                <div className="flex items-center bg-gray-50 rounded-lg border border-gray-300">
+                                    <button onClick={() => updateQuantity(item.id, -1)} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-100 rounded-l-lg transition-colors text-lg">−</button>
+                                    <span className="w-6 text-center text-xs font-bold text-gray-800">{item.quantity}</span>
+                                    <button onClick={() => updateQuantity(item.id, 1)} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-100 rounded-r-lg transition-colors text-lg">+</button>
                                 </div>
                                 <button onClick={() => removeItem(item.id)} className="w-8 h-8 flex items-center justify-center bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-lg transition-colors">
                                     🗑️
@@ -535,17 +535,17 @@ export default function PosTerminal({
                         </div>
                     ))}
                     {cart.length === 0 && existingItems.length === 0 && (
-                        <div className="h-full flex flex-col items-center justify-center text-slate-500 space-y-3 opacity-60 min-h-[200px]">
+                        <div className="h-full flex flex-col items-center justify-center text-gray-400 space-y-3 opacity-60 min-h-[200px]">
                             <span className="text-5xl">🛒</span>
                             <p className="text-xs uppercase font-bold tracking-wider">ဘေလ်ရှင်းရန် မရှိသေးပါ</p>
                         </div>
                     )}
                 </div>
 
-                <div className="p-5 bg-slate-950 border-t border-slate-800 shrink-0">
+                <div className="p-5 bg-white border-t border-gray-200 shrink-0">
                     <div className="flex justify-between items-center mb-4">
-                        <span className="text-sm font-bold text-slate-400 uppercase tracking-wider">Total</span>
-                        <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-rose-400 font-mono">
+                        <span className="text-sm font-bold text-gray-500 uppercase tracking-wider">Total</span>
+                        <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-800 to-gray-500 font-mono">
                             {totalAmount.toLocaleString()} MMK
                         </span>
                     </div>
@@ -553,14 +553,14 @@ export default function PosTerminal({
                         <button
                             onClick={handleSendOrder}
                             disabled={(cart.length === 0 || isSubmitting) ? true : undefined}
-                            className="flex-1 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-900 disabled:text-slate-600 text-white text-xs font-bold py-3 rounded-xl transition-all shadow-lg flex items-center justify-center"
+                            className="flex-1 bg-gray-200 hover:bg-slate-700 disabled:bg-gray-50 disabled:text-gray-300 text-black text-xs font-bold py-3 rounded-xl transition-all shadow-lg flex items-center justify-center"
                         >
                             👨‍🍳 အော်ဒါပို့မည်
                         </button>
                         <button
                             onClick={handleCheckout}
                             disabled={((cart.length === 0 && !activeOrderId) || isSubmitting) ? true : undefined}
-                            className="flex-[2] bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-400 hover:to-rose-400 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-500 text-white text-sm font-black py-3 rounded-xl transition-all shadow-lg hover:shadow-orange-500/25 flex items-center justify-center gap-2"
+                            className="flex-[2] bg-gradient-to-r from-orange-500 to-rose-500 hover:from-gray-800 hover:to-gray-500 disabled:from-slate-800 disabled:to-slate-800 disabled:text-gray-400 text-black text-sm font-black py-3 rounded-xl transition-all shadow-lg hover:shadow-orange-500/25 flex items-center justify-center gap-2"
                         >
                             {isSubmitting ? "Processing..." : "💸 ဘေလ်ရှင်းမည်"}
                         </button>
@@ -573,7 +573,7 @@ export default function PosTerminal({
                 <div className="md:hidden fixed bottom-6 left-4 right-4 z-30 pb-[env(safe-area-inset-bottom)]">
                     <button
                         onClick={() => setIsCartOpen(true)}
-                        className="w-full bg-gradient-to-r from-orange-500 to-rose-500 text-white text-sm font-black py-4 rounded-2xl shadow-2xl shadow-orange-500/30 flex justify-between items-center px-6"
+                        className="w-full bg-gradient-to-r from-orange-500 to-rose-500 text-black text-sm font-black py-4 rounded-2xl shadow-2xl shadow-orange-500/30 flex justify-between items-center px-6"
                     >
                         <span className="flex items-center gap-2">🛒 <span>{cart.length} Items</span></span>
                         <span>{totalAmount.toLocaleString()} MMK</span>

@@ -35,28 +35,28 @@ export default function TrashSection({ deletedItems }: TrashSectionProps) {
     }
 
     return (
-        <div className="bg-slate-900 border border-slate-800 p-8 rounded-3xl shadow-xl mt-8">
-            <h3 className="text-xl font-black text-slate-100 flex items-center gap-2 mb-6">
+        <div className="bg-gray-50 border border-gray-200 p-8 rounded-3xl shadow-xl mt-8">
+            <h3 className="text-xl font-black text-gray-900 flex items-center gap-2 mb-6">
                 <span className="text-red-500">🗑️</span> ဖျက်ထားသော မီနူးများ (Trash)
             </h3>
             
             {deletedItems.length === 0 ? (
-                <div className="text-center py-8 text-sm text-slate-500 border border-dashed border-slate-700 rounded-2xl">
+                <div className="text-center py-8 text-sm text-gray-400 border border-dashed border-gray-300 rounded-2xl">
                     အမှိုက်ပုံးထဲတွင် မီနူးများ မရှိသေးပါ
                 </div>
             ) : (
                 <div className="space-y-4">
                     {deletedItems.map((item) => (
-                        <div key={item.id} className="bg-slate-950 border border-slate-800 p-4 rounded-xl flex items-center justify-between gap-4">
+                        <div key={item.id} className="bg-white border border-gray-200 p-4 rounded-xl flex items-center justify-between gap-4">
                             <div>
-                                <h4 className="font-bold text-slate-300">{item.name}</h4>
-                                <p className="text-xs text-slate-500 mt-1">Category: {item.category?.name} | Price: {item.price.toLocaleString()} MMK</p>
+                                <h4 className="font-bold text-gray-700">{item.name}</h4>
+                                <p className="text-xs text-gray-400 mt-1">Category: {item.category?.name} | Price: {item.price.toLocaleString()} MMK</p>
                             </div>
                             <div className="flex gap-2">
                                 <button 
                                     onClick={() => handleRestore(item.id)}
                                     disabled={isProcessing}
-                                    className="px-4 py-2 bg-slate-800 text-green-400 font-bold text-xs rounded-lg hover:bg-slate-700 transition-colors disabled:opacity-50"
+                                    className="px-4 py-2 bg-gray-200 text-green-600 font-bold text-xs rounded-lg hover:bg-slate-700 transition-colors disabled:opacity-50"
                                 >
                                     Restore
                                 </button>

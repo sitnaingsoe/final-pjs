@@ -44,32 +44,32 @@ function ResetPasswordForm() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-            <div className="bg-slate-950 p-8 rounded-2xl shadow-2xl border border-slate-800 w-full max-w-md space-y-6">
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+            <div className="bg-white p-8 rounded-2xl shadow-2xl border border-gray-200 w-full max-w-md space-y-6">
 
                 {/* Header */}
                 <div className="text-center space-y-2">
                     <div className="text-3xl">🔒</div>
-                    <h1 className="text-xl font-black text-white uppercase tracking-wider">Reset Password</h1>
-                    <p className="text-xs text-slate-400">သင်၏ အကောင့်အတွက် စကားဝှက်အသစ် သတ်မှတ်ပါ</p>
+                    <h1 className="text-xl font-black text-black uppercase tracking-wider">Reset Password</h1>
+                    <p className="text-xs text-gray-500">သင်၏ အကောင့်အတွက် စကားဝှက်အသစ် သတ်မှတ်ပါ</p>
                 </div>
 
                 {/* Token မရှိပါက Warning */}
                 {!token && (
-                    <div className="bg-red-950/50 border border-red-800 text-red-400 text-xs p-3.5 rounded-xl font-medium">
+                    <div className="bg-red-50 border border-red-200 text-red-600 text-xs p-3.5 rounded-xl font-medium">
                         ⚠️ Reset token ပျောက်ဆုံးနေပါသည်။ Forgot Password page မှ ထပ်မံ တောင်းဆိုပါ။
                     </div>
                 )}
 
                 {/* Error / Success Alert */}
                 {message?.error && (
-                    <div className="bg-red-950/50 border border-red-800 text-red-400 text-xs p-3.5 rounded-xl font-medium">
+                    <div className="bg-red-50 border border-red-200 text-red-600 text-xs p-3.5 rounded-xl font-medium">
                         ⚠️ {message.error}
                     </div>
                 )}
                 {message?.success && (
-                    <div className="bg-green-950/50 border border-green-800 text-green-400 text-xs p-3.5 rounded-xl font-medium">
-                        🎉 {message.success} <span className="text-slate-500">(Login page သို့ ပြန်ညွှန်းနေသည်...)</span>
+                    <div className="bg-green-950/50 border border-green-200 text-green-600 text-xs p-3.5 rounded-xl font-medium">
+                        🎉 {message.success} <span className="text-gray-400">(Login page သို့ ပြန်ညွှန်းနေသည်...)</span>
                     </div>
                 )}
 
@@ -79,7 +79,7 @@ function ResetPasswordForm() {
 
                         {/* New Password */}
                         <div>
-                            <label className="block text-xs font-bold text-slate-400 mb-1.5">
+                            <label className="block text-xs font-bold text-gray-500 mb-1.5">
                                 စကားဝှက်အသစ် (New Password)
                             </label>
                             <div className="relative">
@@ -87,7 +87,7 @@ function ResetPasswordForm() {
                                     type={showPassword ? 'text' : 'password'}
                                     name="password"
                                     placeholder="••••••••"
-                                    className="w-full border border-slate-800 rounded-xl p-3 pr-10 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition bg-slate-900 text-white placeholder-slate-500"
+                                    className="w-full border border-gray-200 rounded-xl p-3 pr-10 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition bg-gray-50 text-black placeholder-gray-400"
                                     required
                                     minLength={6}
                                     disabled={isPending}
@@ -95,7 +95,7 @@ function ResetPasswordForm() {
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition text-sm"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black transition text-sm"
                                 >
                                     {showPassword ? '🙈' : '👁️'}
                                 </button>
@@ -104,7 +104,7 @@ function ResetPasswordForm() {
 
                         {/* Confirm Password */}
                         <div>
-                            <label className="block text-xs font-bold text-slate-400 mb-1.5">
+                            <label className="block text-xs font-bold text-gray-500 mb-1.5">
                                 စကားဝှက်အသစ် ထပ်မံရိုက်ပါ (Confirm Password)
                             </label>
                             <div className="relative">
@@ -112,14 +112,14 @@ function ResetPasswordForm() {
                                     type={showConfirm ? 'text' : 'password'}
                                     name="confirmPassword"
                                     placeholder="••••••••"
-                                    className="w-full border border-slate-800 rounded-xl p-3 pr-10 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition bg-slate-900 text-white placeholder-slate-500"
+                                    className="w-full border border-gray-200 rounded-xl p-3 pr-10 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition bg-gray-50 text-black placeholder-gray-400"
                                     required
                                     disabled={isPending}
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowConfirm(!showConfirm)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition text-sm"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black transition text-sm"
                                 >
                                     {showConfirm ? '🙈' : '👁️'}
                                 </button>
@@ -130,7 +130,7 @@ function ResetPasswordForm() {
                         <button
                             type="submit"
                             disabled={isPending}
-                            className="w-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold py-3.5 rounded-xl transition shadow-md disabled:bg-slate-800 disabled:text-slate-500 flex items-center justify-center gap-2 mt-2"
+                            className="w-full bg-black hover:bg-gray-800 text-white text-sm font-bold py-3.5 rounded-xl transition shadow-md disabled:bg-gray-200 disabled:text-gray-400 flex items-center justify-center gap-2 mt-2"
                         >
                             {isPending ? (
                                 <>
@@ -145,9 +145,9 @@ function ResetPasswordForm() {
                 )}
 
                 {/* Back to Forgot Password */}
-                <div className="text-center pt-2 border-t border-slate-900">
-                    <a href="/forgot-password" className="text-xs text-slate-400 hover:text-white transition">
-                        Link ထပ်တောင်းရန် <span className="text-orange-500 font-bold hover:underline">Forgot Password</span>
+                <div className="text-center pt-2 border-t border-gray-100">
+                    <a href="/forgot-password" className="text-xs text-gray-500 hover:text-black transition">
+                        Link ထပ်တောင်းရန် <span className="text-black font-bold hover:underline">Forgot Password</span>
                     </a>
                 </div>
 
@@ -160,8 +160,8 @@ function ResetPasswordForm() {
 export default function ResetPasswordPage() {
     return (
         <Suspense fallback={
-            <div className="text-white text-center min-h-screen flex items-center justify-center bg-slate-900">
-                <span className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></span>
+            <div className="text-black text-center min-h-screen flex items-center justify-center bg-gray-50">
+                <span className="w-8 h-8 border-4 border-black border-t-transparent rounded-full animate-spin"></span>
             </div>
         }>
             <ResetPasswordForm />

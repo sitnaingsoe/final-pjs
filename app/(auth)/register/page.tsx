@@ -38,19 +38,19 @@ export default function RegisterPage() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-            <div className="bg-slate-950 p-8 rounded-2xl shadow-2xl border border-slate-800 w-full max-w-md space-y-6">
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+            <div className="bg-white p-8 rounded-2xl shadow-2xl border border-gray-200 w-full max-w-md space-y-6">
 
                 {/* Header */}
                 <div className="text-center space-y-2">
                     <div className="text-3xl">🏢</div>
-                    <h1 className="text-xl font-black text-white uppercase tracking-wider">Owner Registration</h1>
-                    <p className="text-xs text-slate-400">လုပ်ငန်းစုစနစ်အသစ် စတင်ရန်နှင့် ပိုင်ရှင်အကောင့်ဆောက်ရန်</p>
+                    <h1 className="text-xl font-black text-black uppercase tracking-wider">Owner Registration</h1>
+                    <p className="text-xs text-gray-500">လုပ်ငန်းစုစနစ်အသစ် စတင်ရန်နှင့် ပိုင်ရှင်အကောင့်ဆောက်ရန်</p>
                 </div>
 
                 {/* Error Alert */}
                 {error && (
-                    <div className="bg-red-950/50 border border-red-800 text-red-400 text-xs p-3.5 rounded-xl font-medium">
+                    <div className="bg-red-50 border border-red-200 text-red-600 text-xs p-3.5 rounded-xl font-medium">
                         ⚠️ {error}
                     </div>
                 )}
@@ -60,12 +60,12 @@ export default function RegisterPage() {
 
                     {/* ကုမ္ပဏီ/လုပ်ငန်းအမည် */}
                     <div>
-                        <label className="block text-xs font-bold text-slate-400 mb-1.5">လုပ်ငန်း/ကုမ္ပဏီအမည် (Business/Company Name)</label>
+                        <label className="block text-xs font-bold text-gray-500 mb-1.5">လုပ်ငန်း/ကုမ္ပဏီအမည် (Business/Company Name)</label>
                         <input
                             type="text"
                             name="companyName"
                             placeholder="ဥပမာ - BiteCraft Food Group"
-                            className="w-full border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition bg-slate-900 text-white placeholder-slate-500"
+                            className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition bg-gray-50 text-black placeholder-gray-400"
                             required
                             disabled={isPending}
                         />
@@ -73,24 +73,24 @@ export default function RegisterPage() {
 
                     {/* ပိုင်ရှင်အမည် */}
                     <div>
-                        <label className="block text-xs font-bold text-slate-400 mb-1.5">ပိုင်ရှင်အမည် (Owner Name)</label>
+                        <label className="block text-xs font-bold text-gray-500 mb-1.5">ပိုင်ရှင်အမည် (Owner Name)</label>
                         <input
                             type="text"
                             name="name"
                             placeholder="ဥပမာ - ဦးကျော်ကျော်"
-                            className="w-full border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition bg-slate-900 text-white placeholder-slate-500"
+                            className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition bg-gray-50 text-black placeholder-gray-400"
                             disabled={isPending}
                         />
                     </div>
 
                     {/* အီးမေးလ် */}
                     <div>
-                        <label className="block text-xs font-bold text-slate-400 mb-1.5">အီးမေးလ် (Owner Email)</label>
+                        <label className="block text-xs font-bold text-gray-500 mb-1.5">အီးမေးလ် (Owner Email)</label>
                         <input
                             type="email"
                             name="email"
                             placeholder="owner@bitecraft.com"
-                            className="w-full border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition bg-slate-900 text-white placeholder-slate-500"
+                            className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition bg-gray-50 text-black placeholder-gray-400"
                             required
                             disabled={isPending}
                         />
@@ -98,13 +98,13 @@ export default function RegisterPage() {
 
                     {/* လျှို့ဝှက်နံပါတ် + Show/Hide */}
                     <div>
-                        <label className="block text-xs font-bold text-slate-400 mb-1.5">လျှို့ဝှက်နံပါတ် (Password)</label>
+                        <label className="block text-xs font-bold text-gray-500 mb-1.5">လျှို့ဝှက်နံပါတ် (Password)</label>
                         <div className="relative">
                             <input
                                 type={showPassword ? 'text' : 'password'}
                                 name="password"
                                 placeholder="••••••••"
-                                className="w-full border border-slate-800 rounded-xl p-3 pr-11 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition bg-slate-900 text-white placeholder-slate-500"
+                                className="w-full border border-gray-200 rounded-xl p-3 pr-11 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition bg-gray-50 text-black placeholder-gray-400"
                                 required
                                 minLength={6}
                                 disabled={isPending}
@@ -112,7 +112,7 @@ export default function RegisterPage() {
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-orange-400 transition text-base select-none"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800 transition text-base select-none"
                                 tabIndex={-1}
                                 aria-label={showPassword ? 'Hide password' : 'Show password'}
                             >
@@ -123,20 +123,20 @@ export default function RegisterPage() {
 
                     {/* လျှို့ဝှက်နံပါတ် ထပ်မံရိုက်ပါ (Confirm Password) */}
                     <div>
-                        <label className="block text-xs font-bold text-slate-400 mb-1.5">လျှို့ဝှက်နံပါတ်ထပ်မံရိုက်ပါ (Confirm Password)</label>
+                        <label className="block text-xs font-bold text-gray-500 mb-1.5">လျှို့ဝှက်နံပါတ်ထပ်မံရိုက်ပါ (Confirm Password)</label>
                         <div className="relative">
                             <input
                                 type={showConfirm ? 'text' : 'password'}
                                 name="confirmPassword"
                                 placeholder="••••••••"
-                                className="w-full border border-slate-800 rounded-xl p-3 pr-11 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition bg-slate-900 text-white placeholder-slate-500"
+                                className="w-full border border-gray-200 rounded-xl p-3 pr-11 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition bg-gray-50 text-black placeholder-gray-400"
                                 required
                                 disabled={isPending}
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowConfirm(!showConfirm)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-orange-400 transition text-base select-none"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800 transition text-base select-none"
                                 tabIndex={-1}
                                 aria-label={showConfirm ? 'Hide confirm password' : 'Show confirm password'}
                             >
@@ -149,7 +149,7 @@ export default function RegisterPage() {
                     <button
                         type="submit"
                         disabled={isPending}
-                        className="w-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold py-3.5 rounded-xl transition shadow-md disabled:bg-slate-800 disabled:text-slate-500 flex items-center justify-center gap-2 mt-2"
+                        className="w-full bg-black hover:bg-gray-800 text-white text-sm font-bold py-3.5 rounded-xl transition shadow-md disabled:bg-gray-200 disabled:text-gray-400 flex items-center justify-center gap-2 mt-2"
                     >
                         {isPending ? (
                             <>
@@ -162,9 +162,9 @@ export default function RegisterPage() {
                     </button>
                 </form>
 
-                <div className="text-center pt-2 border-t border-slate-900">
-                    <Link href="/login" className="text-xs text-slate-400 hover:text-white transition">
-                        အကောင့်ရှိပြီးသားလား? <span className="text-orange-500 font-bold hover:underline">Login ဝင်ရန်</span>
+                <div className="text-center pt-2 border-t border-gray-100">
+                    <Link href="/login" className="text-xs text-gray-500 hover:text-black transition">
+                        အကောင့်ရှိပြီးသားလား? <span className="text-black font-bold hover:underline">Login ဝင်ရန်</span>
                     </Link>
                 </div>
 

@@ -38,21 +38,21 @@ export default async function CentralStaffPage() {
     const staffs = await getAllStaffs(companyId)
 
     return (
-        <div className="space-y-6 text-white min-h-screen">
+        <div className="space-y-6 text-black min-h-screen">
 
             {/* Header */}
-            <div className="bg-slate-950 p-6 rounded-2xl border border-slate-800 shadow-xl">
-                <h1 className="text-xl font-black uppercase tracking-wider text-orange-500">👥 Global Workforce Registry</h1>
-                <p className="text-xs text-slate-400 mt-0.5">ဆိုင်ခွဲအားလုံးရှိ မန်နေဂျာများနှင့် ဝန်ထမ်းအကောင့်များအား ဗဟိုမှ ထိန်းချုပ်ခန်း</p>
+            <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-xl">
+                <h1 className="text-xl font-black uppercase tracking-wider text-black">👥 Global Workforce Registry</h1>
+                <p className="text-xs text-gray-500 mt-0.5">ဆိုင်ခွဲအားလုံးရှိ မန်နေဂျာများနှင့် ဝန်ထမ်းအကောင့်များအား ဗဟိုမှ ထိန်းချုပ်ခန်း</p>
             </div>
 
             {/* Staffs Table */}
-            <div className="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-                <h2 className="text-sm font-bold uppercase text-slate-200">All Employees ({staffs.length})</h2>
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-xl space-y-4">
+                <h2 className="text-sm font-bold uppercase text-gray-800">All Employees ({staffs.length})</h2>
 
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs text-slate-300">
-                        <thead className="bg-slate-900 text-2xs uppercase font-bold text-slate-400 border-b border-slate-800">
+                    <table className="w-full text-left text-xs text-gray-700">
+                        <thead className="bg-gray-50 text-2xs uppercase font-bold text-gray-500 border-b border-gray-200">
                             <tr>
                                 <th className="p-3">Employee Name</th>
                                 <th className="p-3">Email Address</th>
@@ -65,29 +65,29 @@ export default async function CentralStaffPage() {
                         <tbody className="divide-y divide-slate-900">
                             {staffs.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="p-8 text-center text-slate-500">
+                                    <td colSpan={6} className="p-8 text-center text-gray-400">
                                         လက်ရှိတွင် မည်သည့်ဝန်ထမ်းအကောင့်မျှ မရှိသေးပါ။
                                     </td>
                                 </tr>
                             ) : (
                                 staffs.map((staff) => (
-                                    <tr key={staff.id} className="hover:bg-slate-900/40 transition">
+                                    <tr key={staff.id} className="hover:bg-gray-50/40 transition">
                                         {/* Name */}
-                                        <td className="p-3 font-bold text-white">{staff.name}</td>
+                                        <td className="p-3 font-bold text-black">{staff.name}</td>
 
                                         {/* Email */}
-                                        <td className="p-3 font-mono text-slate-400">{staff.email}</td>
+                                        <td className="p-3 font-mono text-gray-500">{staff.email}</td>
 
                                         {/* Branch Name */}
-                                        <td className="p-3 text-slate-300 font-medium">
+                                        <td className="p-3 text-gray-700 font-medium">
                                             {staff.branch?.name || '🏪 ဗဟိုရုံးချုပ် (HQ)'}
                                         </td>
 
                                         {/* Role Badge */}
                                         <td className="p-3 text-center">
                                             <span className={`px-2 py-0.5 rounded text-3xs font-black uppercase border ${staff.role === 'BRANCH_ADMIN'
-                                                ? 'bg-orange-950/40 border-orange-800 text-orange-400'
-                                                : 'bg-slate-900 border-slate-800 text-slate-400'
+                                                ? 'bg-orange-950/40 border-orange-800 text-gray-800'
+                                                : 'bg-gray-50 border-gray-200 text-gray-500'
                                                 }`}>
                                                 {staff.role === 'BRANCH_ADMIN' ? 'Manager' : 'Staff'}
                                             </span>
@@ -96,8 +96,8 @@ export default async function CentralStaffPage() {
                                         {/* Status */}
                                         <td className="p-3 text-center">
                                             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-3xs font-bold uppercase ${staff.isActive !== false
-                                                ? 'bg-green-950/40 border border-green-800 text-green-400'
-                                                : 'bg-red-950/40 border border-red-800 text-red-400'
+                                                ? 'bg-green-50 border border-green-200 text-green-600'
+                                                : 'bg-red-950/40 border border-red-200 text-red-600'
                                                 }`}>
                                                 ● {true ? 'Active' : 'Suspended'}
                                             </span>

@@ -39,22 +39,22 @@ export default async function HQHomePage({ searchParams }: PageProps) {
   }
 
   const companyOrderWhere = { ...orderWhere, branch: { companyId } }
-  const companyInvoiceWhere = { ...invoiceWhere, branch: { companyId } }
+  const companyRevenueWhere = { ...invoiceWhere, branch: { companyId } }
 
   const totalBranches = await prisma.branch.count({ where: { companyId } })
   const totalOrders = await prisma.order.count({ where: companyOrderWhere })
 
-  const invoiceSum = await prisma.invoice.aggregate({
+  const revenueSum = await prisma.order.aggregate({
     _sum: { finalAmount: true },
-    where: companyInvoiceWhere
+    where: companyRevenueWhere
   })
-  const totalRevenue = invoiceSum._sum.finalAmount || 0
+  const totalRevenue = revenueSum._sum.finalAmount || 0
 
   const branches = await prisma.branch.findMany({
     where: { companyId },
     include: {
       users: { where: { role: 'BRANCH_ADMIN' }, take: 1 },
-      invoices: { where: companyInvoiceWhere, select: { finalAmount: true } },
+      orders: { where: { paymentStatus: 'PAID' as const, ...(hasFilter ? { createdAt: dateQuery } : {}) }, select: { finalAmount: true } },
       _count: { select: { orders: { where: companyOrderWhere } } }
     }
   })
@@ -64,7 +64,7 @@ export default async function HQHomePage({ searchParams }: PageProps) {
     name: branch.name,
     manager: branch.users[0]?.name || 'သတ်မှတ်မထားပါ',
     totalOrders: branch._count.orders,
-    revenue: branch.invoices.reduce((sum, inv) => sum + inv.finalAmount, 0)
+    revenue: branch.orders.reduce((sum, ord) => sum + ord.finalAmount, 0)
   }))
 
   const chartData = branchTableData.map(b => ({ 
@@ -75,11 +75,11 @@ export default async function HQHomePage({ searchParams }: PageProps) {
   const dashboardPayload = { totalBranches, totalOrders, totalRevenue, branchTableData, chartData }
 
   return (
-    <div className="space-y-6 text-white">
+    <div className="space-y-6 text-black">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-xl font-black uppercase tracking-wider text-orange-500">🏢 Central Control</h1>
-          <p className="text-xs text-slate-400 mt-0.5">လုပ်ငန်းစုချုပ် စီမံခန့်ခွဲမှုဗဟို</p>
+          <h1 className="text-xl font-black uppercase tracking-wider text-black">🏢 Central Control</h1>
+          <p className="text-xs text-gray-500 mt-0.5">လုပ်ငန်းစုချုပ် စီမံခန့်ခွဲမှုဗဟို</p>
         </div>
         <DashboardFilters />
       </div>

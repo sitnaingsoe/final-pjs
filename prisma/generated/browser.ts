@@ -43,11 +43,6 @@ export type PasswordResetToken = Prisma.PasswordResetTokenModel
  */
 export type RefreshToken = Prisma.RefreshTokenModel
 /**
- * Model Setting
- * 
- */
-export type Setting = Prisma.SettingModel
-/**
  * Model MenuCategory
  * 
  */
@@ -62,11 +57,6 @@ export type MenuItem = Prisma.MenuItemModel
  * 
  */
 export type AddonCategory = Prisma.AddonCategoryModel
-/**
- * Model MenuItemAddonCategory
- * 
- */
-export type MenuItemAddonCategory = Prisma.MenuItemAddonCategoryModel
 /**
  * Model Addon
  * 
@@ -97,23 +87,3 @@ export type OrderItem = Prisma.OrderItemModel
  * 
  */
 export type OrderItemAddon = Prisma.OrderItemAddonModel
-/**
- * Model Invoice
- * 
- */
-export type Invoice = Prisma.InvoiceModel
-/**
- * Model Menu
- * 
- */
-export type Menu = Prisma.MenuModel
-/**
- * Model MenuOnBranch
- * 
- */
-export type MenuOnBranch = Prisma.MenuOnBranchModel
-/**
- * Model Inventory
- * 
- */
-export type Inventory = Prisma.InventoryModel

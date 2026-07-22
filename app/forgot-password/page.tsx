@@ -22,14 +22,14 @@ export default function ForgotPasswordPage() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-            <div className="bg-slate-950 p-8 rounded-2xl shadow-2xl border border-slate-800 w-full max-w-md space-y-6">
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+            <div className="bg-white p-8 rounded-2xl shadow-2xl border border-gray-200 w-full max-w-md space-y-6">
 
                 {/* Header */}
                 <div className="text-center space-y-2">
                     <div className="text-3xl">📧</div>
-                    <h1 className="text-xl font-black text-white uppercase tracking-wider">Forgot Password</h1>
-                    <p className="text-xs text-slate-400">
+                    <h1 className="text-xl font-black text-black uppercase tracking-wider">Forgot Password</h1>
+                    <p className="text-xs text-gray-500">
                         အကောင့်ဖွင့်ထားသည့် အီးမေးလ်ကို ရိုက်ထည့်ပါ။<br />
                         စကားဝှက်ပြင်ရန် လင့်ခ် ပေးပို့ပေးပါမည်။
                     </p>
@@ -37,14 +37,14 @@ export default function ForgotPasswordPage() {
 
                 {/* Error Alert */}
                 {message?.error && (
-                    <div className="bg-red-950/50 border border-red-800 text-red-400 text-xs p-3.5 rounded-xl font-medium">
+                    <div className="bg-red-50 border border-red-200 text-red-600 text-xs p-3.5 rounded-xl font-medium">
                         ⚠️ {message.error}
                     </div>
                 )}
 
                 {/* Success Alert */}
                 {message?.success && (
-                    <div className="bg-green-950/50 border border-green-800 text-green-400 text-xs p-3.5 rounded-xl font-medium">
+                    <div className="bg-green-950/50 border border-green-200 text-green-600 text-xs p-3.5 rounded-xl font-medium">
                         ✅ {message.success}
                     </div>
                 )}
@@ -53,14 +53,14 @@ export default function ForgotPasswordPage() {
                 {!message?.success && (
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
-                            <label className="block text-xs font-bold text-slate-400 mb-1.5">
+                            <label className="block text-xs font-bold text-gray-500 mb-1.5">
                                 အီးမေးလ် (Email Address)
                             </label>
                             <input
                                 type="email"
                                 name="email"
                                 placeholder="name@company.com"
-                                className="w-full border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition bg-slate-900 text-white placeholder-slate-500"
+                                className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition bg-gray-50 text-black placeholder-gray-400"
                                 required
                                 disabled={isPending}
                             />
@@ -69,7 +69,7 @@ export default function ForgotPasswordPage() {
                         <button
                             type="submit"
                             disabled={isPending}
-                            className="w-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold py-3.5 rounded-xl transition shadow-md disabled:bg-slate-800 disabled:text-slate-500 flex items-center justify-center gap-2 mt-2"
+                            className="w-full bg-black hover:bg-gray-800 text-white text-sm font-bold py-3.5 rounded-xl transition shadow-md disabled:bg-gray-200 disabled:text-gray-400 flex items-center justify-center gap-2 mt-2"
                         >
                             {isPending ? (
                                 <>
@@ -84,9 +84,9 @@ export default function ForgotPasswordPage() {
                 )}
 
                 {/* Back to Login */}
-                <div className="text-center pt-2 border-t border-slate-900">
-                    <Link href="/login" className="text-xs text-slate-400 hover:text-white transition">
-                        အကောင့်ရှိပြီးသားလား? <span className="text-orange-500 font-bold hover:underline">Login ဝင်ရန်</span>
+                <div className="text-center pt-2 border-t border-gray-100">
+                    <Link href="/login" className="text-xs text-gray-500 hover:text-black transition">
+                        အကောင့်ရှိပြီးသားလား? <span className="text-black font-bold hover:underline">Login ဝင်ရန်</span>
                     </Link>
                 </div>
 
