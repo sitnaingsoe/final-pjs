@@ -1,18 +1,26 @@
 // middleware.ts (Root folder ထဲတွင် ထားရှိရပါမည်)
-import NextAuth from "next-auth"
-import { authConfig } from "./auth.config"
+import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
+import { getToken } from "next-auth/jwt"
 
-const { auth } = NextAuth(authConfig)
-
-export default auth((req) => {
-    const isLoggedIn = !!req.auth;
+export async function middleware(req: NextRequest) {
+    // Session Token ကို Cookie ထဲမှ တိုက်ရိုက်ဆွဲထုတ်ခြင်း
+    const isProd = process.env.NODE_ENV === "production";
+    const token = await getToken({
+        req,
+        secret: process.env.NEXTAUTH_SECRET,
+        secureCookie: isProd,
+        salt: isProd ? "__Secure-authjs.session-token" : "authjs.session-token"
+    })
 
     // အကောင့်ဝင်မထားပါက /login သို့ အတင်းမောင်းထုတ်မည်
-    if (!isLoggedIn) {
-        const loginUrl = new URL("/login", req.nextUrl)
-        return Response.redirect(loginUrl)
+    if (!token) {
+        const loginUrl = new URL("/login", req.url)
+        return NextResponse.redirect(loginUrl)
     }
-})
+
+    return NextResponse.next()
+}
 
 export const config = {
     matcher: [
