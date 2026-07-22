@@ -4,8 +4,7 @@
 import React, { useState, useTransition, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { loginUser } from '@/server/actions/auth' // 👈 Login Action ကို လှမ်းခေါ်ခြင်း
-import { signOut } from 'next-auth/react'
+import { signOut, signIn } from 'next-auth/react'
 
 function LoginForm() {
     const router = useRouter()
