@@ -20,26 +20,14 @@ export async function POST(request: Request) {
             return NextResponse.json({ success: false, error: "Invalid or expired refresh token" }, { status: 403 })
         }
 
-        // Check database to ensure the token exists and is not revoked
-        const dbToken = await prisma.refreshToken.findUnique({
-            where: { token: tokenValue }
+        // Fetch user by refresh token to ensure it exists and is not revoked
+        const user = await prisma.user.findUnique({
+            where: { refreshToken: tokenValue }
         })
 
-        if (!dbToken || dbToken.isRevoked) {
-            return NextResponse.json({ success: false, error: "Token revoked or not found" }, { status: 403 })
+        if (!user || user.refreshTokenRevoked || !user.isActive || !user.refreshTokenExpires || new Date() > user.refreshTokenExpires) {
+            return NextResponse.json({ success: false, error: "Token invalid, expired, or user disabled" }, { status: 403 })
         }
-
-        // Fetch user to get current data for the access token
-        const user = await prisma.user.findUnique({ where: { id: payload.id } })
-        if (!user || !user.isActive) {
-            return NextResponse.json({ success: false, error: "User not found or disabled" }, { status: 403 })
-        }
-
-        // Revoke the old refresh token (Token Rotation for security)
-        await prisma.refreshToken.update({
-            where: { token: tokenValue },
-            data: { isRevoked: true }
-        })
 
         // Generate new tokens
         const newAccessToken = generateAccessToken({
@@ -54,11 +42,13 @@ export async function POST(request: Request) {
         const expiresAt = new Date()
         expiresAt.setDate(expiresAt.getDate() + 7)
         
-        await prisma.refreshToken.create({
+        // Update user's refresh token directly (Token Rotation)
+        await prisma.user.update({
+            where: { id: user.id },
             data: {
-                token: newRefreshToken,
-                userId: user.id,
-                expires: expiresAt
+                refreshToken: newRefreshToken,
+                refreshTokenExpires: expiresAt,
+                refreshTokenRevoked: false
             }
         })
 

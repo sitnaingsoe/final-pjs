@@ -28,6 +28,24 @@ export async function getMenuItems() {
     }
 }
 
+// ၁.၁။ သက်ဆိုင်ရာဆိုင်ခွဲအတွက် ချထားပေးသော Master Menus များကို ဆွဲထုတ်ခြင်း
+export async function getBranchMasterMenus() {
+    const session = await auth()
+    if (!session?.user?.branchId) return { success: false, data: [] }
+
+    try {
+        const data = await prisma.menuOnBranch.findMany({
+            where: { branchId: session.user.branchId },
+            include: {
+                menu: true
+            }
+        })
+        return { success: true, data }
+    } catch (error) {
+        return { success: false, data: [] }
+    }
+}
+
 // ၂။ မီနူးအသစ်ဆောက်ခြင်း (Addon Categories ချိတ်ဆက်မှုပါဝင်သည်)
 export async function createMenuItem(formData: FormData, selectedAddonCatIds: string[]) {
     const session = await auth()

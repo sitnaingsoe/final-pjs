@@ -36,15 +36,16 @@ export async function POST(request: Request) {
         
         const refreshToken = generateRefreshToken({ id: user.id })
 
-        // 2. Save Refresh Token to DB (expires in 7 days)
+        // 2. Save Refresh Token to User (expires in 7 days)
         const expiresAt = new Date()
         expiresAt.setDate(expiresAt.getDate() + 7)
         
-        await prisma.refreshToken.create({
+        await prisma.user.update({
+            where: { id: user.id },
             data: {
-                token: refreshToken,
-                userId: user.id,
-                expires: expiresAt
+                refreshToken: refreshToken,
+                refreshTokenExpires: expiresAt,
+                refreshTokenRevoked: false
             }
         })
 

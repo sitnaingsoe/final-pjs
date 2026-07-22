@@ -46,6 +46,8 @@ export default function DashboardLayout({
             { name: "ဆက်တင် (Settings)", path: "/dashboard/store/settings", icon: "⚙️" },
         ]
 
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
+
     // Session ဆွဲနေတုန်း UI ဗလာမဖြစ်အောင် loading ပြခြင်း
     if (status === 'loading') {
         return (
@@ -55,76 +57,111 @@ export default function DashboardLayout({
         )
     }
 
-    return (
-        <div className="flex h-screen bg-gray-50 font-sans text-gray-900 overflow-hidden">
+    const navigationLinks = (
+        <nav className="p-4 space-y-1">
+            {links.map((link) => {
+                const isActive = pathname === link.path
 
-            {/* ၁။ SIDEBAR (ဘယ်ဘက် Navigation Menu) - Dark Mode Style */}
+                return (
+                    <Link
+                        key={link.path}
+                        href={link.path}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`flex items-center gap-3 p-3 rounded-xl transition text-xs font-bold ${isActive
+                            ? 'bg-black text-white shadow-md'
+                            : 'text-gray-500 hover:bg-gray-50 hover:text-black'
+                            }`}
+                    >
+                        <span>{link.icon}</span>
+                        <span>{link.name}</span>
+                    </Link>
+                )
+            })}
+        </nav>
+    )
+
+    const sidebarFooter = (
+        <div className="p-4 border-t border-gray-100 flex items-center justify-between gap-2 bg-white">
+            <div className="flex items-center gap-3 overflow-hidden">
+                <div className="w-9 h-9 bg-black rounded-full flex items-center justify-center font-black text-white text-xs shrink-0 uppercase">
+                    {userName.substring(0, 2)}
+                </div>
+                <div className="overflow-hidden">
+                    <p className="text-xs font-bold truncate text-gray-800">{userName}</p>
+                    <p className="text-3xs text-gray-400 font-black uppercase tracking-wider">{role || 'STAFF'}</p>
+                </div>
+            </div>
+
+            <button
+                onClick={handleLogout}
+                className="p-2 hover:bg-gray-50 text-gray-500 hover:text-red-600 rounded-xl transition text-sm flex items-center gap-1 shrink-0"
+                title="စနစ်မှထွက်မည်"
+            >
+                🚪 <span className="text-2xs font-bold hidden lg:inline">ထွက်မည်</span>
+            </button>
+        </div>
+    )
+
+    return (
+        <div className="flex h-screen bg-gray-50 font-sans text-gray-900 overflow-hidden relative">
+
+            {/* ၁။ SIDEBAR (Desktop View) */}
             <aside className="w-64 bg-white text-black flex flex-col justify-between hidden md:flex border-r border-gray-200">
                 <div>
-                    {/* Logo / ဆိုင်အမည် */}
                     <div className="p-5 text-lg font-black tracking-wider border-b border-gray-100 flex items-center gap-2">
                         🍕 <span className="text-black uppercase">BiteCraft OS</span>
                     </div>
-
-                    {/* Dynamic Menu ခလုတ်များ */}
-                    <nav className="p-4 space-y-1">
-                        {links.map((link) => {
-                            // Link လမ်းကြောင်း တိကျစွာ ကိုက်ညီမှု ရှိမရှိ စစ်ခြင်း
-                            const isActive = pathname === link.path
-
-                            return (
-                                <Link
-                                    key={link.path}
-                                    href={link.path}
-                                    className={`flex items-center gap-3 p-3 rounded-xl transition text-xs font-bold ${isActive
-                                        ? 'bg-black text-white shadow-md'
-                                        : 'text-gray-500 hover:bg-gray-50 hover:text-black'
-                                        }`}
-                                >
-                                    <span>{link.icon}</span>
-                                    <span>{link.name}</span>
-                                </Link>
-                            )
-                        })}
-                    </nav>
+                    {navigationLinks}
                 </div>
-
-                {/* 🎯 Sidebar အောက်ခြေရှိ အက်ဒမင် ပရိုဖိုင် နှင့် Logout ခလုတ် */}
-                <div className="p-4 border-t border-gray-100 flex items-center justify-between gap-2 bg-white">
-                    <div className="flex items-center gap-3 overflow-hidden">
-                        <div className="w-9 h-9 bg-black rounded-full flex items-center justify-center font-black text-white text-xs shrink-0 uppercase">
-                            {userName.substring(0, 2)}
-                        </div>
-                        <div className="overflow-hidden">
-                            <p className="text-xs font-bold truncate text-gray-800">{userName}</p>
-                            <p className="text-3xs text-gray-400 font-black uppercase tracking-wider">{role || 'STAFF'}</p>
-                        </div>
-                    </div>
-
-                    {/* 🚀 Logout ခလုတ် */}
-                    <button
-                        onClick={handleLogout}
-                        className="p-2 hover:bg-gray-50 text-gray-500 hover:text-red-600 rounded-xl transition text-sm flex items-center gap-1 shrink-0"
-                        title="စနစ်မှထွက်မည်"
-                    >
-                        🚪 <span className="text-2xs font-bold hidden lg:inline">ထွက်မည်</span>
-                    </button>
-                </div>
+                {sidebarFooter}
             </aside>
 
-            {/* ၂။ MAIN CONTENT AREA (ညာဘက်ခြမ်းတစ်ခုလုံး) */}
+            {/* ၂။ MOBILE DRAWER (Mobile View Navigation Overlay) */}
+            {isMobileMenuOpen && (
+                <div className="fixed inset-0 z-50 md:hidden flex">
+                    {/* Backdrop */}
+                    <div 
+                        className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity" 
+                        onClick={() => setIsMobileMenuOpen(false)}
+                    />
+                    
+                    {/* Drawer Content */}
+                    <aside className="relative w-64 bg-white text-black flex flex-col justify-between h-full shadow-2xl z-10 animate-in slide-in-from-left duration-300">
+                        <div>
+                            <div className="p-5 text-lg font-black tracking-wider border-b border-gray-100 flex items-center justify-between">
+                                <span className="flex items-center gap-2">🍕 BiteCraft OS</span>
+                                <button 
+                                    onClick={() => setIsMobileMenuOpen(false)} 
+                                    className="p-1 rounded-lg hover:bg-gray-100 text-sm text-gray-500"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                            {navigationLinks}
+                        </div>
+                        {sidebarFooter}
+                    </aside>
+                </div>
+            )}
+
+            {/* ၃။ MAIN CONTENT AREA */}
             <div className="flex-1 flex flex-col overflow-hidden bg-gray-50">
 
-                {/* TOP NAVBAR (အပေါ်ဘက်တန်း) - Dark Mode Accent */}
+                {/* TOP NAVBAR */}
                 <header className="h-16 bg-white flex items-center justify-between px-6 border-b border-gray-100">
                     <div className="flex items-center gap-4">
-                        <button className="md:hidden p-2 rounded-xl hover:bg-gray-50 text-xl">☰</button>
+                        <button 
+                            onClick={() => setIsMobileMenuOpen(true)}
+                            className="md:hidden p-2 rounded-xl hover:bg-gray-100 text-xl text-gray-800 transition-colors"
+                            aria-label="Open menu"
+                        >
+                            ☰
+                        </button>
                         <h1 className="text-sm font-bold text-gray-700 tracking-wide uppercase">
                             {role === 'COMPANY_HEAD' ? '🏢 Central Control' : '🏪 Branch Operation'}
                         </h1>
                     </div>
 
-                    {/* ညာဘက်ခြမ်း ဆိုင်အခြေအနေ Badge နှင့် Notification */}
                     <div className="flex items-center gap-4">
                         <span className="bg-green-50 border border-green-200 text-green-600 text-2xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 uppercase">
                             <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
@@ -133,8 +170,7 @@ export default function DashboardLayout({
                     </div>
                 </header>
 
-                {/* စာမျက်နှာအလိုက် ပြောင်းလဲမည့် Page Content များ ဤနေရာသို့ ဝင်လာမည် */}
-                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
+                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-4 sm:p-6">
                     {children}
                 </main>
             </div>

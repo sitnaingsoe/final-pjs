@@ -13,18 +13,6 @@ export async function getOrders() {
     try {
         const orders = await prisma.order.findMany({
             where: { branchId: session.user.branchId },
-            include: {
-                items: {
-                    include: {
-                        menuItem: true,
-                        addons: {
-                            include: {
-                                addon: true
-                            }
-                        }
-                    }
-                }
-            },
             orderBy: {
                 createdAt: 'desc' // နောက်ဆုံးမှာတဲ့အော်ဒါကို အပေါ်ဆုံးကပြမည်
             }
@@ -54,7 +42,7 @@ export async function updateOrderStatus(orderId: string, newStatus: OrderStatus)
     }
 }
 
-// ၃။ POS မှတဆင့် အော်ဒါအသစ်တင်ခြင်း
+// ၃။ POS မှတဆင့် အော်ဒါအသစ်တင်ခြင်း (JSON items)
 export async function createPosOrder(data: {
     branchId: string;
     tableId: string | null;
@@ -66,7 +54,7 @@ export async function createPosOrder(data: {
     }
 
     try {
-        // Fetch prices to calculate total on the server side
+        // Fetch prices and names to calculate total on the server side
         const menuItems = await prisma.menuItem.findMany({
             where: { id: { in: data.items.map(i => i.menuItemId) } }
         })
@@ -81,15 +69,14 @@ export async function createPosOrder(data: {
 
             return {
                 menuItemId: item.menuItemId,
+                name: menu?.name || "Unknown Item",
                 quantity: item.quantity,
                 price: menuPrice,
-                addons: item.addons && item.addons.length > 0 ? {
-                    create: item.addons.map(a => ({ addonId: a.addonId }))
-                } : undefined
+                addons: item.addons || []
             }
         })
 
-        const taxAmount = totalAmount * 0.05 // 5% tax example (can be 0)
+        const taxAmount = totalAmount * 0.05
         const finalAmount = totalAmount + taxAmount
 
         const newOrder = await prisma.order.create({
@@ -100,9 +87,7 @@ export async function createPosOrder(data: {
                 totalAmount,
                 taxAmount,
                 finalAmount,
-                items: {
-                    create: orderItemsData
-                }
+                items: orderItemsData
             }
         })
 
@@ -129,14 +114,6 @@ export async function getActiveTableOrder(tableId: string) {
                 tableId,
                 branchId: session.user.branchId,
                 status: { in: ['PENDING', 'CONFIRMED', 'COOKING', 'READY', 'DELIVERED'] }
-            },
-            include: {
-                items: {
-                    include: { 
-                        menuItem: true,
-                        addons: { include: { addon: true } }
-                    }
-                }
             }
         })
         return { success: true, data: activeOrder }
@@ -168,7 +145,7 @@ export async function getPendingBillRequests(branchId: string) {
 }
 
 export async function sendOrderToKitchen(data: {
-    orderId?: string; // If undefined, create new. If string, append items.
+    orderId?: string;
     branchId: string;
     tableId: string | null;
     items: { menuItemId: string, quantity: number, addons?: { addonId: string, price: number }[] }[];
@@ -194,20 +171,22 @@ export async function sendOrderToKitchen(data: {
 
             return {
                 menuItemId: item.menuItemId,
+                name: menu?.name || "Unknown Item",
                 quantity: item.quantity,
                 price: menuPrice,
-                addons: item.addons && item.addons.length > 0 ? {
-                    create: item.addons.map(a => ({ addonId: a.addonId }))
-                } : undefined
+                addons: item.addons || []
             }
         })
 
         let finalOrderId = data.orderId
 
         if (data.orderId) {
-            // Append to existing order
+            // Append to existing order items JSON array
             const existingOrder = await prisma.order.findUnique({ where: { id: data.orderId } })
             if (!existingOrder) return { success: false, error: "Order not found" }
+
+            const existingItems = (existingOrder.items as any[]) || []
+            const newItems = [...existingItems, ...orderItemsData]
 
             const newTotalAmount = existingOrder.totalAmount + addedAmount
             const newTaxAmount = newTotalAmount * 0.05
@@ -219,9 +198,7 @@ export async function sendOrderToKitchen(data: {
                     totalAmount: newTotalAmount,
                     taxAmount: newTaxAmount,
                     finalAmount: newFinalAmount,
-                    items: {
-                        create: orderItemsData
-                    }
+                    items: newItems
                 }
             })
         } else {
@@ -237,9 +214,7 @@ export async function sendOrderToKitchen(data: {
                     totalAmount: addedAmount,
                     taxAmount: taxAmount,
                     finalAmount: finalAmount,
-                    items: {
-                        create: orderItemsData
-                    }
+                    items: orderItemsData
                 }
             })
             finalOrderId = newOrder.id
@@ -260,18 +235,34 @@ export async function checkoutOrder(orderId: string, paymentMethod: string = 'CA
 
     try {
         const order = await prisma.order.findUnique({
-            where: { id: orderId, branchId: session.user.branchId },
-            include: { items: { include: { menuItem: true } } }
+            where: { id: orderId, branchId: session.user.branchId }
         })
 
         if (!order) return { success: false, error: "Order not found" }
 
-        // Change status to PAID
-        // Also we could create an Invoice here.
+        // Generate unique invoice number
+        const invoiceNumber = `INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`
+        
+        // 1. Create a separate Invoice record
+        const invoice = await prisma.invoice.create({
+            data: {
+                invoiceNumber,
+                paymentMethod,
+                paymentStatus: 'PAID',
+                subTotal: order.totalAmount,
+                taxAmount: order.taxAmount,
+                finalAmount: order.finalAmount,
+                branchId: session.user.branchId
+            }
+        })
+
+        // 2. Link Invoice to Order and set status to PAID
         const updatedOrder = await prisma.order.update({
             where: { id: orderId },
-            data: { status: 'PAID' },
-            include: { items: { include: { menuItem: true } } }
+            data: { 
+                status: 'PAID',
+                invoiceId: invoice.id
+            }
         })
 
         revalidatePath('/pos')

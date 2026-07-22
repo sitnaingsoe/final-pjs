@@ -10,10 +10,12 @@ export async function POST(request: Request) {
         if (refreshTokenCookie && refreshTokenCookie.value) {
             const tokenValue = refreshTokenCookie.value
 
-            // Revoke in DB
-            await prisma.refreshToken.updateMany({
-                where: { token: tokenValue },
-                data: { isRevoked: true }
+            // Revoke on User
+            await prisma.user.updateMany({
+                where: { refreshToken: tokenValue },
+                data: {
+                    refreshTokenRevoked: true
+                }
             })
         }
 

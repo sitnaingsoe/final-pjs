@@ -120,14 +120,11 @@ export async function placeTableOrder(
       totalAmount += price * item.quantity
 
       return {
+        menuItemId: item.menuItemId,
+        name: matchedMenu?.name || "Unknown Item",
         quantity: item.quantity,
         price: menuPrice,
-        menuItem: {
-          connect: { id: item.menuItemId }
-        },
-        addons: item.addons && item.addons.length > 0 ? {
-          create: item.addons.map(a => ({ addonId: a.addonId }))
-        } : undefined
+        addons: item.addons || []
       }
     })
 
@@ -143,7 +140,10 @@ export async function placeTableOrder(
     })
 
     if (activeOrder) {
-        // Append to existing order
+        // Append to existing order items JSON array
+        const existingItems = (activeOrder.items as any[]) || []
+        const newItems = [...existingItems, ...orderItemsData]
+
         const newTotalAmount = activeOrder.totalAmount + totalAmount
         const newTaxAmount = newTotalAmount * 0.05
         const newFinalAmount = newTotalAmount + newTaxAmount
@@ -156,25 +156,21 @@ export async function placeTableOrder(
                 finalAmount: newFinalAmount,
                 isBillRequested: false, // Reset because they ordered more!
                 notes: notes ? (activeOrder.notes ? activeOrder.notes + '\n' + notes : notes) : activeOrder.notes,
-                items: {
-                    create: orderItemsData
-                }
+                items: newItems
             }
         })
     } else {
         // ၅။ တွက်ချက်ပြီးသား ငွေပမာဏများနှင့်တကွ ဒေတာဘေ့စ်ထဲ အသစ် သိမ်းဆည်းခြင်း
         await prisma.order.create({
           data: {
-            branchId: table.branchId, // 👈 Added branchId requirement
+            branchId: table.branchId,
             tableId: table.id,
             status: 'PENDING',
             notes: notes,
             totalAmount: totalAmount,
             taxAmount: taxAmount,
             finalAmount: finalAmount,
-            items: {
-              create: orderItemsData
-            }
+            items: orderItemsData
           }
         })
     }
@@ -196,16 +192,6 @@ export async function getActiveOrderForTableNumber(tableNumber: string) {
       where: {
         tableId: table.id,
         status: { in: ['PENDING', 'CONFIRMED', 'COOKING', 'READY', 'DELIVERED'] }
-      },
-      include: {
-        items: {
-          include: { 
-            menuItem: {
-              include: { discount: true }
-            },
-            addons: { include: { addon: true } }
-          }
-        }
       }
     })
 

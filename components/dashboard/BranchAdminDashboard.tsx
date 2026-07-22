@@ -60,12 +60,7 @@ async function getBranchDashboardData(branchId: string, page: number, period: st
         skip: skip,
         orderBy: { createdAt: 'desc' },
         include: { 
-            table: true,
-            items: {
-                include: {
-                    menuItem: true
-                }
-            }
+            table: true
         }
     })
 
@@ -127,9 +122,9 @@ export default async function BranchAdminDashboard({ branchId, page, period }: B
                                     <p className="text-xs text-gray-500 mb-2">Table: {order.table?.number || 'Take Away'} • {new Date(order.createdAt).toLocaleString()}</p>
                                     
                                     <div className="flex flex-wrap gap-2 mt-2">
-                                        {order.items.map((item) => (
-                                            <div key={item.id} className="bg-white border border-gray-200 px-2.5 py-1 rounded-md flex items-center gap-2">
-                                                <span className="text-xs text-gray-700">{item.menuItem.name}</span>
+                                        {((order.items as any[]) || []).map((item, idx) => (
+                                            <div key={idx} className="bg-white border border-gray-200 px-2.5 py-1 rounded-md flex items-center gap-2">
+                                                <span className="text-xs text-gray-700">{item.name}</span>
                                                 <span className="text-3xs font-bold text-gray-800">x{item.quantity}</span>
                                             </div>
                                         ))}

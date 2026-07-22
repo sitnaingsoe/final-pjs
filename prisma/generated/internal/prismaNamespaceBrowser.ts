@@ -54,8 +54,6 @@ export const ModelName = {
   Company: 'Company',
   Branch: 'Branch',
   User: 'User',
-  PasswordResetToken: 'PasswordResetToken',
-  RefreshToken: 'RefreshToken',
   MenuCategory: 'MenuCategory',
   MenuItem: 'MenuItem',
   AddonCategory: 'AddonCategory',
@@ -63,8 +61,9 @@ export const ModelName = {
   Discount: 'Discount',
   Table: 'Table',
   Order: 'Order',
-  OrderItem: 'OrderItem',
-  OrderItemAddon: 'OrderItemAddon'
+  Invoice: 'Invoice',
+  Menu: 'Menu',
+  MenuOnBranch: 'MenuOnBranch'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -119,34 +118,16 @@ export const UserScalarFieldEnum = {
   branchId: 'branchId',
   companyId: 'companyId',
   isActive: 'isActive',
+  resetToken: 'resetToken',
+  resetTokenExpires: 'resetTokenExpires',
+  refreshToken: 'refreshToken',
+  refreshTokenExpires: 'refreshTokenExpires',
+  refreshTokenRevoked: 'refreshTokenRevoked',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
-
-
-export const PasswordResetTokenScalarFieldEnum = {
-  id: 'id',
-  email: 'email',
-  token: 'token',
-  expires: 'expires',
-  createdAt: 'createdAt'
-} as const
-
-export type PasswordResetTokenScalarFieldEnum = (typeof PasswordResetTokenScalarFieldEnum)[keyof typeof PasswordResetTokenScalarFieldEnum]
-
-
-export const RefreshTokenScalarFieldEnum = {
-  id: 'id',
-  token: 'token',
-  userId: 'userId',
-  expires: 'expires',
-  createdAt: 'createdAt',
-  isRevoked: 'isRevoked'
-} as const
-
-export type RefreshTokenScalarFieldEnum = (typeof RefreshTokenScalarFieldEnum)[keyof typeof RefreshTokenScalarFieldEnum]
 
 
 export const MenuCategoryScalarFieldEnum = {
@@ -246,35 +227,54 @@ export const OrderScalarFieldEnum = {
   tableId: 'tableId',
   isBillRequested: 'isBillRequested',
   branchId: 'branchId',
+  items: 'items',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  invoiceNumber: 'invoiceNumber',
-  paymentMethod: 'paymentMethod',
-  paymentStatus: 'paymentStatus',
-  discountAmount: 'discountAmount'
+  invoiceId: 'invoiceId'
 } as const
 
 export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
 
 
-export const OrderItemScalarFieldEnum = {
+export const InvoiceScalarFieldEnum = {
   id: 'id',
-  orderId: 'orderId',
-  menuItemId: 'menuItemId',
-  quantity: 'quantity',
-  price: 'price'
+  invoiceNumber: 'invoiceNumber',
+  paymentMethod: 'paymentMethod',
+  paymentStatus: 'paymentStatus',
+  subTotal: 'subTotal',
+  taxAmount: 'taxAmount',
+  discountAmount: 'discountAmount',
+  finalAmount: 'finalAmount',
+  branchId: 'branchId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
-export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof typeof OrderItemScalarFieldEnum]
+export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
 
 
-export const OrderItemAddonScalarFieldEnum = {
+export const MenuScalarFieldEnum = {
   id: 'id',
-  orderItemId: 'orderItemId',
-  addonId: 'addonId'
+  name: 'name',
+  description: 'description',
+  basePrice: 'basePrice',
+  image: 'image',
+  isActive: 'isActive',
+  companyId: 'companyId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
-export type OrderItemAddonScalarFieldEnum = (typeof OrderItemAddonScalarFieldEnum)[keyof typeof OrderItemAddonScalarFieldEnum]
+export type MenuScalarFieldEnum = (typeof MenuScalarFieldEnum)[keyof typeof MenuScalarFieldEnum]
+
+
+export const MenuOnBranchScalarFieldEnum = {
+  menuId: 'menuId',
+  branchId: 'branchId',
+  isAvailable: 'isAvailable'
+} as const
+
+export type MenuOnBranchScalarFieldEnum = (typeof MenuOnBranchScalarFieldEnum)[keyof typeof MenuOnBranchScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -283,6 +283,13 @@ export const SortOrder = {
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -299,4 +306,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

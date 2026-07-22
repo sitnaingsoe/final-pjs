@@ -43,6 +43,11 @@ export type UserMinAggregateOutputType = {
   branchId: string | null
   companyId: string | null
   isActive: boolean | null
+  resetToken: string | null
+  resetTokenExpires: Date | null
+  refreshToken: string | null
+  refreshTokenExpires: Date | null
+  refreshTokenRevoked: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -56,6 +61,11 @@ export type UserMaxAggregateOutputType = {
   branchId: string | null
   companyId: string | null
   isActive: boolean | null
+  resetToken: string | null
+  resetTokenExpires: Date | null
+  refreshToken: string | null
+  refreshTokenExpires: Date | null
+  refreshTokenRevoked: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -69,6 +79,11 @@ export type UserCountAggregateOutputType = {
   branchId: number
   companyId: number
   isActive: number
+  resetToken: number
+  resetTokenExpires: number
+  refreshToken: number
+  refreshTokenExpires: number
+  refreshTokenRevoked: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -92,6 +107,11 @@ export type UserMinAggregateInputType = {
   branchId?: true
   companyId?: true
   isActive?: true
+  resetToken?: true
+  resetTokenExpires?: true
+  refreshToken?: true
+  refreshTokenExpires?: true
+  refreshTokenRevoked?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -105,6 +125,11 @@ export type UserMaxAggregateInputType = {
   branchId?: true
   companyId?: true
   isActive?: true
+  resetToken?: true
+  resetTokenExpires?: true
+  refreshToken?: true
+  refreshTokenExpires?: true
+  refreshTokenRevoked?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -118,6 +143,11 @@ export type UserCountAggregateInputType = {
   branchId?: true
   companyId?: true
   isActive?: true
+  resetToken?: true
+  resetTokenExpires?: true
+  refreshToken?: true
+  refreshTokenExpires?: true
+  refreshTokenRevoked?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -218,6 +248,11 @@ export type UserGroupByOutputType = {
   branchId: string | null
   companyId: string | null
   isActive: boolean
+  resetToken: string | null
+  resetTokenExpires: Date | null
+  refreshToken: string | null
+  refreshTokenExpires: Date | null
+  refreshTokenRevoked: boolean
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -254,11 +289,15 @@ export type UserWhereInput = {
   branchId?: Prisma.StringNullableFilter<"User"> | string | null
   companyId?: Prisma.StringNullableFilter<"User"> | string | null
   isActive?: Prisma.BoolFilter<"User"> | boolean
+  resetToken?: Prisma.StringNullableFilter<"User"> | string | null
+  resetTokenExpires?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  refreshToken?: Prisma.StringNullableFilter<"User"> | string | null
+  refreshTokenExpires?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  refreshTokenRevoked?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   branch?: Prisma.XOR<Prisma.BranchNullableScalarRelationFilter, Prisma.BranchWhereInput> | null
   company?: Prisma.XOR<Prisma.CompanyNullableScalarRelationFilter, Prisma.CompanyWhereInput> | null
-  refreshTokens?: Prisma.RefreshTokenListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -270,16 +309,22 @@ export type UserOrderByWithRelationInput = {
   branchId?: Prisma.SortOrderInput | Prisma.SortOrder
   companyId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  resetToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  resetTokenExpires?: Prisma.SortOrderInput | Prisma.SortOrder
+  refreshToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  refreshTokenExpires?: Prisma.SortOrderInput | Prisma.SortOrder
+  refreshTokenRevoked?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   branch?: Prisma.BranchOrderByWithRelationInput
   company?: Prisma.CompanyOrderByWithRelationInput
-  refreshTokens?: Prisma.RefreshTokenOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: number
   email?: string
+  resetToken?: string
+  refreshToken?: string
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
@@ -289,12 +334,14 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   branchId?: Prisma.StringNullableFilter<"User"> | string | null
   companyId?: Prisma.StringNullableFilter<"User"> | string | null
   isActive?: Prisma.BoolFilter<"User"> | boolean
+  resetTokenExpires?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  refreshTokenExpires?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  refreshTokenRevoked?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   branch?: Prisma.XOR<Prisma.BranchNullableScalarRelationFilter, Prisma.BranchWhereInput> | null
   company?: Prisma.XOR<Prisma.CompanyNullableScalarRelationFilter, Prisma.CompanyWhereInput> | null
-  refreshTokens?: Prisma.RefreshTokenListRelationFilter
-}, "id" | "email">
+}, "id" | "email" | "resetToken" | "refreshToken">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -305,6 +352,11 @@ export type UserOrderByWithAggregationInput = {
   branchId?: Prisma.SortOrderInput | Prisma.SortOrder
   companyId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  resetToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  resetTokenExpires?: Prisma.SortOrderInput | Prisma.SortOrder
+  refreshToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  refreshTokenExpires?: Prisma.SortOrderInput | Prisma.SortOrder
+  refreshTokenRevoked?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -326,6 +378,11 @@ export type UserScalarWhereWithAggregatesInput = {
   branchId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   companyId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  resetToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  resetTokenExpires?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  refreshToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  refreshTokenExpires?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  refreshTokenRevoked?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -336,11 +393,15 @@ export type UserCreateInput = {
   password: string
   role?: $Enums.UserRole
   isActive?: boolean
+  resetToken?: string | null
+  resetTokenExpires?: Date | string | null
+  refreshToken?: string | null
+  refreshTokenExpires?: Date | string | null
+  refreshTokenRevoked?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   branch?: Prisma.BranchCreateNestedOneWithoutUsersInput
   company?: Prisma.CompanyCreateNestedOneWithoutUsersInput
-  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -352,9 +413,13 @@ export type UserUncheckedCreateInput = {
   branchId?: string | null
   companyId?: string | null
   isActive?: boolean
+  resetToken?: string | null
+  resetTokenExpires?: Date | string | null
+  refreshToken?: string | null
+  refreshTokenExpires?: Date | string | null
+  refreshTokenRevoked?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -363,11 +428,15 @@ export type UserUpdateInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refreshTokenExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refreshTokenRevoked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneWithoutUsersNestedInput
   company?: Prisma.CompanyUpdateOneWithoutUsersNestedInput
-  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -379,9 +448,13 @@ export type UserUncheckedUpdateInput = {
   branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refreshTokenExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refreshTokenRevoked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -393,6 +466,11 @@ export type UserCreateManyInput = {
   branchId?: string | null
   companyId?: string | null
   isActive?: boolean
+  resetToken?: string | null
+  resetTokenExpires?: Date | string | null
+  refreshToken?: string | null
+  refreshTokenExpires?: Date | string | null
+  refreshTokenRevoked?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -403,6 +481,11 @@ export type UserUpdateManyMutationInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refreshTokenExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refreshTokenRevoked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -416,6 +499,11 @@ export type UserUncheckedUpdateManyInput = {
   branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refreshTokenExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refreshTokenRevoked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -439,6 +527,11 @@ export type UserCountOrderByAggregateInput = {
   branchId?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  resetToken?: Prisma.SortOrder
+  resetTokenExpires?: Prisma.SortOrder
+  refreshToken?: Prisma.SortOrder
+  refreshTokenExpires?: Prisma.SortOrder
+  refreshTokenRevoked?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -456,6 +549,11 @@ export type UserMaxOrderByAggregateInput = {
   branchId?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  resetToken?: Prisma.SortOrder
+  resetTokenExpires?: Prisma.SortOrder
+  refreshToken?: Prisma.SortOrder
+  refreshTokenExpires?: Prisma.SortOrder
+  refreshTokenRevoked?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -469,17 +567,17 @@ export type UserMinOrderByAggregateInput = {
   branchId?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  resetToken?: Prisma.SortOrder
+  resetTokenExpires?: Prisma.SortOrder
+  refreshToken?: Prisma.SortOrder
+  refreshTokenExpires?: Prisma.SortOrder
+  refreshTokenRevoked?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type UserSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
-}
-
-export type UserScalarRelationFilter = {
-  is?: Prisma.UserWhereInput
-  isNot?: Prisma.UserWhereInput
 }
 
 export type UserCreateNestedManyWithoutCompanyInput = {
@@ -570,6 +668,10 @@ export type EnumUserRoleFieldUpdateOperationsInput = {
   set?: $Enums.UserRole
 }
 
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
 export type IntFieldUpdateOperationsInput = {
   set?: number
   increment?: number
@@ -578,30 +680,20 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
-export type UserCreateNestedOneWithoutRefreshTokensInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutRefreshTokensInput, Prisma.UserUncheckedCreateWithoutRefreshTokensInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRefreshTokensInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutRefreshTokensNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutRefreshTokensInput, Prisma.UserUncheckedCreateWithoutRefreshTokensInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRefreshTokensInput
-  upsert?: Prisma.UserUpsertWithoutRefreshTokensInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRefreshTokensInput, Prisma.UserUpdateWithoutRefreshTokensInput>, Prisma.UserUncheckedUpdateWithoutRefreshTokensInput>
-}
-
 export type UserCreateWithoutCompanyInput = {
   email: string
   name?: string | null
   password: string
   role?: $Enums.UserRole
   isActive?: boolean
+  resetToken?: string | null
+  resetTokenExpires?: Date | string | null
+  refreshToken?: string | null
+  refreshTokenExpires?: Date | string | null
+  refreshTokenRevoked?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   branch?: Prisma.BranchCreateNestedOneWithoutUsersInput
-  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCompanyInput = {
@@ -612,9 +704,13 @@ export type UserUncheckedCreateWithoutCompanyInput = {
   role?: $Enums.UserRole
   branchId?: string | null
   isActive?: boolean
+  resetToken?: string | null
+  resetTokenExpires?: Date | string | null
+  refreshToken?: string | null
+  refreshTokenExpires?: Date | string | null
+  refreshTokenRevoked?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCompanyInput = {
@@ -655,6 +751,11 @@ export type UserScalarWhereInput = {
   branchId?: Prisma.StringNullableFilter<"User"> | string | null
   companyId?: Prisma.StringNullableFilter<"User"> | string | null
   isActive?: Prisma.BoolFilter<"User"> | boolean
+  resetToken?: Prisma.StringNullableFilter<"User"> | string | null
+  resetTokenExpires?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  refreshToken?: Prisma.StringNullableFilter<"User"> | string | null
+  refreshTokenExpires?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  refreshTokenRevoked?: Prisma.BoolFilter<"User"> | boolean
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
 }
@@ -665,10 +766,14 @@ export type UserCreateWithoutBranchInput = {
   password: string
   role?: $Enums.UserRole
   isActive?: boolean
+  resetToken?: string | null
+  resetTokenExpires?: Date | string | null
+  refreshToken?: string | null
+  refreshTokenExpires?: Date | string | null
+  refreshTokenRevoked?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   company?: Prisma.CompanyCreateNestedOneWithoutUsersInput
-  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBranchInput = {
@@ -679,9 +784,13 @@ export type UserUncheckedCreateWithoutBranchInput = {
   role?: $Enums.UserRole
   companyId?: string | null
   isActive?: boolean
+  resetToken?: string | null
+  resetTokenExpires?: Date | string | null
+  refreshToken?: string | null
+  refreshTokenExpires?: Date | string | null
+  refreshTokenRevoked?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBranchInput = {
@@ -710,72 +819,6 @@ export type UserUpdateManyWithWhereWithoutBranchInput = {
   data: Prisma.XOR<Prisma.UserUpdateManyMutationInput, Prisma.UserUncheckedUpdateManyWithoutBranchInput>
 }
 
-export type UserCreateWithoutRefreshTokensInput = {
-  email: string
-  name?: string | null
-  password: string
-  role?: $Enums.UserRole
-  isActive?: boolean
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  branch?: Prisma.BranchCreateNestedOneWithoutUsersInput
-  company?: Prisma.CompanyCreateNestedOneWithoutUsersInput
-}
-
-export type UserUncheckedCreateWithoutRefreshTokensInput = {
-  id?: number
-  email: string
-  name?: string | null
-  password: string
-  role?: $Enums.UserRole
-  branchId?: string | null
-  companyId?: string | null
-  isActive?: boolean
-  createdAt?: Date | string
-  updatedAt?: Date | string
-}
-
-export type UserCreateOrConnectWithoutRefreshTokensInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutRefreshTokensInput, Prisma.UserUncheckedCreateWithoutRefreshTokensInput>
-}
-
-export type UserUpsertWithoutRefreshTokensInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutRefreshTokensInput, Prisma.UserUncheckedUpdateWithoutRefreshTokensInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutRefreshTokensInput, Prisma.UserUncheckedCreateWithoutRefreshTokensInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutRefreshTokensInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutRefreshTokensInput, Prisma.UserUncheckedUpdateWithoutRefreshTokensInput>
-}
-
-export type UserUpdateWithoutRefreshTokensInput = {
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  password?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  branch?: Prisma.BranchUpdateOneWithoutUsersNestedInput
-  company?: Prisma.CompanyUpdateOneWithoutUsersNestedInput
-}
-
-export type UserUncheckedUpdateWithoutRefreshTokensInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  password?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
-  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
 export type UserCreateManyCompanyInput = {
   id?: number
   email: string
@@ -784,6 +827,11 @@ export type UserCreateManyCompanyInput = {
   role?: $Enums.UserRole
   branchId?: string | null
   isActive?: boolean
+  resetToken?: string | null
+  resetTokenExpires?: Date | string | null
+  refreshToken?: string | null
+  refreshTokenExpires?: Date | string | null
+  refreshTokenRevoked?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -794,10 +842,14 @@ export type UserUpdateWithoutCompanyInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refreshTokenExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refreshTokenRevoked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneWithoutUsersNestedInput
-  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCompanyInput = {
@@ -808,9 +860,13 @@ export type UserUncheckedUpdateWithoutCompanyInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refreshTokenExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refreshTokenRevoked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutCompanyInput = {
@@ -821,6 +877,11 @@ export type UserUncheckedUpdateManyWithoutCompanyInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refreshTokenExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refreshTokenRevoked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -833,6 +894,11 @@ export type UserCreateManyBranchInput = {
   role?: $Enums.UserRole
   companyId?: string | null
   isActive?: boolean
+  resetToken?: string | null
+  resetTokenExpires?: Date | string | null
+  refreshToken?: string | null
+  refreshTokenExpires?: Date | string | null
+  refreshTokenRevoked?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -843,10 +909,14 @@ export type UserUpdateWithoutBranchInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refreshTokenExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refreshTokenRevoked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneWithoutUsersNestedInput
-  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBranchInput = {
@@ -857,9 +927,13 @@ export type UserUncheckedUpdateWithoutBranchInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refreshTokenExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refreshTokenRevoked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutBranchInput = {
@@ -870,39 +944,15 @@ export type UserUncheckedUpdateManyWithoutBranchInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   companyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refreshTokenExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refreshTokenRevoked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-
-/**
- * Count Type UserCountOutputType
- */
-
-export type UserCountOutputType = {
-  refreshTokens: number
-}
-
-export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  refreshTokens?: boolean | UserCountOutputTypeCountRefreshTokensArgs
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the UserCountOutputType
-   */
-  select?: Prisma.UserCountOutputTypeSelect<ExtArgs> | null
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountRefreshTokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.RefreshTokenWhereInput
-}
 
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -914,12 +964,15 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   branchId?: boolean
   companyId?: boolean
   isActive?: boolean
+  resetToken?: boolean
+  resetTokenExpires?: boolean
+  refreshToken?: boolean
+  refreshTokenExpires?: boolean
+  refreshTokenRevoked?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.User$branchArgs<ExtArgs>
   company?: boolean | Prisma.User$companyArgs<ExtArgs>
-  refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>
-  _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -931,6 +984,11 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   branchId?: boolean
   companyId?: boolean
   isActive?: boolean
+  resetToken?: boolean
+  resetTokenExpires?: boolean
+  refreshToken?: boolean
+  refreshTokenExpires?: boolean
+  refreshTokenRevoked?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.User$branchArgs<ExtArgs>
@@ -946,6 +1004,11 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   branchId?: boolean
   companyId?: boolean
   isActive?: boolean
+  resetToken?: boolean
+  resetTokenExpires?: boolean
+  refreshToken?: boolean
+  refreshTokenExpires?: boolean
+  refreshTokenRevoked?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   branch?: boolean | Prisma.User$branchArgs<ExtArgs>
@@ -961,16 +1024,19 @@ export type UserSelectScalar = {
   branchId?: boolean
   companyId?: boolean
   isActive?: boolean
+  resetToken?: boolean
+  resetTokenExpires?: boolean
+  refreshToken?: boolean
+  refreshTokenExpires?: boolean
+  refreshTokenRevoked?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "password" | "role" | "branchId" | "companyId" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "password" | "role" | "branchId" | "companyId" | "isActive" | "resetToken" | "resetTokenExpires" | "refreshToken" | "refreshTokenExpires" | "refreshTokenRevoked" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.User$branchArgs<ExtArgs>
   company?: boolean | Prisma.User$companyArgs<ExtArgs>
-  refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>
-  _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.User$branchArgs<ExtArgs>
@@ -986,7 +1052,6 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     branch: Prisma.$BranchPayload<ExtArgs> | null
     company: Prisma.$CompanyPayload<ExtArgs> | null
-    refreshTokens: Prisma.$RefreshTokenPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -997,6 +1062,11 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     branchId: string | null
     companyId: string | null
     isActive: boolean
+    resetToken: string | null
+    resetTokenExpires: Date | null
+    refreshToken: string | null
+    refreshTokenExpires: Date | null
+    refreshTokenRevoked: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -1395,7 +1465,6 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   branch<T extends Prisma.User$branchArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$branchArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   company<T extends Prisma.User$companyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$companyArgs<ExtArgs>>): Prisma.Prisma__CompanyClient<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  refreshTokens<T extends Prisma.User$refreshTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$refreshTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RefreshTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1433,6 +1502,11 @@ export interface UserFieldRefs {
   readonly branchId: Prisma.FieldRef<"User", 'String'>
   readonly companyId: Prisma.FieldRef<"User", 'String'>
   readonly isActive: Prisma.FieldRef<"User", 'Boolean'>
+  readonly resetToken: Prisma.FieldRef<"User", 'String'>
+  readonly resetTokenExpires: Prisma.FieldRef<"User", 'DateTime'>
+  readonly refreshToken: Prisma.FieldRef<"User", 'String'>
+  readonly refreshTokenExpires: Prisma.FieldRef<"User", 'DateTime'>
+  readonly refreshTokenRevoked: Prisma.FieldRef<"User", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }
@@ -1871,30 +1945,6 @@ export type User$companyArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    */
   include?: Prisma.CompanyInclude<ExtArgs> | null
   where?: Prisma.CompanyWhereInput
-}
-
-/**
- * User.refreshTokens
- */
-export type User$refreshTokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the RefreshToken
-   */
-  select?: Prisma.RefreshTokenSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the RefreshToken
-   */
-  omit?: Prisma.RefreshTokenOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.RefreshTokenInclude<ExtArgs> | null
-  where?: Prisma.RefreshTokenWhereInput
-  orderBy?: Prisma.RefreshTokenOrderByWithRelationInput | Prisma.RefreshTokenOrderByWithRelationInput[]
-  cursor?: Prisma.RefreshTokenWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.RefreshTokenScalarFieldEnum | Prisma.RefreshTokenScalarFieldEnum[]
 }
 
 /**

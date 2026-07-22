@@ -18,6 +18,7 @@ model Company {
   updatedAt DateTime @updatedAt
   branches  Branch[] // One-to-Many
   users     User[] // One-to-Many (COMPANY_HEAD users linked directly to Company)
+  menus     Menu[] // One-to-Many (Master Menus belong to Company)
 }
 
 model Branch {
@@ -36,15 +37,17 @@ model Branch {
   discounts      Discount[]
 
   // Merged from Setting model
-  restaurantName    String   @default("")
-  currency          String   @default("MMK")
-  taxRate           Float    @default(5.0)
-  isAcceptingOrders Boolean  @default(true)
+  restaurantName    String  @default("")
+  currency          String  @default("MMK")
+  taxRate           Float   @default(5.0)
+  isAcceptingOrders Boolean @default(true)
 
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   addonCategories AddonCategory[]
   addons          Addon[]
+  menuOnBranches  MenuOnBranch[]
+  invoices        Invoice[]
 }
 
 // =================================================================
@@ -66,7 +69,14 @@ model User {
 
   isActive Boolean @default(true)
 
-  refreshTokens RefreshToken[]
+  // Password reset fields combined directly into User
+  resetToken        String?   @unique
+  resetTokenExpires DateTime?
+
+  // Refresh token fields combined directly into User
+  refreshToken        String?   @unique
+  refreshTokenExpires DateTime?
+  refreshTokenRevoked Boolean   @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -76,26 +86,6 @@ enum UserRole {
   COMPANY_HEAD
   BRANCH_ADMIN
   STAFF
-}
-
-model PasswordResetToken {
-  id        String   @id @default(cuid())
-  email     String
-  token     String   @unique
-  expires   DateTime
-  createdAt DateTime @default(now())
-
-  @@unique([email, token])
-}
-
-model RefreshToken {
-  id        String   @id @default(cuid())
-  token     String   @unique
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expires   DateTime
-  createdAt DateTime @default(now())
-  isRevoked Boolean  @default(false)
 }
 
 // =================================================================
@@ -117,18 +107,18 @@ model MenuCategory {
 }
 
 model MenuItem {
-  id              String         @id @default(cuid())
+  id              String          @id @default(cuid())
   name            String
   description     String?
   price           Float
   imageUrl        String?
-  isActive        Boolean        @default(true)
-  isDeleted       Boolean        @default(false)
+  isActive        Boolean         @default(true)
+  isDeleted       Boolean         @default(false)
   categoryId      String
-  category        MenuCategory   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category        MenuCategory    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   addonCategories AddonCategory[] // Implicit Many-to-Many
   discountId      String?
-  discount        Discount?      @relation(fields: [discountId], references: [id], onDelete: SetNull)
+  discount        Discount?       @relation(fields: [discountId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -177,10 +167,6 @@ model Discount {
   updatedAt DateTime @updatedAt
 }
 
-// =================================================================
-// 🪑 ၄။ TABLES & ORDERS (BRANCH SPECIFIC)
-// =================================================================
-
 model Table {
   id       String  @id @default(cuid())
   number   String
@@ -212,16 +198,12 @@ model Order {
   branchId String
   branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
 
-  // 🎯 Consolidating all order items and addons in this single JSON column
   items     Json
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  // Merged from Invoice model
-  invoiceNumber   String?       @unique // e.g., INV-2026-0001
-  paymentMethod   String?       // CASH, KPAY, CB_PAY, CREDIT_CARD
-  paymentStatus   PaymentStatus @default(UNPAID)
-  discountAmount  Float         @default(0.0)
+  invoiceId String?
+  invoice   Invoice? @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
 }
 
 enum OrderStatus {
@@ -238,4 +220,52 @@ enum PaymentStatus {
   UNPAID
   PAID
   REFUNDED
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique // e.g. INV-2026-0001
+  paymentMethod String // CASH, KPAY, CB_PAY, CREDIT_CARD
+  paymentStatus PaymentStatus @default(UNPAID)
+
+  subTotal       Float
+  taxAmount      Float
+  discountAmount Float @default(0.0)
+  finalAmount    Float
+
+  branchId String
+  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  orders Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Menu {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  basePrice   Float
+  image       String?
+  isActive    Boolean @default(true)
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  branches MenuOnBranch[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model MenuOnBranch {
+  menuId   String
+  branchId String
+  menu     Menu   @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  isAvailable Boolean @default(true)
+
+  @@id([menuId, branchId])
 }

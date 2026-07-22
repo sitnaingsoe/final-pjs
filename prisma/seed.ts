@@ -7,8 +7,6 @@ async function main() {
     console.log('🚀 Restaurant Backoffice ဒေတာများ စတင်ထည့်သွင်းနေပါပြီ...')
 
     console.log('🧹 ဒေတာဟောင်းများကို အကုန်ဖျက်သိမ်းနေသည်...')
-    await prisma.orderItemAddon.deleteMany()
-    await prisma.orderItem.deleteMany()
     await prisma.order.deleteMany()
     await prisma.addon.deleteMany()
     await prisma.addonCategory.deleteMany()
@@ -111,7 +109,7 @@ async function main() {
     console.log('✅ စားစရာမီနူးများနှင့် အပိုပစ္စည်းများ ချိတ်ဆက်မှု အောင်မြင်သည်။')
 
     // -------------------------------------------------------------
-    // အဆင့် (၆) စမ်းသပ်ရန် အော်ဒါ (Mock Orders) အသစ်သွင်းခြင်း
+    // အဆင့် (၆) စမ်းသပ်ရန် အော်ဒါ (Mock Orders) အသစ်သွင်းခြင်း (JSON format)
     // -------------------------------------------------------------
     const eggAddon = toppingCategory.addons.find(a => a.name === "ကြက်ဥပြုတ်")!
 
@@ -123,18 +121,17 @@ async function main() {
             taxAmount: 150,
             finalAmount: 3150,
             branchId: branch.id,
-            items: {
-                create: {
+            items: [
+                {
                     menuItemId: mohingaItem.id,
+                    name: mohingaItem.name,
                     quantity: 1,
                     price: 2500,
-                    addons: {
-                        create: [
-                            { addonId: eggAddon.id }
-                        ]
-                    }
+                    addons: [
+                        { addonId: eggAddon.id, name: eggAddon.name, price: eggAddon.price }
+                    ]
                 }
-            }
+            ]
         }
     })
 

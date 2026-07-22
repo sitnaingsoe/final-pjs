@@ -541,10 +541,6 @@ export type DiscountUpdateOneWithoutMenuItemsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DiscountUpdateToOneWithWhereWithoutMenuItemsInput, Prisma.DiscountUpdateWithoutMenuItemsInput>, Prisma.DiscountUncheckedUpdateWithoutMenuItemsInput>
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type DiscountCreateWithoutBranchInput = {
   id?: string
   name: string

@@ -68,11 +68,12 @@ export default function PosTerminal({
                 const res = await getActiveTableOrder(selectedTableId)
                 if (res.success && res.data) {
                     setActiveOrderId(res.data.id)
-                    setExistingItems(res.data.items.map((i: any) => ({
-                        name: i.menuItem.name,
+                    const itemsArray = (res.data.items as any[]) || []
+                    setExistingItems(itemsArray.map((i: any) => ({
+                        name: i.name,
                         quantity: i.quantity,
                         price: i.price,
-                        addons: i.addons?.map((a: any) => ({ name: a.addon.name })) || []
+                        addons: i.addons?.map((a: any) => ({ name: a.name })) || []
                     })))
                     setExistingTotal(res.data.totalAmount)
                     setIsBillRequested(res.data.isBillRequested)

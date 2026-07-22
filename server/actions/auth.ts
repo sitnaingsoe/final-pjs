@@ -76,10 +76,13 @@ export async function sendPasswordResetEmail(email: string) {
         // ၃။ Token expires 1 နာရီ အတွင်း
         const expires = new Date(Date.now() + 60 * 60 * 1000)
 
-        // ၄။ DB ထဲတွင် Token သိမ်းသည် (အဟောင်း ရှိနှင့်ပြီးက ဖျက်ပြီး အသစ်ထည့်)
-        await prisma.passwordResetToken.deleteMany({ where: { email } })
-        await prisma.passwordResetToken.create({
-            data: { email, token, expires }
+        // ၄။ DB ထဲတွင် User model ၌ Token သိမ်းသည်
+        await prisma.user.update({
+            where: { email },
+            data: {
+                resetToken: token,
+                resetTokenExpires: expires
+            }
         })
 
         // ၅။ Reset Link တည်ဆောက်သည်
@@ -132,32 +135,40 @@ export async function resetPassword(token: string, newPassword: string) {
     }
 
     try {
-        // ၁။ DB ထဲမှ Token ရှာသည်
-        const resetToken = await prisma.passwordResetToken.findUnique({
-            where: { token }
+        // ၁။ DB ထဲမှ Token ဖြင့် User ရှာသည်
+        const user = await prisma.user.findUnique({
+            where: { resetToken: token }
         })
 
-        if (!resetToken) {
+        if (!user) {
             return { error: "Token မမှန်ကန်ပါ သို့မဟုတ် အသုံးပြုပြီးသားဖြစ်သည်" }
         }
 
         // ၂။ Token expire ဖြစ်/မဖြစ် စစ်သည်
-        if (new Date() > resetToken.expires) {
-            await prisma.passwordResetToken.delete({ where: { token } })
+        if (!user.resetTokenExpires || new Date() > user.resetTokenExpires) {
+            // Expire ဖြစ်ပါက token ပြန်ဖျက်သည်
+            await prisma.user.update({
+                where: { id: user.id },
+                data: {
+                    resetToken: null,
+                    resetTokenExpires: null
+                }
+            })
             return { error: "Token သက်တမ်းကုန်သွားပါပြီ။ ထပ်မံ တောင်းဆိုပါ။" }
         }
 
         // ၃။ Password အသစ် hash လုပ်သည်
         const hashedPassword = await bcrypt.hash(newPassword, 10)
 
-        // ၄။ User password update လုပ်သည်
+        // ၄။ User password update လုပ်ပြီး Token ရှင်းသည် (reuse မဖြစ်စေရန်)
         await prisma.user.update({
-            where: { email: resetToken.email },
-            data: { password: hashedPassword }
+            where: { id: user.id },
+            data: {
+                password: hashedPassword,
+                resetToken: null,
+                resetTokenExpires: null
+            }
         })
-
-        // ၅။ Token ကို တစ်ကြိမ်သုံးပြီး delete လုပ်သည် (reuse မဖြစ်ရ)
-        await prisma.passwordResetToken.delete({ where: { token } })
 
         return { success: "Password အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီ! Login ဝင်ပါ။" }
 

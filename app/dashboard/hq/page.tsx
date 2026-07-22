@@ -34,17 +34,17 @@ export default async function HQHomePage({ searchParams }: PageProps) {
   })
   const companyId = currentUser?.companyId || currentUser?.branch?.companyId
 
+  const companyOrderWhere = { ...orderWhere, branch: { companyId } }
+  const companyRevenueWhere = { ...invoiceWhere, branch: { companyId } }
+
   if (!companyId) {
       return <div className="p-6 text-center text-red-500">ကုမ္ပဏီအချက်အလက် ရှာမတွေ့ပါ။</div>
   }
 
-  const companyOrderWhere = { ...orderWhere, branch: { companyId } }
-  const companyRevenueWhere = { ...invoiceWhere, branch: { companyId } }
-
   const totalBranches = await prisma.branch.count({ where: { companyId } })
   const totalOrders = await prisma.order.count({ where: companyOrderWhere })
 
-  const revenueSum = await prisma.order.aggregate({
+  const revenueSum = await prisma.invoice.aggregate({
     _sum: { finalAmount: true },
     where: companyRevenueWhere
   })
@@ -54,7 +54,7 @@ export default async function HQHomePage({ searchParams }: PageProps) {
     where: { companyId },
     include: {
       users: { where: { role: 'BRANCH_ADMIN' }, take: 1 },
-      orders: { where: { paymentStatus: 'PAID' as const, ...(hasFilter ? { createdAt: dateQuery } : {}) }, select: { finalAmount: true } },
+      invoices: { where: { paymentStatus: 'PAID' as const, ...(hasFilter ? { createdAt: dateQuery } : {}) }, select: { finalAmount: true } },
       _count: { select: { orders: { where: companyOrderWhere } } }
     }
   })
@@ -64,7 +64,7 @@ export default async function HQHomePage({ searchParams }: PageProps) {
     name: branch.name,
     manager: branch.users[0]?.name || 'သတ်မှတ်မထားပါ',
     totalOrders: branch._count.orders,
-    revenue: branch.orders.reduce((sum, ord) => sum + ord.finalAmount, 0)
+    revenue: branch.invoices.reduce((sum, inv) => sum + inv.finalAmount, 0)
   }))
 
   const chartData = branchTableData.map(b => ({ 

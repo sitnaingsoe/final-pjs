@@ -8,8 +8,7 @@ import { redirect } from 'next/navigation'
 async function getInvoices(role: string, branchId: string | null | undefined) {
     if (role === 'COMPANY_HEAD') {
         // Owner ဆိုလျှင် ဆိုင်ခွဲအားလုံး၏ ဘေလ်များကို ဆွဲထုတ်ပြီး ဆိုင်ခွဲအမည်ပါ တွဲယူမည်
-        return await prisma.order.findMany({
-            where: { invoiceNumber: { not: null } },
+        return await prisma.invoice.findMany({
             include: {
                 branch: { select: { name: true } }
             },
@@ -17,10 +16,9 @@ async function getInvoices(role: string, branchId: string | null | undefined) {
         })
     } else {
         // ဆိုင်ခွဲဝန်ထမ်း/မန်နေဂျာ ဆိုလျှင် မိမိဆိုင်ခွဲတစ်ခုတည်းကိုသာ Filter ချမည်
-        return await prisma.order.findMany({
+        return await prisma.invoice.findMany({
             where: { 
-                branchId: branchId || "",
-                invoiceNumber: { not: null }
+                branchId: branchId || ""
             },
             include: {
                 branch: { select: { name: true } }
@@ -111,7 +109,7 @@ export default async function InvoicesPage() {
                                         </td>
 
                                         {/* Financial Breakdowns */}
-                                        <td className="p-3 text-right font-mono text-gray-500">{invoice.totalAmount.toLocaleString()}</td>
+                                        <td className="p-3 text-right font-mono text-gray-500">{invoice.subTotal.toLocaleString()}</td>
                                         <td className="p-3 text-right font-mono text-gray-400">{invoice.taxAmount.toLocaleString()}</td>
                                         <td className="p-3 text-right font-mono text-red-600/80">-{invoice.discountAmount.toLocaleString()}</td>
                                         <td className="p-3 text-right font-mono font-black text-gray-800">{invoice.finalAmount.toLocaleString()}</td>
