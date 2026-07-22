@@ -13,8 +13,10 @@ export async function middleware(req: NextRequest) {
         salt: isProd ? "__Secure-authjs.session-token" : "authjs.session-token"
     })
 
-    // အကောင့်ဝင်မထားပါက /login သို့ အတင်းမောင်းထုတ်မည်
-    if (!token) {
+    const refreshToken = req.cookies.get("refreshToken")?.value;
+
+    // အကောင့်ဝင်မထားပါက /login သို့ အတင်းမောင်းထုတ်မည် (NextAuth token သို့မဟုတ် Custom Refresh Token နှစ်ခုလုံးမရှိလျှင်)
+    if (!token && !refreshToken) {
         const loginUrl = new URL("/login", req.url)
         return NextResponse.redirect(loginUrl)
     }
