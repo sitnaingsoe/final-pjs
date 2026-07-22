@@ -67,7 +67,7 @@ export async function POST(request: Request) {
             value: refreshToken,
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
+            sameSite: 'lax',
             path: '/', // Accessible everywhere
             expires: expiresAt
         })
