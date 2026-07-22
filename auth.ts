@@ -44,5 +44,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }
         })
     ],
+    pages: {
+        signIn: "/login", // Default Sign-in page ကို ကိုယ့်စာမျက်နှာဆီ ညွှန်းခြင်း
+    },
     secret: process.env.NEXTAUTH_SECRET,
+    trustHost: true,
 })
