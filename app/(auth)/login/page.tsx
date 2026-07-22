@@ -74,17 +74,20 @@ function LoginForm() {
                             return
                         }
 
-                        // 2. Establish NextAuth Session (for Dashboard Middleware)
-                        const res = await loginUser(formData)
+                        // 2. Establish NextAuth Session (Client Side API call avoids Server Action Vercel bugs)
+                        const res = await signIn("credentials", {
+                            email,
+                            password,
+                            redirect: false,
+                        })
 
-                        if (res && !res.success) {
-                            setError(res.error || "အကောင့်ဝင်၍ မရပါ")
+                        if (res?.error) {
+                            setError("အကောင့်ဝင်၍ မရပါ: " + res.error)
                         } else {
                             // 🎯 Role အပေါ်မူတည်ပြီး မတူညီသော Dashboard သို့ ညွှန်းမည်
-                            // 💡 window.location.href ကို သုံးခြင်းဖြင့် Next.js ၏ Cache ကို ရှင်းလင်းပြီး Data အသစ်များကို သေချာဆွဲယူစေပါမည်။
-                            if (res.role === 'COMPANY_HEAD') {
+                            if (apiData.user?.role === 'COMPANY_HEAD') {
                                 window.location.href = '/dashboard/hq/branches'
-                            } else if (res.role === 'STAFF') {
+                            } else if (apiData.user?.role === 'STAFF') {
                                 window.location.href = '/pos'
                             } else {
                                 window.location.href = '/dashboard/store/orders' // Default to orders page
