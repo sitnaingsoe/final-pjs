@@ -1,6 +1,8 @@
 // middleware.ts (Root folder ထဲတွင် ထားရှိရပါမည်)
-import { NextResponse } from "next/server"
-import { auth } from "@/auth"
+import NextAuth from "next-auth"
+import { authConfig } from "./auth.config"
+
+const { auth } = NextAuth(authConfig)
 
 export default auth((req) => {
     const isLoggedIn = !!req.auth;
@@ -8,10 +10,8 @@ export default auth((req) => {
     // အကောင့်ဝင်မထားပါက /login သို့ အတင်းမောင်းထုတ်မည်
     if (!isLoggedIn) {
         const loginUrl = new URL("/login", req.nextUrl)
-        return NextResponse.redirect(loginUrl)
+        return Response.redirect(loginUrl)
     }
-
-    return NextResponse.next()
 })
 
 export const config = {

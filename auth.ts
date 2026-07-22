@@ -1,10 +1,12 @@
-// auth.ts (Project Root Level တွင် ဆောက်ပါ)
+// auth.ts
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import { prisma } from "@/lib/db"
 import bcrypt from "bcryptjs"
+import { authConfig } from "./auth.config"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+    ...authConfig,
     providers: [
         Credentials({
             name: "Credentials",
@@ -42,38 +44,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }
         })
     ],
-    callbacks: {
-        // ၁။ JWT Token ထဲသို့ Role နှင့် BranchId ထည့်ခြင်း
-        async jwt({ token, user }) {
-            if (user) {
-                token.role = user.role
-                token.branchId = user.branchId
-            }
-            // 🔥 Token ကို Access လုပ်တိုင်း Database မှာ Active ဖြစ်/မဖြစ် စစ်ဆေးမည်
-            if (token.sub) {
-                const dbUser = await prisma.user.findUnique({
-                    where: { id: parseInt(token.sub) },
-                    select: { isActive: true }
-                })
-                // Active မဖြစ်တော့ရင် token ကို ဖျက်ပစ်မည် (Logout ဖြစ်သွားမည်)
-                if (dbUser && !dbUser.isActive) {
-                    return {} as any
-                }
-            }
-            return token
-        },
-        // ၂။ Frontend Session ထဲသို့ Role နှင့် BranchId လွှဲပြောင်းပေးခြင်း
-        async session({ session, token }) {
-            if (session.user) {
-                session.user.id = token.sub as string
-                session.user.role = token.role as string
-                session.user.branchId = token.branchId as string
-            }
-            return session
-        }
-    },
-    pages: {
-        signIn: "/login", // Default Sign-in page ကို ကိုယ့်စာမျက်နှာဆီ ညွှန်းခြင်း
-    },
     secret: process.env.NEXTAUTH_SECRET,
 })
