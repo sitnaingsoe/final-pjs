@@ -20,6 +20,15 @@ export default function DashboardLayout({
     const handleLogout = async () => {
         // Custom JWT Access Token ကို ရှင်းလင်းမည်
         localStorage.removeItem('accessToken')
+        
+        // Refresh Token ကို ဖျက်ရန် API ခေါ်မည်
+        try {
+            await fetch('/api/auth/logout', { method: 'POST' })
+        } catch (e) {
+            console.error("Logout API failed", e)
+        }
+
+        // NextAuth Session ရှင်းမည်
         await signOut({ callbackUrl: '/login' })
     }
 
