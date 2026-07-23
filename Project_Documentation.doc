@@ -1,0 +1,59 @@
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head><title>Project Documentation</title></head>
+<body style="font-family: Arial, sans-serif;">
+
+<h1>Project Documentation: Omnichannel Restaurant POS Platform</h1>
+
+<h2>1. Project Overview</h2>
+<p>This project is a <strong>Cloud-Based, Multi-Tenant Point of Sale (POS) & Restaurant Management System</strong>. It is designed to handle end-to-end restaurant operations, from multi-branch administration at the headquarters level to mobile-based customer self-ordering and kitchen order tracking.</p>
+<p>Unlike traditional single-device POS systems, this platform uses an <strong>omnichannel approach</strong>, unifying in-store counter orders, table-side QR code ordering, and customer mobile apps into a single centralized database.</p>
+
+<hr>
+
+<h2>2. Core Features</h2>
+<ul>
+  <li><strong>Multi-Tenant Architecture:</strong> A single codebase and database that supports multiple parent companies, each with multiple independent branches.</li>
+  <li><strong>Omnichannel Ordering:</strong> Orders can be placed via the Cashier Dashboard (<code>/pos</code>) or by customers scanning a QR code (<code>/scan</code>).</li>
+  <li><strong>Real-Time Order Lifecycle:</strong> Orders are tracked across multiple states: <code>PENDING ➔ CONFIRMED ➔ COOKING ➔ READY ➔ DELIVERED ➔ PAID</code>.</li>
+  <li><strong>Advanced Menu Management:</strong> Supports master menus at the company level, localized branch menus, and complex add-on rules (min/max selections).</li>
+  <li><strong>Billing & Local Payments:</strong> Automated invoice generation calculating subtotal, tax (5%), and discounts, with support for cash, KPAY, CB Pay, and credit cards.</li>
+</ul>
+
+<hr>
+
+<h2>3. User Roles & Access Control</h2>
+<p>The system implements strict Role-Based Access Control (RBAC):</p>
+<ul>
+  <li><strong><code>COMPANY_HEAD</code></strong>: Highest administrative access. Can oversee all branches, view global analytics, and manage master menus.</li>
+  <li><strong><code>BRANCH_ADMIN</code></strong>: Store-level manager. Can manage local staff, table layouts, branch-specific menu availability, and view daily branch reports.</li>
+  <li><strong><code>STAFF</code></strong>: Cashiers and waitstaff. Access is restricted to the <code>/pos</code> terminal for punching in orders, updating kitchen statuses, and processing payments.</li>
+</ul>
+
+<hr>
+
+<h2>4. Technology Stack</h2>
+<ul>
+  <li><strong>Frontend Framework:</strong> Next.js 14+ (App Router)</li>
+  <li><strong>UI Library:</strong> React 19</li>
+  <li><strong>Styling:</strong> Tailwind CSS v4</li>
+  <li><strong>Backend API:</strong> Next.js Server Actions & API Routes</li>
+  <li><strong>Database:</strong> PostgreSQL</li>
+  <li><strong>ORM:</strong> Prisma</li>
+  <li><strong>Authentication:</strong> NextAuth (Auth.js v5 Beta)</li>
+  <li><strong>File Storage:</strong> AWS S3</li>
+  <li><strong>Email Service:</strong> Resend</li>
+</ul>
+
+<hr>
+
+<h2>5. Database Architecture Highlights</h2>
+<p>The database is highly normalized to support scaling:</p>
+<ul>
+  <li><code>Company</code> ➔ One-to-Many ➔ <code>Branch</code></li>
+  <li><code>Branch</code> ➔ One-to-Many ➔ <code>Tables, Orders, Staff (Users)</code></li>
+  <li><code>Menu</code> (Master) ➔ Many-to-Many ➔ <code>Branch</code> (via MenuOnBranch)</li>
+  <li><code>Order</code> contains a JSON payload for items to maintain historical pricing accuracy, linked to <code>Invoice</code> for payment tracking.</li>
+</ul>
+
+</body>
+</html>

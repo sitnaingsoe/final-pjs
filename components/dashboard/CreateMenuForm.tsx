@@ -1,9 +1,11 @@
+/* eslint-disable @next/next/no-img-element */
 // components/dashboard/CreateMenuForm.tsx
 'use client'
 
 import React, { useState, useTransition } from 'react'
 import { createMenuItem } from '@/server/actions/menu'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function CreateMenuForm({ categories, addonCategories, discounts = [] }: { categories: any[], addonCategories: any[], discounts?: any[] }) {
     const [isOpen, setIsOpen] = useState(false)
     const [isPending, startTransition] = useTransition()
@@ -44,7 +46,7 @@ export default function CreateMenuForm({ categories, addonCategories, discounts 
 
     return (
         <>
-            <button 
+            <button
                 onClick={() => setIsOpen(true)}
                 className="bg-gradient-to-r from-orange-500 to-rose-500 hover:from-gray-800 hover:to-gray-500 text-black text-sm font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg hover:shadow-orange-500/25 flex items-center gap-2"
             >
@@ -54,13 +56,13 @@ export default function CreateMenuForm({ categories, addonCategories, discounts 
             {isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
                     <div className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl relative">
-                        <button 
+                        <button
                             onClick={() => setIsOpen(false)}
                             className="absolute top-4 right-4 text-gray-500 hover:text-black bg-gray-50 hover:bg-gray-100 p-2 rounded-lg transition-colors"
                         >
                             ✕
                         </button>
-                        
+
                         <h3 className="font-black text-gray-800 mb-6 flex items-center gap-2 text-lg uppercase tracking-wider">
                             <span className="text-black">➕</span> ဟင်းပွဲအသစ် ထည့်မည်
                         </h3>
@@ -108,12 +110,12 @@ export default function CreateMenuForm({ categories, addonCategories, discounts 
                                             <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                                         </div>
                                     )}
-                                    <input 
-                                        type="file" 
-                                        name="image" 
+                                    <input
+                                        type="file"
+                                        name="image"
                                         accept="image/*"
                                         onChange={handleImageChange}
-                                        disabled={isPending} 
+                                        disabled={isPending}
                                         className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2 text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-black file:text-white hover:file:bg-gray-900 transition-colors"
                                     />
                                 </div>
