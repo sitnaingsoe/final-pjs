@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 import { generateAccessToken, generateRefreshToken } from '@/lib/tokens'
+import { cookies } from 'next/headers'
 
 export async function POST(request: Request) {
     try {
@@ -62,7 +63,8 @@ export async function POST(request: Request) {
             }
         })
 
-        response.cookies.set({
+        const cookieStore = await cookies()
+        cookieStore.set({
             name: 'refreshToken',
             value: refreshToken,
             httpOnly: true,

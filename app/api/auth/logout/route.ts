@@ -19,19 +19,16 @@ export async function POST(request: Request) {
             })
         }
 
-        // Clear the cookie
-        const response = NextResponse.json({ success: true })
-        response.cookies.set({
-            name: 'refreshToken',
-            value: '',
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            path: '/',
-            expires: new Date(0) // immediately expire
-        })
+        // Clear the refresh token cookie
+        cookieStore.delete('refreshToken')
+        
+        // Explicitly clear NextAuth session cookies as well to prevent production bugs
+        cookieStore.delete('authjs.session-token')
+        cookieStore.delete('__Secure-authjs.session-token')
+        cookieStore.delete('next-auth.session-token')
+        cookieStore.delete('__Secure-next-auth.session-token')
 
-        return response
+        return NextResponse.json({ success: true })
 
     } catch (error) {
         console.error("Logout API Error:", error)
