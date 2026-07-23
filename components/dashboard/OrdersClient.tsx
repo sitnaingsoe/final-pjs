@@ -125,14 +125,14 @@ export default function OrdersClient({ initialOrders }: { initialOrders: any[] }
                                 </div>
                                 {/* မှာယူသည့် မီနူးပစ္စည်းများ */}
                                 <div className="text-sm space-y-2">
-                                    {order.items.map((item: any) => (
-                                        <div key={item.id} className="font-bold text-gray-700">
+                                    {order.items.map((item: any, idx: number) => (
+                                        <div key={item.id || item.menuItemId || idx} className="font-bold text-gray-700">
                                             <div className="flex justify-between">
-                                                <span>• {item.menuItem.name}</span>
+                                                <span>• {item.name || item.menuItem?.name || "Unknown Item"}</span>
                                                 <span className="text-red-600 font-black px-2 bg-red-500/10 rounded">x{item.quantity}</span>
                                             </div>
-                                            {item.addons.map((a: any) => (
-                                                <div key={a.id} className="text-xs text-gray-400 pl-4 mt-0.5">↳ {a.addon.name}</div>
+                                            {item.addons?.map((a: any, idx: number) => (
+                                                <div key={a.id || idx} className="text-xs text-gray-400 pl-4 mt-0.5">↳ {a.name || a.addon?.name || "Addon"}</div>
                                             ))}
                                         </div>
                                     ))}
@@ -170,14 +170,14 @@ export default function OrdersClient({ initialOrders }: { initialOrders: any[] }
                                     <span className="text-xs font-bold text-gray-400 bg-gray-50 px-2 py-1 rounded-md">{new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                 </div>
                                 <div className="text-sm space-y-2">
-                                    {order.items.map((item: any) => (
-                                        <div key={item.id} className="font-bold text-gray-700">
+                                    {order.items.map((item: any, idx: number) => (
+                                        <div key={item.id || item.menuItemId || idx} className="font-bold text-gray-700">
                                             <div className="flex justify-between">
-                                                <span>• {item.menuItem.name}</span>
+                                                <span>• {item.name || item.menuItem?.name || "Unknown Item"}</span>
                                                 <span className="text-blue-400 font-black px-2 bg-blue-500/10 rounded">x{item.quantity}</span>
                                             </div>
-                                            {item.addons.map((a: any) => (
-                                                <div key={a.id} className="text-xs text-gray-400 pl-4 mt-0.5">↳ {a.addon.name}</div>
+                                            {item.addons?.map((a: any, idx: number) => (
+                                                <div key={a.id || idx} className="text-xs text-gray-400 pl-4 mt-0.5">↳ {a.name || a.addon?.name || "Addon"}</div>
                                             ))}
                                         </div>
                                     ))}
@@ -216,10 +216,10 @@ export default function OrdersClient({ initialOrders }: { initialOrders: any[] }
                                     <span className="text-xs font-bold text-gray-400 bg-gray-50 px-2 py-1 rounded-md">{new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                 </div>
                                 <div className="text-sm space-y-2 relative z-10">
-                                    {order.items.map((item: any) => (
-                                        <div key={item.id} className="font-bold text-gray-700">
+                                    {order.items.map((item: any, idx: number) => (
+                                        <div key={item.id || item.menuItemId || idx} className="font-bold text-gray-700">
                                             <div className="flex justify-between">
-                                                <span>• {item.menuItem.name}</span>
+                                                <span>• {item.name || item.menuItem?.name || "Unknown Item"}</span>
                                                 <span className="text-green-600 font-black px-2 bg-green-500/10 rounded">x{item.quantity}</span>
                                             </div>
                                         </div>

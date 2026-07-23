@@ -10,6 +10,18 @@ export default async function OrdersPage() {
     const orders = result.data || []
 
     return (
-        <OrdersClient initialOrders={orders} />
+        <div className="space-y-4">
+            <div className="flex justify-end">
+                <a 
+                    href="/kitchen" 
+                    target="_blank" 
+                    className="flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-5 py-2.5 rounded-xl font-bold text-xs transition-all shadow-lg"
+                >
+                    <span>📺</span>
+                    Open Full-Screen KDS
+                </a>
+            </div>
+            <OrdersClient initialOrders={orders} />
+        </div>
     )
 }
