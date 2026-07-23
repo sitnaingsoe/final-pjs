@@ -52,13 +52,14 @@ function LoginForm() {
                         const password = formData.get('password') as string
 
                         // 1. Get Custom Access & Refresh Tokens
+                        let apiData;
                         try {
                             const apiRes = await fetch('/api/login', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ email, password })
                             })
-                            const apiData = await apiRes.json()
+                            apiData = await apiRes.json()
 
                             if (!apiRes.ok || !apiData.success) {
                                 setError(apiData.error || "API Login Failed")
