@@ -26,7 +26,7 @@ export async function createTable(formData: FormData) {
   if (!number) return { success: false, error: "စားပွဲနံပါတ် ထည့်သွင်းပါ" }
 
   try {
-    const domain = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+    const domain = process.env.AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
     const qrUrl = `${domain}/scan?tableNumber=${number}`;
     const branchId = session.user.branchId;
     await prisma.table.create({
