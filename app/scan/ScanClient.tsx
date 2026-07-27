@@ -8,6 +8,7 @@ import { getMenuForTable, placeTableOrder, getActiveOrderForTableNumber, request
 
 export default function AdvancedCustomerScanPage() {
     const searchParams = useSearchParams()
+    const tableId = searchParams.get('tableId')
     const tableNumber = searchParams.get('tableNumber') || 'Unknown'
 
     const [menuItems, setMenuItems] = useState<any[]>([])
@@ -36,12 +37,12 @@ export default function AdvancedCustomerScanPage() {
     useEffect(() => {
         async function loadData() {
             try {
-                const res = await getMenuForTable(tableNumber)
+                const res = await getMenuForTable(tableNumber, tableId)
                 if (res && res.success) {
                     setMenuItems(res.menuItems || [])
                     setCategories(res.categories || [])
                 }
-                const orderRes = await getActiveOrderForTableNumber(tableNumber)
+                const orderRes = await getActiveOrderForTableNumber(tableNumber, tableId)
                 if (orderRes && orderRes.success) {
                     setActiveOrder(orderRes.data)
                 }
@@ -56,7 +57,7 @@ export default function AdvancedCustomerScanPage() {
         // Poll for order status every 10 seconds
         const intervalId = setInterval(async () => {
             try {
-                const orderRes = await getActiveOrderForTableNumber(tableNumber)
+                const orderRes = await getActiveOrderForTableNumber(tableNumber, tableId)
                 if (orderRes && orderRes.success) {
                     setActiveOrder(orderRes.data)
                 }
@@ -66,7 +67,7 @@ export default function AdvancedCustomerScanPage() {
         }, 10000)
 
         return () => clearInterval(intervalId)
-    }, [tableNumber])
+    }, [tableNumber, tableId])
 
     // --- HOME VIEW ACTIONS ---
     const handleItemClick = (item: any) => {
@@ -170,11 +171,11 @@ export default function AdvancedCustomerScanPage() {
             addons: item.selectedAddons?.map((a: any) => ({ addonId: a.id, name: a.name, price: a.price }))
         }))
 
-        const res = await placeTableOrder(tableNumber, orderItems, notes)
+        const res = await placeTableOrder(tableNumber, orderItems, notes, tableId)
         if (res.success) {
             setIsOrdered(true)
             setCart([])
-            const orderRes = await getActiveOrderForTableNumber(tableNumber)
+            const orderRes = await getActiveOrderForTableNumber(tableNumber, tableId)
             if (orderRes && orderRes.success) {
                 setActiveOrder(orderRes.data)
             }
@@ -185,11 +186,11 @@ export default function AdvancedCustomerScanPage() {
 
     const handleRequestBill = async () => {
         setIsRequestingBill(true)
-        const res = await requestBillForTable(tableNumber)
+        const res = await requestBillForTable(tableNumber, tableId)
         setIsRequestingBill(false)
         if (res.success) {
             alert('ဘေလ်တောင်းဆိုမှု အောင်မြင်ပါသည်။ ခေတ္တစောင့်ဆိုင်းပေးပါ။')
-            const orderRes = await getActiveOrderForTableNumber(tableNumber)
+            const orderRes = await getActiveOrderForTableNumber(tableNumber, tableId)
             if (orderRes && orderRes.success) {
                 setActiveOrder(orderRes.data)
             }
@@ -258,11 +259,118 @@ export default function AdvancedCustomerScanPage() {
                         </div>
                     </header>
 
+                    {/* 🔥 PROMOTIONAL DEALS & SPECIAL OFFERS MULTI-ITEM CAROUSEL */}
+                    {(() => {
+                        const discountedItems = safeMenuItems.filter(i => i && i.discount && i.discount.isActive)
+
+                        return (
+                            <div className="pt-4">
+                                <div className="px-4 flex justify-between items-center mb-2">
+                                    <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-gray-900">
+                                        <span className="text-red-600 animate-pulse">🔥</span>
+                                        <span>TODAY'S SPECIAL OFFERS</span>
+                                    </div>
+                                    {discountedItems.length > 1 && (
+                                        <span className="text-[10px] font-bold bg-red-100 text-red-600 px-2 py-0.5 rounded-full">
+                                            {discountedItems.length} Deals Active
+                                        </span>
+                                    )}
+                                </div>
+
+                                <div className="flex gap-3 overflow-x-auto px-4 pb-2 snap-x snap-mandatory no-scrollbar">
+                                    {discountedItems.length > 0 ? (
+                                        discountedItems.map((item, idx) => {
+                                            const gradients = [
+                                                'from-red-600 via-rose-600 to-amber-600 shadow-red-500/20',
+                                                'from-purple-600 via-indigo-600 to-blue-600 shadow-purple-500/20',
+                                                'from-emerald-600 via-teal-600 to-cyan-600 shadow-emerald-500/20',
+                                                'from-amber-600 via-orange-600 to-red-600 shadow-amber-500/20'
+                                            ]
+                                            const bgGradient = gradients[idx % gradients.length]
+
+                                            return (
+                                                <div 
+                                                    key={item.id}
+                                                    onClick={() => handleItemClick(item)}
+                                                    className={`w-[85%] sm:w-[90%] shrink-0 snap-center relative overflow-hidden rounded-3xl bg-gradient-to-r ${bgGradient} p-4 sm:p-5 text-white shadow-xl cursor-pointer group active:scale-[0.98] transition-all`}
+                                                >
+                                                    <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform"></div>
+                                                    <div className="relative z-10 flex items-center justify-between gap-3">
+                                                        <div className="flex-1 min-w-0">
+                                                            <div className="inline-flex items-center gap-1 bg-white/20 backdrop-blur-md px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider mb-1.5 text-amber-200 border border-white/20">
+                                                                <span>🔥 DEAL #{idx + 1}</span>
+                                                            </div>
+                                                            <h2 className="text-base font-black tracking-tight line-clamp-1 group-hover:underline">
+                                                                {item.name}
+                                                            </h2>
+                                                            <div className="flex items-baseline gap-2 mt-1">
+                                                                <span className="text-lg font-black text-white">
+                                                                    {getFinalPrice(item).toLocaleString()} MMK
+                                                                </span>
+                                                                <span className="text-xs text-white/70 line-through font-medium">
+                                                                    {(item.price || 0).toLocaleString()} MMK
+                                                                </span>
+                                                            </div>
+                                                            <span className="inline-block mt-2 text-[9px] font-black bg-white text-gray-900 px-2.5 py-1 rounded-xl uppercase tracking-wider shadow">
+                                                                {item.discount.type === 'PERCENTAGE' 
+                                                                    ? `SAVE ${item.discount.value}% NOW`
+                                                                    : `SAVE ${item.discount.value.toLocaleString()} MMK`}
+                                                            </span>
+                                                        </div>
+
+                                                        {item.imageUrl ? (
+                                                            <div className="w-20 h-20 rounded-2xl overflow-hidden relative shrink-0 shadow-md border-2 border-white/30 bg-black/20">
+                                                                <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                                                            </div>
+                                                        ) : (
+                                                            <div className="w-20 h-20 rounded-2xl bg-white/10 flex items-center justify-center text-3xl shrink-0">
+                                                                🍲
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )
+                                        })
+                                    ) : (
+                                        <>
+                                            <div className="w-[85%] shrink-0 snap-center relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-gray-900 to-black p-4 text-white shadow-xl">
+                                                <div className="absolute right-0 top-0 w-36 h-36 bg-amber-500/10 rounded-full blur-3xl"></div>
+                                                <div className="relative z-10 flex items-center justify-between">
+                                                    <div>
+                                                        <div className="inline-block bg-amber-400/20 text-amber-300 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest mb-1 border border-amber-400/30">
+                                                            ✨ CHEF'S RECOMMENDATION
+                                                        </div>
+                                                        <h2 className="text-sm font-black text-white tracking-tight">Freshly Prepared Delicious Meals</h2>
+                                                        <p className="text-[10px] text-gray-300 mt-0.5">Order directly from your phone!</p>
+                                                    </div>
+                                                    <div className="text-3xl">🍲</div>
+                                                </div>
+                                            </div>
+
+                                            <div className="w-[85%] shrink-0 snap-center relative overflow-hidden rounded-3xl bg-gradient-to-r from-red-900 via-rose-950 to-black p-4 text-white shadow-xl">
+                                                <div className="relative z-10 flex items-center justify-between">
+                                                    <div>
+                                                        <div className="inline-block bg-red-400/20 text-red-300 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest mb-1 border border-red-400/30">
+                                                            ⚡ FAST SERVICE
+                                                        </div>
+                                                        <h2 className="text-sm font-black text-white tracking-tight">Table QR Express Ordering</h2>
+                                                        <p className="text-[10px] text-gray-300 mt-0.5">Kitchen notified instantly upon order placement.</p>
+                                                    </div>
+                                                    <div className="text-3xl">⚡</div>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        )
+                    })()}
+
                     <div className="p-4 space-y-4">
                         {filteredMenuItems.map(item => {
                             if (!item) return null
                             return (
-                                <div key={item.id} onClick={() => handleItemClick(item)} className="bg-white rounded-2xl shadow-sm border border-gray-100 flex overflow-hidden cursor-pointer active:scale-[0.98] transition-transform">
+                                <div key={item.id} onClick={() => handleItemClick(item)} className="bg-white rounded-2xl shadow-sm border border-gray-100 flex overflow-hidden cursor-pointer active:scale-[0.98] transition-transform relative">
                                     <div className="w-28 h-28 bg-gray-100 shrink-0 relative">
                                         {item.imageUrl ? (
                                             <Image src={item.imageUrl} alt={item.name} fill className="object-cover" sizes="(max-width: 768px) 33vw, 20vw" />
@@ -270,6 +378,13 @@ export default function AdvancedCustomerScanPage() {
                                             <div className="w-full h-full flex items-center justify-center text-3xl">🍽️</div>
                                         )}
                                         <div className="absolute inset-0 bg-black/5"></div>
+
+                                        {/* Red Discount Tag */}
+                                        {item.discount && item.discount.isActive && (
+                                            <div className="absolute top-2 left-2 bg-red-600 text-white font-black text-[9px] px-2 py-0.5 rounded-md uppercase tracking-wider shadow-md z-10">
+                                                {item.discount.type === 'PERCENTAGE' ? `-${item.discount.value}%` : `-${item.discount.value.toLocaleString()} MMK`}
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="p-3 flex-1 flex flex-col justify-between">
                                         <div>
@@ -286,7 +401,7 @@ export default function AdvancedCustomerScanPage() {
                                                 {item.discount && item.discount.isActive ? (
                                                     <div className="flex flex-col">
                                                         <span className="text-[10px] text-gray-400 line-through leading-none">{(item.price || 0).toLocaleString()} MMK</span>
-                                                        <span className="text-gray-900 leading-tight">{getFinalPrice(item).toLocaleString()} MMK</span>
+                                                        <span className="text-red-600 leading-tight">{getFinalPrice(item).toLocaleString()} MMK</span>
                                                     </div>
                                                 ) : (
                                                     <span className="text-gray-900">{(item.price || 0).toLocaleString()} MMK</span>

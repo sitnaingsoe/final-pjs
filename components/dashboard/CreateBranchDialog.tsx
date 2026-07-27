@@ -1,16 +1,20 @@
 // components/dashboard/CreateBranchDialog.tsx
 'use client'
 
-import React, { useState, useTransition } from 'react'
+import React, { useState, useTransition, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { createBranchWithAdmin } from '@/server/actions/branch'
 import { useRouter } from 'next/navigation'
-import InputField from '../ui/InputField' // 👈 Reusable Input ကို ပြန်သုံးခြင်း
+import InputField from '../ui/InputField'
 
 export default function CreateBranchDialog({ companyId }: { companyId: string }) {
     const router = useRouter()
     const [isOpen, setIsOpen] = useState(false)
     const [isPending, startTransition] = useTransition()
     const [error, setError] = useState<string | null>(null)
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => setMounted(true), [])
 
     const handleSubmit = async (formData: FormData) => {
         formData.append('companyId', companyId)
@@ -39,14 +43,14 @@ export default function CreateBranchDialog({ companyId }: { companyId: string })
                 <span>Add New Branch</span>
             </button>
 
-            {/* Dialog Overlay & Box */}
-            {isOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-300">
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-md transition-opacity" onClick={() => !isPending && setIsOpen(false)}></div>
+            {/* Dialog Overlay & Box via Portal */}
+            {isOpen && mounted && createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-300">
+                    <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity" onClick={() => !isPending && setIsOpen(false)}></div>
 
-                    <div className="bg-white/90 backdrop-blur-2xl rounded-[2rem] w-full max-w-2xl relative z-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden animate-in zoom-in-95 duration-300 border border-white">
-                        {/* Header with subtle gradient */}
-                        <div className="bg-gradient-to-r from-white/60 to-white/40 border-b border-gray-100 p-8 flex justify-between items-start">
+                    <div className="bg-white rounded-[2rem] w-full max-w-2xl max-h-[90vh] flex flex-col relative z-10 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.4)] overflow-hidden animate-in zoom-in-95 duration-300 border border-gray-100">
+                        {/* Header */}
+                        <div className="bg-white border-b border-gray-100 p-6 sm:p-8 flex justify-between items-start shrink-0">
                             <div className="flex gap-4 items-start">
                                 <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center shrink-0 shadow-lg shadow-black/10">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>
@@ -56,9 +60,13 @@ export default function CreateBranchDialog({ companyId }: { companyId: string })
                                     <p className="text-[10px] text-gray-400 mt-1 font-bold uppercase tracking-widest">Set up a new branch and assign its manager</p>
                                 </div>
                             </div>
+                            <button onClick={() => !isPending && setIsOpen(false)} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                            </button>
                         </div>
 
-                        <div className="p-8 bg-white/40">
+                        {/* Scrollable Body */}
+                        <div className="p-6 sm:p-8 bg-white overflow-y-auto custom-scrollbar flex-1">
                             {/* Error Handling */}
                             {error && (
                                 <div className="mb-6 bg-red-50 border border-red-100 text-red-600 text-xs font-bold p-4 rounded-xl flex items-center gap-3 animate-in slide-in-from-top-2">
@@ -70,7 +78,6 @@ export default function CreateBranchDialog({ companyId }: { companyId: string })
                             {/* Form */}
                             <form action={handleSubmit} className="space-y-8">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-
                                     {/* Left Side: Branch Info */}
                                     <div className="space-y-5">
                                         <div className="flex items-center gap-3 pb-3 border-b border-gray-200/50">
@@ -120,7 +127,8 @@ export default function CreateBranchDialog({ companyId }: { companyId: string })
                             </form>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </>
     )

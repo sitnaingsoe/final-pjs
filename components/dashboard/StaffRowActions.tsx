@@ -1,7 +1,8 @@
 // components/dashboard/StaffRowActions.tsx
 'use client'
 
-import React, { useState, useTransition } from 'react'
+import React, { useState, useTransition, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { resetStaffPassword, toggleStaffStatus } from '@/server/actions/staff'
 import InputField from '../ui/InputField'
@@ -12,6 +13,9 @@ export default function StaffRowActions({ staff }: { staff: any }) {
     const [isResetOpen, setIsResetOpen] = useState(false)
     const [isToggleOpen, setIsToggleOpen] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => setMounted(true), [])
 
     const handlePasswordReset = (formData: FormData) => {
         startTransition(async () => {
@@ -50,13 +54,12 @@ export default function StaffRowActions({ staff }: { staff: any }) {
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="relative z-10 transition-colors"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </button>
 
-            {/* 🚫 Block / Unblock Button */}
+            {/* 🚫 Suspend / Unsuspend Button */}
             <button
                 onClick={() => setIsToggleOpen(true)}
-                disabled={isPending}
-                className={`group relative flex items-center justify-center w-8 h-8 rounded-lg transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 overflow-hidden border disabled:opacity-50 ${staff.isActive !== false
-                    ? 'bg-gray-50 hover:bg-red-600 border-gray-200 hover:border-red-600 text-red-500 hover:text-white'
-                    : 'bg-gray-50 hover:bg-green-600 border-gray-200 hover:border-green-600 text-green-500 hover:text-white'
+                className={`group relative flex items-center justify-center w-8 h-8 rounded-lg transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 overflow-hidden border ${staff.isActive !== false
+                    ? 'bg-red-50 hover:bg-red-600 border-red-200 hover:border-red-600 text-red-600 hover:text-white'
+                    : 'bg-green-50 hover:bg-green-600 border-green-200 hover:border-green-600 text-green-600 hover:text-white'
                     }`}
                 title={staff.isActive !== false ? "Suspend Staff" : "Unsuspend Staff"}
             >
@@ -69,11 +72,11 @@ export default function StaffRowActions({ staff }: { staff: any }) {
             </button>
 
             {/* Reset Password Dialog Box Modal */}
-            {isResetOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-300">
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-md transition-opacity" onClick={() => !isPending && setIsResetOpen(false)}></div>
-                    <div className="bg-white/90 backdrop-blur-2xl rounded-[2rem] w-full max-w-sm relative z-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] border border-white overflow-hidden animate-in zoom-in-95 duration-300">
-                        <div className="bg-gradient-to-r from-white/60 to-white/40 border-b border-gray-100 p-6 flex justify-between items-start">
+            {isResetOpen && mounted && createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-300">
+                    <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity" onClick={() => !isPending && setIsResetOpen(false)}></div>
+                    <div className="bg-white rounded-[2rem] w-full max-w-sm relative z-10 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.4)] border border-gray-100 overflow-hidden animate-in zoom-in-95 duration-300">
+                        <div className="bg-white border-b border-gray-100 p-6 flex justify-between items-start">
                             <div className="flex gap-4 items-start">
                                 <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shrink-0 shadow-lg shadow-black/10">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -85,7 +88,7 @@ export default function StaffRowActions({ staff }: { staff: any }) {
                             </div>
                         </div>
 
-                        <div className="p-6 bg-white/40">
+                        <div className="p-6 bg-white">
                             {error && (
                                 <div className="mb-4 bg-red-50 border border-red-100 text-red-600 text-xs p-3 rounded-xl flex items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -117,14 +120,15 @@ export default function StaffRowActions({ staff }: { staff: any }) {
                             </form>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             {/* Custom Toggle Status Dialog Box Modal */}
-            {isToggleOpen && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-300">
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-md transition-opacity" onClick={() => !isPending && setIsToggleOpen(false)}></div>
-                    <div className="bg-white/90 backdrop-blur-2xl rounded-[2rem] w-full max-w-sm relative z-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] border border-white overflow-hidden animate-in zoom-in-95 duration-300 p-8 text-center">
+            {isToggleOpen && mounted && createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-300">
+                    <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity" onClick={() => !isPending && setIsToggleOpen(false)}></div>
+                    <div className="bg-white rounded-[2rem] w-full max-w-sm relative z-10 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.4)] border border-gray-100 overflow-hidden animate-in zoom-in-95 duration-300 p-8 text-center">
                         <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg ${staff.isActive !== false ? 'bg-red-500 shadow-red-500/20 rotate-3' : 'bg-green-500 shadow-green-500/20 -rotate-3'}`}>
                             {staff.isActive !== false ? (
                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-white"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/></svg>
@@ -149,7 +153,8 @@ export default function StaffRowActions({ staff }: { staff: any }) {
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     )

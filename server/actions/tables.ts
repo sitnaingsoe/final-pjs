@@ -7,8 +7,11 @@ import { prisma } from '@/lib/db'
 import { revalidatePath } from 'next/cache'
 
 export async function getTables() {
+  const session = await auth()
+  if (!session?.user?.branchId) return { success: false, data: [] }
   try {
     const tables = await prisma.table.findMany({
+      where: { branchId: session.user.branchId },
       orderBy: { number: 'asc' }
     })
     return { success: true, data: tables }
@@ -17,7 +20,7 @@ export async function getTables() {
     return { success: false, error: "စားပွဲစာရင်း ဆွဲထုတ်၍ မရပါ" }
   }
 }
-``
+
 export async function createTable(formData: FormData) {
   const number = formData.get('number') as string
   const session = await auth();
@@ -28,28 +31,40 @@ export async function createTable(formData: FormData) {
 
   try {
     const domain = process.env.AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-    const qrUrl = `${domain}/scan?tableNumber=${number}`;
     const branchId = session.user.branchId;
-    await prisma.table.create({
+
+    const newTable = await prisma.table.create({
       data: {
         number,
-        qrUrl,
+        qrUrl: '',
         branchId
       }
     })
 
+    const qrUrl = `${domain}/scan?tableId=${newTable.id}&tableNumber=${encodeURIComponent(number)}`;
+    await prisma.table.update({
+      where: { id: newTable.id },
+      data: { qrUrl }
+    })
+
     revalidatePath('/tables')
+    revalidatePath('/dashboard/store/tables')
     return { success: true }
   } catch (error) {
     console.error(error)
     return { success: false, error: "စားပွဲနံပါတ် ထပ်နေနိုင်ပါသည်" }
   }
 }
-export async function getMenuForTable(tableNumber: string) {
+
+export async function getMenuForTable(tableNumber: string, tableId?: string | null) {
   try {
-    const table = await prisma.table.findFirst({
-      where: { number: tableNumber }
-    })
+    let table = null
+    if (tableId) {
+      table = await prisma.table.findUnique({ where: { id: tableId } })
+    }
+    if (!table && tableNumber && tableNumber !== 'Unknown') {
+      table = await prisma.table.findFirst({ where: { number: tableNumber } })
+    }
     if (!table) return { success: false, error: "Invalid table" }
 
     const tableBranchId = table.branchId
@@ -79,7 +94,7 @@ export async function getMenuForTable(tableNumber: string) {
         price: mb.menu.basePrice,
         imageUrl: mb.menu.image,
         isActive: mb.menu.isActive,
-        categoryId: 'master', // Virtual category
+        categoryId: 'master',
         isMasterMenu: true
     }))
 
@@ -88,7 +103,7 @@ export async function getMenuForTable(tableNumber: string) {
         ? [...localCategories, { id: 'master', name: 'Main Menu' }]
         : localCategories
 
-    return { success: true, menuItems, categories, tableId: table.id }
+    return { success: true, menuItems, categories, tableId: table.id, branchId: tableBranchId }
   } catch (error) {
     return { success: false, error: "Failed to load menu" }
   }
@@ -97,16 +112,19 @@ export async function getMenuForTable(tableNumber: string) {
 export async function placeTableOrder(
   tableNumber: string,
   items: { menuItemId: string, quantity: number, addons?: { price: number }[] }[],
-  notes: string
+  notes: string,
+  tableId?: string | null
 ) {
   try {
-    // ၁။ စားပွဲနံပါတ် အရင်စစ်မည်
-    const table = await prisma.table.findFirst({
-      where: { number: tableNumber }
-    })
+    let table = null
+    if (tableId) {
+      table = await prisma.table.findUnique({ where: { id: tableId } })
+    }
+    if (!table && tableNumber) {
+      table = await prisma.table.findFirst({ where: { number: tableNumber } })
+    }
     if (!table) return { success: false, error: "မှားယွင်းသော စားပွဲနံပါတ်ဖြစ်နေပါသည်" }
 
-    // ၂။ မှာလိုက်သည့် ဟင်းပွဲများ၏ ဈေးနှုန်းများကို DB မှ ဆွဲထုတ်ခြင်း
     const menuItems = await prisma.menuItem.findMany({
       where: {
         id: { in: items.map(i => i.menuItemId) }
@@ -116,7 +134,6 @@ export async function placeTableOrder(
       }
     })
 
-    // Calculate discounted price
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getFinalPrice = (item: any) => {
         let finalPrice = item.price;
@@ -130,7 +147,6 @@ export async function placeTableOrder(
         return finalPrice;
     }
 
-    // ၃။ 🔑 စုစုပေါင်း ကျသင့်ငွေ (Total Amount) ကို ကုဒ်ထဲမှာတင် ကြိုတင်တွက်ချက်ခြင်း
     let totalAmount = 0
     const orderItemsData = items.map(item => {
       const matchedMenu = menuItems.find(m => m.id === item.menuItemId)
@@ -138,7 +154,6 @@ export async function placeTableOrder(
       const addonsPrice = item.addons?.reduce((sum, a) => sum + a.price, 0) || 0
       const price = menuPrice + addonsPrice
 
-      // စုစုပေါင်းငွေကို ပေါင်းရိုက်ထည့်ခြင်း (Price * Quantity)
       totalAmount += price * item.quantity
 
       return {
@@ -151,7 +166,6 @@ export async function placeTableOrder(
       }
     })
 
-    // ၄။ Tax (အခွန်) နှင့် Final Amount များကို တွက်ချက်ခြင်း
     const taxAmount = totalAmount * 0.05
     const finalAmount = totalAmount + taxAmount
 
@@ -163,7 +177,6 @@ export async function placeTableOrder(
     })
 
     if (activeOrder) {
-        // Append to existing order items JSON array
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const existingItems = (activeOrder.items as any[]) || []
         const newItems = [...existingItems, ...orderItemsData]
@@ -178,14 +191,13 @@ export async function placeTableOrder(
                 totalAmount: newTotalAmount,
                 taxAmount: newTaxAmount,
                 finalAmount: newFinalAmount,
-                isBillRequested: false, // Reset because they ordered more!
+                isBillRequested: false,
                 notes: notes ? (activeOrder.notes ? activeOrder.notes + '\n' + notes : notes) : activeOrder.notes,
                 items: newItems,
-                status: 'PENDING' // Reset so the kitchen knows new items arrived
+                status: 'PENDING'
             }
         })
     } else {
-        // ၅။ တွက်ချက်ပြီးသား ငွေပမာဏများနှင့်တကွ ဒေတာဘေ့စ်ထဲ အသစ် သိမ်းဆည်းခြင်း
         await prisma.order.create({
           data: {
             branchId: table.branchId,
@@ -208,9 +220,15 @@ export async function placeTableOrder(
   }
 }
 
-export async function getActiveOrderForTableNumber(tableNumber: string) {
+export async function getActiveOrderForTableNumber(tableNumber: string, tableId?: string | null) {
   try {
-    const table = await prisma.table.findFirst({ where: { number: tableNumber } })
+    let table = null
+    if (tableId) {
+      table = await prisma.table.findUnique({ where: { id: tableId } })
+    }
+    if (!table && tableNumber) {
+      table = await prisma.table.findFirst({ where: { number: tableNumber } })
+    }
     if (!table) return { success: false, error: "Invalid table" }
 
     const activeOrder = await prisma.order.findFirst({
@@ -226,9 +244,15 @@ export async function getActiveOrderForTableNumber(tableNumber: string) {
   }
 }
 
-export async function requestBillForTable(tableNumber: string) {
+export async function requestBillForTable(tableNumber: string, tableId?: string | null) {
   try {
-    const table = await prisma.table.findFirst({ where: { number: tableNumber } })
+    let table = null
+    if (tableId) {
+      table = await prisma.table.findUnique({ where: { id: tableId } })
+    }
+    if (!table && tableNumber) {
+      table = await prisma.table.findFirst({ where: { number: tableNumber } })
+    }
     if (!table) return { success: false, error: "Invalid table" }
 
     const activeOrder = await prisma.order.findFirst({
@@ -240,12 +264,6 @@ export async function requestBillForTable(tableNumber: string) {
 
     if (!activeOrder) return { success: false, error: "No active order to bill" }
 
-    // Using BILL_REQUESTED state if it exists, otherwise use a generic update or notes
-    // Wait, let's check Prisma schema for OrderStatus. If BILL_REQUESTED is not there, we can't use it.
-    // Let's assume it doesn't have BILL_REQUESTED since we didn't add it.
-    // We can append to notes or we need to check OrderStatus enum.
-    // Let's just update the notes for now with "[BILL REQUESTED]" and we can trigger an alert on POS.
-    
     await prisma.order.update({
       where: { id: activeOrder.id },
       data: { isBillRequested: true }

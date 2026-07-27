@@ -176,8 +176,14 @@ export default async function MenuPage() {
 
                                         </div>
 
-                                        <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
-                                            <div className="flex gap-2 items-center">
+                                        <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col gap-3">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[9px] text-gray-400 font-black uppercase tracking-widest">Base Price</span>
+                                                <div className="text-lg font-black text-black font-mono tracking-tight">
+                                                    {mb.menu.basePrice.toLocaleString()} <span className="text-[9px] text-gray-400 font-bold ml-0.5 tracking-widest uppercase">MMK</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center justify-between gap-2 pt-2 border-t border-gray-50">
                                                 <ToggleMasterMenu menuId={mb.menuId} initialIsAvailable={mb.isAvailable} />
                                                 <AttachMasterMenuAddons 
                                                     menuId={mb.menuId} 
@@ -185,9 +191,6 @@ export default async function MenuPage() {
                                                     currentAddonCategories={mb.menu.addonCategories || []} 
                                                     allAddonCategories={addonCategories} 
                                                 />
-                                            </div>
-                                            <div className="text-lg font-black text-black font-mono tracking-tight">
-                                                {mb.menu.basePrice.toLocaleString()} <span className="text-[9px] text-gray-400 font-bold ml-0.5 tracking-widest uppercase">MMK</span>
                                             </div>
                                         </div>
                                     </div>

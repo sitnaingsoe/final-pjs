@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { createStaff } from '@/server/actions/staff'
 import InputField from '../ui/InputField'
 import { useRouter } from 'next/navigation'
@@ -10,6 +11,9 @@ export default function CreateStaffForm() {
     const [isOpen, setIsOpen] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState('')
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => setMounted(true), [])
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -39,12 +43,13 @@ export default function CreateStaffForm() {
                 <span>Add Staff</span>
             </button>
 
-            {isOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-300">
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-md transition-opacity" onClick={() => !isSubmitting && setIsOpen(false)}></div>
+            {isOpen && mounted && createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-300">
+                    <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity" onClick={() => !isSubmitting && setIsOpen(false)}></div>
 
-                    <div className="bg-white/90 backdrop-blur-2xl rounded-[2rem] w-full max-w-lg relative z-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] border border-white overflow-hidden animate-in zoom-in-95 duration-300">
-                        <div className="bg-gradient-to-r from-white/60 to-white/40 border-b border-gray-100 p-8 flex justify-between items-start">
+                    <div className="bg-white rounded-[2rem] w-full max-w-lg max-h-[90vh] flex flex-col relative z-10 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.4)] border border-gray-100 overflow-hidden animate-in zoom-in-95 duration-300">
+                        {/* Header */}
+                        <div className="bg-white border-b border-gray-100 p-6 sm:p-8 flex justify-between items-start shrink-0">
                             <div className="flex gap-4 items-start">
                                 <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center shrink-0 shadow-lg shadow-black/10">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
@@ -54,9 +59,13 @@ export default function CreateStaffForm() {
                                     <p className="text-[10px] text-gray-400 mt-1 font-bold uppercase tracking-widest">ဆိုင်ခွဲအတွက် ဝန်ထမ်းအကောင့်အသစ် ဖန်တီးရန်</p>
                                 </div>
                             </div>
+                            <button onClick={() => !isSubmitting && setIsOpen(false)} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                            </button>
                         </div>
                         
-                        <div className="p-8 bg-white/40">
+                        {/* Scrollable Body */}
+                        <div className="p-6 sm:p-8 bg-white overflow-y-auto custom-scrollbar flex-1">
                             {error && (
                                 <div className="mb-6 bg-red-50 border border-red-100 text-red-600 text-xs font-bold p-4 rounded-xl flex items-center gap-3 animate-in slide-in-from-top-2 shadow-sm">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -92,7 +101,8 @@ export default function CreateStaffForm() {
                             </form>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </>
     )

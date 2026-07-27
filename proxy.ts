@@ -9,17 +9,21 @@ export default auth((req) => {
     const refreshToken = req.cookies.get("refreshToken")?.value
     const { pathname } = req.nextUrl
 
-    // 🎯 API routes, Next.js internal routes, and auth pages must NEVER be redirected by middleware
+    // 🎯 Public routes: Scan page, API routes, Next.js assets, and Auth pages must NEVER require login
     if (
+        pathname.startsWith('/scan') ||
         pathname.startsWith('/api') ||
         pathname.startsWith('/_next') ||
         pathname === '/login' ||
-        pathname === '/register'
+        pathname === '/register' ||
+        pathname === '/forgot-password' ||
+        pathname === '/reset-password' ||
+        pathname === '/'
     ) {
         return NextResponse.next()
     }
 
-    // အကောင့်ဝင်မထားပါက /login သို့ အတင်းမောင်းထုတ်မည်
+    // အကောင့်ဝင်မထားပါက /login သို့ အတင်းမောင်းထုတ်မည် (Dashboard/POS/Kitchen မ်ားအတှကျ)
     if (!isLoggedIn && !refreshToken) {
         const loginUrl = new URL("/login", req.url)
         return Response.redirect(loginUrl)
@@ -30,6 +34,8 @@ export default auth((req) => {
 
 export const config = {
     matcher: [
-        "/((?!api|_next/static|_next/image|favicon.ico|login|register).*)",
+        "/dashboard/:path*",
+        "/pos/:path*",
+        "/kitchen/:path*",
     ],
 }
