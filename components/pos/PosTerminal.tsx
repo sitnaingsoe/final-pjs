@@ -45,6 +45,12 @@ export default function PosTerminal({
     // Find initial table if provided via scan
     const initialTable = tables.find(t => t.number === initialTableNumber)
     const [selectedTableId, setSelectedTableId] = useState<string | null>(initialTable ? initialTable.id : null)
+    const [tablesList, setTablesList] = useState<any[]>(tables)
+
+    // Sync tables prop when updated from parent
+    useEffect(() => {
+        setTablesList(tables)
+    }, [tables])
 
     // Active Table Order State
     const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -93,16 +99,25 @@ export default function PosTerminal({
         loadActiveOrder()
     }, [selectedTableId, isOnline])
 
-    // Poll for global bill requests
+    // 🔥 LIVE POLLING (4 Seconds): Fetch pending bill requests & live table statuses
     useEffect(() => {
         if (!isOnline) return;
-        
+
         const fetchRequests = async () => {
             try {
                 const { getPendingBillRequests } = await import('@/server/actions/orders')
-                const res = await getPendingBillRequests(branchId)
-                if (res.success && res.data) {
-                    setBillRequests(res.data)
+                const { getTables } = await import('@/server/actions/tables')
+
+                const [billRes, tablesRes] = await Promise.all([
+                    getPendingBillRequests(branchId),
+                    getTables()
+                ])
+
+                if (billRes.success && billRes.data) {
+                    setBillRequests(billRes.data)
+                }
+                if (tablesRes.success && tablesRes.data) {
+                    setTablesList(tablesRes.data)
                 }
             } catch (e: any) {
                 if (e?.message?.includes('unexpected response') || e?.message?.includes('Unexpected token')) {
@@ -112,7 +127,7 @@ export default function PosTerminal({
         }
         
         fetchRequests()
-        const intervalId = setInterval(fetchRequests, 10000)
+        const intervalId = setInterval(fetchRequests, 4000)
         return () => clearInterval(intervalId)
     }, [branchId, isOnline])
 
@@ -164,10 +179,14 @@ export default function PosTerminal({
     }
     
     
-    // Filter menu items by selected category
-    const displayItems = selectedCategory === 'all'
-        ? menuItems
-        : menuItems.filter(item => item.categoryId === selectedCategory)
+    const [searchQuery, setSearchQuery] = useState('')
+
+    // Filter menu items by selected category and search query
+    const displayItems = menuItems.filter(item => {
+        const matchesCategory = selectedCategory === 'all' || item.categoryId === selectedCategory
+        const matchesSearch = searchQuery.trim() === '' || item.name.toLowerCase().includes(searchQuery.toLowerCase())
+        return matchesCategory && matchesSearch
+    })
 
     // Calculate discounted price
     const getFinalPrice = (item: any) => {
@@ -248,6 +267,11 @@ export default function PosTerminal({
         } finally {
             setIsSubmitting(false)
         }
+    }
+
+    const handlePrintReceipt = async () => {
+        // Trigger checkout which marks PAID in DB, prints receipt, and clears cart
+        await handleCheckout()
     }
 
     const handleSendOrder = async () => {
@@ -372,25 +396,34 @@ export default function PosTerminal({
             // Checkout
             const checkRes = await checkoutOrder(currentOrderId, 'CASH', appliedPromo?.code)
             if (checkRes.success && checkRes.order) {
+                const selectedTableObj = tablesList.find(t => t.id === selectedTableId)
+                const tableLabel = selectedTableObj ? `Table ${selectedTableObj.number}` : 'TAKEAWAY / POS'
+
                 // Print receipt
                 setReceiptData({
                     orderId: checkRes.order.id,
+                    tableNumber: tableLabel,
                     date: checkRes.order.createdAt || new Date(),
                     items: [
                         ...existingItems.map(c => ({
-                            name: c.name + (c.addons?.length ? ` (${c.addons.map((a: any) => a.name).join(', ')})` : ''),
+                            name: c.name,
                             price: c.price,
-                            quantity: c.quantity
+                            quantity: c.quantity,
+                            addons: c.addons
                         })),
                         ...cart.map(c => ({ 
-                            name: c.name + (c.addons?.length ? ` (${c.addons.map(a => a.name).join(', ')})` : ''), 
+                            name: c.name, 
                             price: c.price, 
-                            quantity: c.quantity 
+                            quantity: c.quantity,
+                            addons: c.addons
                         }))
                     ],
                     totalAmount: checkRes.order.totalAmount,
                     taxAmount: checkRes.order.taxAmount,
-                    finalAmount: checkRes.order.finalAmount
+                    discountAmount: appliedPromo?.amount || 0,
+                    promoCode: appliedPromo?.code || undefined,
+                    finalAmount: checkRes.order.finalAmount,
+                    paperSize: '80mm'
                 })
                 setTimeout(() => window.print(), 100)
 
@@ -466,79 +499,153 @@ export default function PosTerminal({
                             )}
                         </div>
                     )}
-                    {/* Categories Banner */}
-                    <div className="p-4 bg-gray-50/50 border-b border-gray-200 overflow-x-auto no-scrollbar shrink-0">
-                        <div className="flex gap-3">
+                    {/* 🔍 Search & Categories Bar */}
+                    <div className="p-4 bg-gray-50/80 border-b border-gray-200 shrink-0 space-y-3">
+                        {/* Search Input Bar */}
+                        <div className="relative w-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
+                                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                            </svg>
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="ဟင်းပွဲအမည် ဖြင့် ရှာဖွေပါ (Search menu items...)"
+                                className="w-full bg-white border border-gray-200 rounded-2xl pl-10 pr-10 py-2.5 text-xs font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-black focus:ring-2 focus:ring-black/10 transition-all shadow-sm"
+                            />
+                            {searchQuery && (
+                                <button
+                                    onClick={() => setSearchQuery('')}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black font-bold text-xs"
+                                >
+                                    ✕
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Category Scrollable Pills */}
+                        <div className="flex gap-2 overflow-x-auto no-scrollbar py-0.5">
                             <button
                                 onClick={() => setSelectedCategory('all')}
-                                className={`whitespace-nowrap px-5 py-2.5 rounded-full text-xs font-bold transition-all ${selectedCategory === 'all' ? 'bg-black text-white shadow-lg shadow-gray-900/10' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:text-black'}`}
+                                className={`whitespace-nowrap px-4 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-1.5 ${selectedCategory === 'all' ? 'bg-black text-white shadow-lg shadow-black/10 scale-[1.02]' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100 hover:text-black'}`}
                             >
-                                အားလုံး (All)
+                                <span>🍽️ အားလုံး</span>
+                                <span className={`text-[10px] px-2 py-0.5 rounded-full font-black ${selectedCategory === 'all' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-700'}`}>
+                                    {menuItems.length}
+                                </span>
                             </button>
-                            {categories.map(cat => (
-                                <button
-                                    key={cat.id}
-                                    onClick={() => setSelectedCategory(cat.id)}
-                                    className={`whitespace-nowrap px-5 py-2.5 rounded-full text-xs font-bold transition-all ${selectedCategory === cat.id ? 'bg-black text-white shadow-lg shadow-gray-900/10' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:text-black'}`}
-                                >
-                                    {cat.name}
-                                </button>
-                            ))}
+                            {categories.map(cat => {
+                                const catCount = menuItems.filter(i => i.categoryId === cat.id).length
+                                return (
+                                    <button
+                                        key={cat.id}
+                                        onClick={() => setSelectedCategory(cat.id)}
+                                        className={`whitespace-nowrap px-4 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-1.5 ${selectedCategory === cat.id ? 'bg-black text-white shadow-lg shadow-black/10 scale-[1.02]' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100 hover:text-black'}`}
+                                    >
+                                        <span>{cat.name}</span>
+                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-black ${selectedCategory === cat.id ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-700'}`}>
+                                            {catCount}
+                                        </span>
+                                    </button>
+                                )
+                            })}
                         </div>
                     </div>
-                {/* Menu Items Grid */}
-                <div className="flex-1 overflow-y-auto p-4 lg:p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pb-28 lg:pb-6 content-start">
+
+                {/* 🍱 Premium Lookable Menu Items Grid */}
+                <div className="flex-1 overflow-y-auto p-4 lg:p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 pb-28 lg:pb-6 content-start bg-gray-50/30">
                     {displayItems.map((item) => (
                         <div 
                             key={item.id} 
                             onClick={() => handleItemClick(item)} 
-                            className={`bg-gray-50 border rounded-2xl transition-all flex flex-col group relative overflow-hidden ${
+                            className={`group bg-white border rounded-[1.5rem] transition-all duration-300 flex flex-col justify-between relative overflow-hidden ${
                                 item.isActive !== false 
-                                    ? 'border-gray-200 cursor-pointer hover:border-black hover:shadow-lg hover:shadow-black/10 active:scale-95' 
-                                    : 'border-red-200 opacity-60 cursor-not-allowed bg-red-50/20'
+                                    ? 'border-gray-200/80 cursor-pointer hover:border-black hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1 active:scale-95' 
+                                    : 'border-red-200 opacity-60 cursor-not-allowed bg-red-50/10'
                             }`}
                         >
                             {/* OUT OF STOCK Badge Overlay */}
                             {item.isActive === false && (
-                                <div className="absolute top-3 right-3 bg-red-600 text-white text-[9px] font-black px-2.5 py-1 rounded-lg z-20 shadow-md uppercase tracking-wider">
+                                <div className="absolute top-3 right-3 bg-red-600 text-white text-[9px] font-black px-2.5 py-1 rounded-xl z-20 shadow-md uppercase tracking-wider">
                                     OUT OF STOCK
                                 </div>
                             )}
 
-                            {/* 🖼️ Hero Image */}
-                            {item.imageUrl ? (
-                                <div className="w-full h-40 bg-gray-200 relative">
-                                    <Image src={item.imageUrl} alt={item.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="(max-width: 768px) 50vw, 25vw" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-80"></div>
-                                </div>
-                            ) : (
-                                <div className="w-full h-32 bg-gray-200 flex items-center justify-center relative">
-                                    <span className="text-gray-300 text-3xl">🍽️</span>
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-80"></div>
+                            {/* Red Discount Tag */}
+                            {item.discount && item.discount.isActive && item.isActive !== false && (
+                                <div className="absolute top-3 left-3 bg-red-600 text-white text-[9px] font-black px-2.5 py-1 rounded-xl z-20 shadow-md uppercase tracking-wider flex items-center gap-1">
+                                    <span>🔥</span>
+                                    <span>{item.discount.type === 'PERCENTAGE' ? `-${item.discount.value}%` : `-${item.discount.value.toLocaleString()} MMK`}</span>
                                 </div>
                             )}
 
-                            <div className="p-4 flex-1 flex flex-col justify-between -mt-6 relative z-10">
-                                <div>
-                                    <h3 className="text-sm font-bold text-gray-900 group-hover:text-gray-800 transition-colors line-clamp-2 drop-shadow-md">{item.name}</h3>
-                                    <span className="text-3xs text-gray-500 mt-1 uppercase tracking-wider">{item.category?.name}</span>
+                            {/* 🖼️ Hero Image Container */}
+                            {item.imageUrl ? (
+                                <div className="w-full h-44 bg-gray-100 relative overflow-hidden">
+                                    <Image src={item.imageUrl} alt={item.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500 ease-out" sizes="(max-width: 768px) 50vw, 25vw" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                                 </div>
-                                <div className="mt-4 font-black font-mono">
-                                    {item.discount && item.discount.isActive ? (
-                                        <div className="flex flex-col">
-                                            <span className="text-3xs text-gray-400 line-through leading-none">{item.price.toLocaleString()} MMK</span>
-                                            <span className="text-rose-400 leading-tight">{getFinalPrice(item).toLocaleString()} <span className="text-3xs font-normal">MMK</span></span>
-                                        </div>
-                                    ) : (
-                                        <span className="text-gray-800">{item.price.toLocaleString()} <span className="text-3xs text-gray-400 font-normal">MMK</span></span>
-                                    )}
+                            ) : (
+                                <div className="w-full h-36 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center relative overflow-hidden">
+                                    <span className="text-gray-400 text-4xl group-hover:scale-110 transition-transform duration-300">🍽️</span>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                                </div>
+                            )}
+
+                            {/* Item Details */}
+                            <div className="p-4 flex-1 flex flex-col justify-between relative z-10 bg-white">
+                                <div>
+                                    <div className="flex items-start justify-between gap-2">
+                                        <h3 className="text-sm font-black text-gray-900 group-hover:text-black transition-colors line-clamp-2 leading-snug tracking-tight">
+                                            {item.name}
+                                        </h3>
+                                        {item.addonCategories && item.addonCategories.length > 0 && (
+                                            <span className="text-[9px] bg-amber-50 text-amber-700 border border-amber-200/80 font-black px-2 py-0.5 rounded-lg shrink-0">
+                                                +Addon
+                                            </span>
+                                        )}
+                                    </div>
+                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">
+                                        {item.category?.name || 'General'}
+                                    </p>
+                                </div>
+
+                                <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
+                                    <div>
+                                        <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest block leading-none mb-0.5">Price</span>
+                                        {item.discount && item.discount.isActive ? (
+                                            <div className="flex items-baseline gap-1.5">
+                                                <span className="text-sm font-black text-red-600 font-mono tracking-tight">
+                                                    {getFinalPrice(item).toLocaleString()} <span className="text-[9px] font-bold">MMK</span>
+                                                </span>
+                                                <span className="text-[10px] text-gray-400 line-through font-mono">
+                                                    {item.price.toLocaleString()}
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <span className="text-sm font-black text-gray-900 font-mono tracking-tight">
+                                                {item.price.toLocaleString()} <span className="text-[9px] text-gray-500 font-bold">MMK</span>
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {/* Quick Add Button Icon */}
+                                    <button className={`w-8 h-8 rounded-xl flex items-center justify-center font-black transition-all ${item.isActive !== false ? 'bg-black text-white group-hover:bg-gray-800 shadow-md shadow-black/10' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>
+                                        +
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     ))}
                     {displayItems.length === 0 && (
-                        <div className="col-span-full h-40 flex items-center justify-center text-sm text-gray-400">
-                            မီနူးများ မရှိသေးပါ
+                        <div className="col-span-full h-64 flex flex-col items-center justify-center text-center bg-white rounded-3xl border border-gray-100 p-8 shadow-sm">
+                            <span className="text-4xl mb-3 opacity-40">🔍</span>
+                            <h4 className="text-sm font-black text-gray-900 uppercase tracking-wider mb-1">
+                                မီနူး ရှာမတွေ့ပါ
+                            </h4>
+                            <p className="text-xs text-gray-400">
+                                ရှာဖွေမှု စာလုံး သို့မဟုတ် ကက်တဂိုရီကို အခြားတစ်ခု ပြောင်းကြည့်ပါခင်ဗျာ။
+                            </p>
                         </div>
                     )}
                 </div>
@@ -591,7 +698,7 @@ export default function PosTerminal({
                         className="w-full bg-white border border-gray-300 rounded-xl p-3 text-sm text-gray-800 focus:outline-none focus:border-black transition-colors"
                     >
                         <option value="">ပါဆယ် (Takeaway)</option>
-                        {tables.map(table => (
+                        {tablesList.map(table => (
                             <option key={table.id} value={table.id}>
                                 စားပွဲ {table.number}
                             </option>
@@ -691,6 +798,14 @@ export default function PosTerminal({
                     </div>
                     <div className="flex gap-2">
                         <button
+                            onClick={handlePrintReceipt}
+                            disabled={(cart.length === 0 && existingItems.length === 0) || isSubmitting}
+                            className="bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold px-3 py-3 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1 border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Print Thermal Receipt"
+                        >
+                            🖨️ ဘေလ်ရိုက်မည်
+                        </button>
+                        <button
                             onClick={handleSendOrder}
                             disabled={(cart.length === 0 || isSubmitting) ? true : undefined}
                             className="flex-1 bg-gray-200 hover:bg-slate-700 disabled:bg-gray-50 disabled:text-gray-300 text-black text-xs font-bold py-3 rounded-xl transition-all shadow-lg flex items-center justify-center"
@@ -700,9 +815,9 @@ export default function PosTerminal({
                         <button
                             onClick={handleCheckout}
                             disabled={((cart.length === 0 && !activeOrderId) || isSubmitting) ? true : undefined}
-                            className="flex-[2] bg-gray-900 hover:bg-black disabled:from-slate-800 disabled:to-slate-800 disabled:text-gray-400 text-white text-sm font-black py-3 rounded-xl transition-all shadow-lg hover:shadow-gray-900/10 flex items-center justify-center gap-2"
+                            className="flex-[1.5] bg-gray-900 hover:bg-black disabled:from-slate-800 disabled:to-slate-800 disabled:text-gray-400 text-white text-sm font-black py-3 rounded-xl transition-all shadow-lg hover:shadow-gray-900/10 flex items-center justify-center gap-1"
                         >
-                            {isSubmitting ? "Processing..." : "💸 ဘေလ်ရှင်းမည်"}
+                            {isSubmitting ? "..." : "💸 ရှင်းမည်"}
                         </button>
                     </div>
                 </div>
