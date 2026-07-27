@@ -73,9 +73,31 @@ export async function toggleMasterMenuAvailability(menuId: string, isAvailable: 
         })
         revalidatePath('/dashboard/store/menu')
         revalidatePath('/pos')
+        revalidatePath('/scan')
         return { success: true }
     } catch (error) {
         console.error("Failed to toggle master menu:", error)
+        return { success: false, error: "Failed to update availability" }
+    }
+}
+
+// ၁.၃။ ဆိုင်ခွဲကိုယ်ပိုင် Local Menu ၏ ရရှိနိုင်မှု (In-Stock / Out-of-Stock) ကို ပြောင်းလဲခြင်း
+export async function toggleLocalMenuItemAvailability(itemId: string, isActive: boolean) {
+    const session = await auth()
+    if (!session?.user?.branchId) return { success: false, error: "Unauthorized" }
+    if (session.user.role === 'STAFF') return { success: false, error: "Permission Denied: Staff cannot toggle menus." }
+
+    try {
+        await prisma.menuItem.update({
+            where: { id: itemId },
+            data: { isActive }
+        })
+        revalidatePath('/dashboard/store/menu')
+        revalidatePath('/pos')
+        revalidatePath('/scan')
+        return { success: true }
+    } catch (error) {
+        console.error("Failed to toggle local menu item:", error)
         return { success: false, error: "Failed to update availability" }
     }
 }

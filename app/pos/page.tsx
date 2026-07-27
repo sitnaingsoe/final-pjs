@@ -44,14 +44,14 @@ export default async function PosPage({
     const localCategories = catResult.data || []
     
     // Process Master Menus
-    const masterMenus = (masterMenuResult.data || []).filter(mb => mb.isAvailable)
+    const masterMenus = (masterMenuResult.data || [])
     const formattedMasterMenus = masterMenus.map((mb: any) => ({
         id: mb.menuId,
         name: mb.menu.name,
         description: mb.menu.description,
         price: mb.menu.basePrice,
         imageUrl: mb.menu.image,
-        isActive: mb.menu.isActive,
+        isActive: mb.isAvailable && mb.menu.isActive,
         categoryId: 'master', // Virtual category
         isMasterMenu: true,
         addonCategories: mb.menu.addonCategories || []

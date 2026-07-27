@@ -72,6 +72,10 @@ export default function AdvancedCustomerScanPage() {
     // --- HOME VIEW ACTIONS ---
     const handleItemClick = (item: any) => {
         if (!item) return
+        if (item.isActive === false) {
+            alert(`"${item.name}" မှာ ခေတ္တ ကုန်နေပါသဖြင့် မှာယူ၍ မရပါ (Out of Stock)`)
+            return
+        }
         const allAddons = item.addonCategories?.flatMap(
             (cat: any) => cat?.addons || []
         ) || []
@@ -79,17 +83,20 @@ export default function AdvancedCustomerScanPage() {
         setActiveItem({ ...item, flattenAddons: allAddons })
         setSelectedAddons([])
         setDetailQuantity(1)
-        setCurrentView('detail') // Always go to detail view so they see the nice big image
+        setCurrentView('detail')
     }
 
     const handleQuickAdd = (e: React.MouseEvent, item: any) => {
-        e.stopPropagation() // Prevent opening detail view
+        e.stopPropagation()
+        if (item.isActive === false) {
+            alert(`"${item.name}" မှာ ခေတ္တ ကုန်နေပါသဖြင့် မှာယူ၍ မရပါ (Out of Stock)`)
+            return
+        }
         const allAddons = item.addonCategories?.flatMap(
             (cat: any) => cat?.addons || []
         ) || []
         
         if (allAddons.length > 0) {
-            // If has addons, force to detail view anyway
             handleItemClick(item)
         } else {
             addToCartDirect(item, [], 1)
@@ -370,7 +377,7 @@ export default function AdvancedCustomerScanPage() {
                         {filteredMenuItems.map(item => {
                             if (!item) return null
                             return (
-                                <div key={item.id} onClick={() => handleItemClick(item)} className="bg-white rounded-2xl shadow-sm border border-gray-100 flex overflow-hidden cursor-pointer active:scale-[0.98] transition-transform relative">
+                                <div key={item.id} onClick={() => handleItemClick(item)} className={`bg-white rounded-2xl shadow-sm border border-gray-100 flex overflow-hidden relative transition-transform ${item.isActive !== false ? 'cursor-pointer active:scale-[0.98]' : 'opacity-60 cursor-not-allowed bg-gray-50'}`}>
                                     <div className="w-28 h-28 bg-gray-100 shrink-0 relative">
                                         {item.imageUrl ? (
                                             <Image src={item.imageUrl} alt={item.name} fill className="object-cover" sizes="(max-width: 768px) 33vw, 20vw" />
@@ -380,9 +387,18 @@ export default function AdvancedCustomerScanPage() {
                                         <div className="absolute inset-0 bg-black/5"></div>
 
                                         {/* Red Discount Tag */}
-                                        {item.discount && item.discount.isActive && (
+                                        {item.discount && item.discount.isActive && item.isActive !== false && (
                                             <div className="absolute top-2 left-2 bg-red-600 text-white font-black text-[9px] px-2 py-0.5 rounded-md uppercase tracking-wider shadow-md z-10">
                                                 {item.discount.type === 'PERCENTAGE' ? `-${item.discount.value}%` : `-${item.discount.value.toLocaleString()} MMK`}
+                                            </div>
+                                        )}
+
+                                        {/* Out of Stock Overlay Badge */}
+                                        {item.isActive === false && (
+                                            <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center z-10 p-1">
+                                                <span className="bg-red-600 text-white font-black text-[9px] px-2 py-1 rounded-md uppercase tracking-widest shadow text-center leading-tight">
+                                                    OUT OF STOCK
+                                                </span>
                                             </div>
                                         )}
                                     </div>
@@ -407,9 +423,15 @@ export default function AdvancedCustomerScanPage() {
                                                     <span className="text-gray-900">{(item.price || 0).toLocaleString()} MMK</span>
                                                 )}
                                             </div>
-                                            <button onClick={(e) => handleQuickAdd(e, item)} className="bg-gray-50 text-black text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-gray-100">
-                                                + မှာမည်
-                                            </button>
+                                            {item.isActive !== false ? (
+                                                <button onClick={(e) => handleQuickAdd(e, item)} className="bg-gray-50 text-black text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-gray-100">
+                                                    + မှာမည်
+                                                </button>
+                                            ) : (
+                                                <button disabled className="bg-gray-100 text-red-500 text-[10px] font-black px-2.5 py-1.5 rounded-lg cursor-not-allowed uppercase border border-red-200">
+                                                    ကုန်သွားပါပြီ
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

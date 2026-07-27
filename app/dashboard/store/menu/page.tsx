@@ -7,6 +7,7 @@ import { getDiscounts } from '@/server/actions/discounts'
 import CreateMenuForm from '@/components/dashboard/CreateMenuForm'
 import MenuCardActions from '@/components/dashboard/MenuCardActions'
 import ToggleMasterMenu from '@/components/dashboard/ToggleMasterMenu'
+import ToggleLocalMenu from '@/components/dashboard/ToggleLocalMenu'
 import AttachMasterMenuAddons from '@/components/dashboard/AttachMasterMenuAddons'
 
 export default async function MenuPage() {
@@ -73,6 +74,13 @@ export default async function MenuPage() {
                                         </div>
                                     )}
 
+                                    {/* Unavailable Badge */}
+                                    {!item.isActive && (
+                                        <div className="absolute top-4 right-4 bg-red-500/90 backdrop-blur-md text-white text-[10px] font-black px-3 py-1.5 rounded-xl z-20 shadow-lg uppercase tracking-widest">
+                                            UNAVAILABLE
+                                        </div>
+                                    )}
+
                                     {/* 🖼️ Hero Image */}
                                     {item.imageUrl && item.imageUrl.trim() !== '' && item.imageUrl !== 'null' && item.imageUrl !== 'undefined' ? (
                                         <div className="w-full h-36 bg-gray-50 border-b border-gray-100 relative overflow-hidden">
@@ -113,10 +121,15 @@ export default async function MenuPage() {
                                             )}
                                         </div>
 
-                                        <div className="mt-4 pt-4 border-t border-gray-100 flex items-end justify-between">
-                                            <span className="text-[9px] text-gray-400 font-black uppercase tracking-widest">Price</span>
-                                            <div className="text-lg font-black text-black font-mono tracking-tight">
-                                                {item.price.toLocaleString()} <span className="text-[9px] text-gray-400 font-bold ml-0.5 tracking-widest uppercase">MMK</span>
+                                        <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col gap-3">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[9px] text-gray-400 font-black uppercase tracking-widest">Base Price</span>
+                                                <div className="text-lg font-black text-black font-mono tracking-tight">
+                                                    {item.price.toLocaleString()} <span className="text-[9px] text-gray-400 font-bold ml-0.5 tracking-widest uppercase">MMK</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center justify-between gap-2 pt-2 border-t border-gray-50">
+                                                <ToggleLocalMenu itemId={item.id} initialIsActive={item.isActive} />
                                             </div>
                                         </div>
                                     </div>

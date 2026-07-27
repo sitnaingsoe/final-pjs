@@ -183,6 +183,10 @@ export default function PosTerminal({
     }
 
     const handleItemClick = (item: any) => {
+        if (item.isActive === false) {
+            alert(`"${item.name}" မှာ ခေတ္တ ကုန်နေပါသဖြင့် မှာယူ၍ မရပါ (Out of Stock)`)
+            return
+        }
         if (item.addonCategories && item.addonCategories.length > 0) {
             setSelectedMenuItemForAddon(item)
             setIsAddonModalOpen(true)
@@ -484,12 +488,23 @@ export default function PosTerminal({
                     </div>
                 {/* Menu Items Grid */}
                 <div className="flex-1 overflow-y-auto p-4 lg:p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pb-28 lg:pb-6 content-start">
-                    {displayItems.map(item => (
-                        <div
-                            key={item.id}
-                            onClick={() => handleItemClick(item)}
-                            className="bg-gray-50 border border-gray-200 rounded-2xl cursor-pointer hover:border-black hover:shadow-lg hover:shadow-black/10 transition-all flex flex-col group relative overflow-hidden active:scale-95"
+                    {displayItems.map((item) => (
+                        <div 
+                            key={item.id} 
+                            onClick={() => handleItemClick(item)} 
+                            className={`bg-gray-50 border rounded-2xl transition-all flex flex-col group relative overflow-hidden ${
+                                item.isActive !== false 
+                                    ? 'border-gray-200 cursor-pointer hover:border-black hover:shadow-lg hover:shadow-black/10 active:scale-95' 
+                                    : 'border-red-200 opacity-60 cursor-not-allowed bg-red-50/20'
+                            }`}
                         >
+                            {/* OUT OF STOCK Badge Overlay */}
+                            {item.isActive === false && (
+                                <div className="absolute top-3 right-3 bg-red-600 text-white text-[9px] font-black px-2.5 py-1 rounded-lg z-20 shadow-md uppercase tracking-wider">
+                                    OUT OF STOCK
+                                </div>
+                            )}
+
                             {/* 🖼️ Hero Image */}
                             {item.imageUrl ? (
                                 <div className="w-full h-40 bg-gray-200 relative">

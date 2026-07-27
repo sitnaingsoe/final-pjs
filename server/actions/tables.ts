@@ -82,7 +82,7 @@ export async function getMenuForTable(tableNumber: string, tableId?: string | nu
         where: { branchId: tableBranchId }
       }),
       prisma.menuOnBranch.findMany({
-        where: { branchId: tableBranchId, isAvailable: true },
+        where: { branchId: tableBranchId },
         include: { menu: true }
       })
     ])
@@ -93,7 +93,7 @@ export async function getMenuForTable(tableNumber: string, tableId?: string | nu
         description: mb.menu.description,
         price: mb.menu.basePrice,
         imageUrl: mb.menu.image,
-        isActive: mb.menu.isActive,
+        isActive: mb.isAvailable && mb.menu.isActive,
         categoryId: 'master',
         isMasterMenu: true
     }))
