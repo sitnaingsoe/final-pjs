@@ -64,10 +64,29 @@ export default async function HQHomePage({ searchParams }: PageProps) {
     }
   })
 
-  // 🚀 USE THE NEW SQL VIEW INSTEAD OF JAVASCRIPT REDUCE LOOP
-  const branchSales = await prisma.branchDailySales.findMany({
-      where: hasFilter ? { date: dateQuery } : {}
-  })
+  // 🚀 USE THE NEW SQL VIEW WITH DIRECT INVOICE FALLBACK FOR PRODUCTION SAFETY
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let branchSales: any[] = []
+  try {
+      branchSales = await prisma.branchDailySales.findMany({
+          where: hasFilter ? { date: dateQuery } : {}
+      })
+  } catch (e) {
+      console.warn("BranchDailySales view missing in database, using Invoice fallback aggregation:", e)
+      const invoices = await prisma.invoice.findMany({
+          where: companyRevenueWhere,
+          select: { branchId: true, finalAmount: true }
+      })
+      const grouped: { [key: string]: { branchId: string; totalRevenue: number; totalInvoices: number } } = {}
+      for (const inv of invoices) {
+          if (!grouped[inv.branchId]) {
+              grouped[inv.branchId] = { branchId: inv.branchId, totalRevenue: 0, totalInvoices: 0 }
+          }
+          grouped[inv.branchId].totalRevenue += inv.finalAmount
+          grouped[inv.branchId].totalInvoices += 1
+      }
+      branchSales = Object.values(grouped)
+  }
 
   const branchTableData = branches.map(branch => {
     // Sum up the view data for this specific branch
