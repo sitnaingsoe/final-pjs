@@ -32,22 +32,44 @@ export default async function PosPage({
     const initialTableNumber = resolvedParams?.tableNumber as string | undefined;
 
     // Fetch data for the POS
-    const [menuResult, catResult, tablesResult] = await Promise.all([
+    const { getBranchMasterMenus } = await import('@/server/actions/menu')
+    const [menuResult, catResult, tablesResult, masterMenuResult] = await Promise.all([
         getMenuItems(),
         getCategories(),
-        getTables()
+        getTables(),
+        getBranchMasterMenus()
     ])
 
-    const menuItems = menuResult.data || []
-    const categories = catResult.data || []
+    const localMenuItems = menuResult.data || []
+    const localCategories = catResult.data || []
+    
+    // Process Master Menus
+    const masterMenus = (masterMenuResult.data || []).filter(mb => mb.isAvailable)
+    const formattedMasterMenus = masterMenus.map((mb: any) => ({
+        id: mb.menuId,
+        name: mb.menu.name,
+        description: mb.menu.description,
+        price: mb.menu.basePrice,
+        imageUrl: mb.menu.image,
+        isActive: mb.menu.isActive,
+        categoryId: 'master', // Virtual category
+        isMasterMenu: true,
+        addonCategories: mb.menu.addonCategories || []
+    }))
+
+    const menuItems = [...localMenuItems, ...formattedMasterMenus]
+    const categories = masterMenus.length > 0 
+        ? [...localCategories, { id: 'master', name: 'Main Menu' }]
+        : localCategories
+
     // Filter tables for the current branch
     const branchTables = (tablesResult.data || []).filter(t => t.branchId === session.user.branchId)
 
     return (
-        <div className="h-[100dvh] w-full bg-white text-gray-800 overflow-hidden flex flex-col">
-            <header className="bg-gray-50 border-b border-gray-200 p-4 flex items-center justify-between shrink-0">
+        <div className="h-[100dvh] w-full bg-white text-gray-800 overflow-hidden flex flex-col print:bg-white print:h-auto print:overflow-visible">
+            <header className="bg-gray-50 border-b border-gray-200 p-4 flex items-center justify-between shrink-0 print:hidden">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-rose-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20 text-black font-black text-xl">
+                    <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center shadow-lg shadow-gray-900/10 text-black font-black text-xl">
                         B
                     </div>
                     <div>
@@ -69,7 +91,7 @@ export default async function PosPage({
                 </div>
             </header>
 
-            <main className="flex-1 overflow-hidden">
+            <main className="flex-1 overflow-hidden print:overflow-visible">
                 <PosTerminal 
                     menuItems={menuItems} 
                     categories={categories} 

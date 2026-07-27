@@ -199,3 +199,42 @@ export async function deleteAddon(id: string) {
         return { success: false, error: "ဖျက်ဆီးခြင်း မအောင်မြင်ပါ" }
     }
 }
+
+// === 🔗 MASTER MENU ADDONS LINKING ===
+
+export async function updateMasterMenuAddons(menuId: string, addonCategoryIds: string[]) {
+    const session = await auth()
+    if (!session?.user?.branchId || session.user.role === 'STAFF') {
+        return { success: false, error: "Unauthorized or Invalid Branch" }
+    }
+
+    try {
+        // First, disconnect all addon categories for this specific branch from this master menu.
+        // Prisma doesn't have a straightforward way to disconnect ONLY items matching a condition in a many-to-many, 
+        // so we fetch the branch's addon categories first.
+        const branchCategories = await prisma.addonCategory.findMany({
+            where: { branchId: session.user.branchId },
+            select: { id: true }
+        });
+        
+        const branchCategoryIds = branchCategories.map(c => ({ id: c.id }));
+
+        // Disconnect all this branch's categories, then connect the selected ones
+        await prisma.menu.update({
+            where: { id: menuId },
+            data: {
+                addonCategories: {
+                    disconnect: branchCategoryIds,
+                    connect: addonCategoryIds.map(id => ({ id }))
+                }
+            }
+        })
+
+        revalidatePath('/dashboard/store/menu')
+        revalidatePath('/pos')
+        return { success: true }
+    } catch (error) {
+        console.error("Error updating master menu addons:", error)
+        return { success: false, error: "အပိုပစ္စည်းများ ချိတ်ဆက်ခြင်း မအောင်မြင်ပါ" }
+    }
+}

@@ -3,8 +3,9 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client"
-  output   = "./generated"
+  provider        = "prisma-client"
+  output          = "./generated"
+  previewFeatures = ["views"]
 }
 
 // =================================================================
@@ -35,6 +36,7 @@ model Branch {
   tables         Table[]
   orders         Order[]
   discounts      Discount[]
+  promoCodes     PromoCode[]
 
   // Merged from Setting model
   restaurantName    String  @default("")
@@ -133,6 +135,7 @@ model AddonCategory {
   branch    Branch     @relation(fields: [branchId], references: [id], onDelete: Cascade)
   addons    Addon[]
   menuItems MenuItem[] // Implicit Many-to-Many
+  masterMenus Menu[]   // Implicit Many-to-Many with HQ Master Menus
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 }
@@ -254,6 +257,7 @@ model Menu {
   company   Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   branches MenuOnBranch[]
+  addonCategories AddonCategory[] // Implicit Many-to-Many with Branch local AddonCategories
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -268,4 +272,32 @@ model MenuOnBranch {
   isAvailable Boolean @default(true)
 
   @@id([menuId, branchId])
+}
+
+view BranchDailySales {
+  branchId       String
+  branchName     String
+  date           DateTime
+  totalRevenue   Float
+  totalInvoices  Int
+
+  @@unique([branchId, date])
+}
+
+model PromoCode {
+  id              String    @id @default(cuid())
+  code            String    @unique
+  discountType    String    // "PERCENTAGE" or "FIXED_AMOUNT"
+  discountValue   Float
+  minOrderAmount  Float?
+  maxUsageLimit   Int?
+  usedCount       Int       @default(0)
+  expiryDate      DateTime?
+  isActive        Boolean   @default(true)
+  
+  branchId        String
+  branch          Branch    @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }

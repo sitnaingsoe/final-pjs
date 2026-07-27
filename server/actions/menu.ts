@@ -37,12 +37,46 @@ export async function getBranchMasterMenus() {
         const data = await prisma.menuOnBranch.findMany({
             where: { branchId: session.user.branchId },
             include: {
-                menu: true
+                menu: {
+                    include: {
+                        addonCategories: {
+                            where: { branchId: session.user.branchId },
+                            include: { addons: true }
+                        }
+                    }
+                }
             }
         })
         return { success: true, data }
     } catch (error) {
+        console.error("GET BRANCH MASTER MENUS ERROR:", error)
         return { success: false, data: [] }
+    }
+}
+
+// ၁.၂။ Master Menu ၏ ရရှိနိုင်မှု (Available/Unavailable) ကို ဆိုင်ခွဲမှ ပြောင်းလဲခြင်း
+export async function toggleMasterMenuAvailability(menuId: string, isAvailable: boolean) {
+    const session = await auth()
+    if (!session?.user?.branchId) return { success: false, error: "Unauthorized" }
+    
+    if (session.user.role === 'STAFF') return { success: false, error: "Permission Denied: Staff cannot toggle menus." }
+
+    try {
+        await prisma.menuOnBranch.update({
+            where: {
+                menuId_branchId: {
+                    menuId: menuId,
+                    branchId: session.user.branchId
+                }
+            },
+            data: { isAvailable }
+        })
+        revalidatePath('/dashboard/store/menu')
+        revalidatePath('/pos')
+        return { success: true }
+    } catch (error) {
+        console.error("Failed to toggle master menu:", error)
+        return { success: false, error: "Failed to update availability" }
     }
 }
 

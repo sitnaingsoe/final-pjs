@@ -11,7 +11,11 @@ export async function resetStaffPassword(userId: number, formData: FormData) {
     const session = await auth()
     if (session?.user?.role !== 'COMPANY_HEAD') return { success: false, error: 'Unauthorized: Only Company Head can perform this action' }
     
-    const companyId = (session?.user as any)?.companyId
+    const currentUser = await prisma.user.findUnique({
+        where: { id: Number(session.user.id) },
+        select: { companyId: true, branch: { select: { companyId: true } } }
+    })
+    const companyId = currentUser?.companyId || currentUser?.branch?.companyId
     if (!companyId) return { success: false, error: "Unauthorized" }
 
     const newPassword = formData.get('newPassword') as string
@@ -48,7 +52,11 @@ export async function toggleStaffStatus(userId: number, currentStatus: boolean) 
     const session = await auth()
     if (session?.user?.role !== 'COMPANY_HEAD') return { success: false, error: 'Unauthorized: Only Company Head can perform this action' }
     
-    const companyId = (session?.user as any)?.companyId
+    const currentUser = await prisma.user.findUnique({
+        where: { id: Number(session.user.id) },
+        select: { companyId: true, branch: { select: { companyId: true } } }
+    })
+    const companyId = currentUser?.companyId || currentUser?.branch?.companyId
     if (!companyId) return { success: false, error: "Unauthorized" }
 
     try {

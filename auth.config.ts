@@ -2,6 +2,7 @@
 import type { NextAuthConfig } from 'next-auth';
 
 export const authConfig = {
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || "your_super_secret_fallback_string_here",
   pages: {
     signIn: '/login',
   },

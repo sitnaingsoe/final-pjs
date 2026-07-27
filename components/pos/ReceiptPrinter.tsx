@@ -19,61 +19,96 @@ export default function ReceiptPrinter({ data }: { data: ReceiptData | null }) {
     if (!data) return null;
 
     return (
-        <div className="hidden print:block absolute top-0 left-0 bg-white text-black text-[12px] font-mono p-4 w-[80mm] max-w-[80mm] mx-auto z-[9999]">
+        <>
+        <style type="text/css">
+            {`
+                @media print {
+                    @page { margin: 0; size: 80mm auto; }
+                    body { margin: 0; }
+                }
+            `}
+        </style>
+        <div className="hidden print:block bg-white text-black text-sm font-mono p-4 w-[80mm] max-w-[80mm] mx-auto z-[9999] print:w-full print:max-w-full">
             {/* Header */}
-            <div className="text-center mb-4">
-                <h2 className="text-xl font-bold mb-1">Our Restaurant</h2>
-                <p className="text-xs">123 Main Street, Yangon</p>
-                <p className="text-xs">Phone: 09-123456789</p>
+            <div className="text-center mb-6">
+                <div className="w-10 h-10 border-2 border-black rounded-full flex items-center justify-center mx-auto mb-2">
+                    <span className="text-xl font-black">B</span>
+                </div>
+                <h2 className="text-2xl font-black uppercase tracking-tight mb-1">BiteCraft</h2>
+                <p className="text-xs font-bold text-gray-800">123 Main Street, Yangon</p>
+                <p className="text-xs font-bold text-gray-800">Te: 09-123456789</p>
             </div>
 
-            <div className="border-t border-b border-black border-dashed py-2 mb-2">
-                <div className="flex justify-between">
-                    <span>Order: #{data.orderId.substring(0, 8)}</span>
+            {/* Order Info */}
+            <div className="border-t-2 border-b-2 border-black border-dashed py-3 mb-4 space-y-1">
+                <div className="flex justify-between items-center text-xs">
+                    <span className="font-bold uppercase">Order No:</span>
+                    <span className="font-mono">{data.orderId.substring(0, 8).toUpperCase()}</span>
                 </div>
-                <div className="flex justify-between">
-                    <span>Date: {new Date(data.date).toLocaleString('en-US', { hour12: true })}</span>
+                <div className="flex justify-between items-center text-xs">
+                    <span className="font-bold uppercase">Date:</span>
+                    <span className="font-mono">{new Date(data.date).toLocaleString('en-US', { hour12: true, month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                 </div>
             </div>
 
             {/* Items */}
-            <div className="mb-2">
-                <div className="flex justify-between font-bold border-b border-black pb-1 mb-1">
-                    <span className="w-1/2">Item</span>
-                    <span className="w-1/4 text-center">Qty</span>
-                    <span className="w-1/4 text-right">Amt</span>
+            <div className="mb-4">
+                <div className="flex justify-between font-black uppercase text-xs border-b-2 border-black pb-2 mb-2">
+                    <span className="w-7/12 text-left">Item</span>
+                    <span className="w-1/12 text-center">Q</span>
+                    <span className="w-4/12 text-right">Amount</span>
                 </div>
-                {data.items.map((item, idx) => (
-                    <div key={idx} className="flex justify-between mb-1">
-                        <span className="w-1/2 break-words pr-1">{item.name}</span>
-                        <span className="w-1/4 text-center">{item.quantity}</span>
-                        <span className="w-1/4 text-right">{(item.price * item.quantity).toLocaleString()}</span>
-                    </div>
-                ))}
+                <div className="space-y-2">
+                    {data.items.map((item, idx) => (
+                        <div key={idx} className="text-xs flex items-start justify-between leading-snug">
+                            <span className="w-7/12 break-words pr-2 font-bold">{item.name}</span>
+                            <span className="w-1/12 text-center font-mono">{item.quantity}</span>
+                            <span className="w-4/12 text-right font-mono tabular-nums">{(item.price * item.quantity).toLocaleString()}</span>
+                        </div>
+                    ))}
+                </div>
             </div>
 
             {/* Totals */}
-            <div className="border-t border-black border-dashed pt-2 space-y-1">
-                <div className="flex justify-between">
-                    <span>Subtotal:</span>
-                    <span>{data.totalAmount.toLocaleString()} MMK</span>
+            <div className="border-t-2 border-black border-dashed pt-3 space-y-1.5">
+                <div className="flex justify-between text-xs">
+                    <span className="font-bold">Subtotal</span>
+                    <span className="font-mono tabular-nums">{data.totalAmount.toLocaleString()} Ks</span>
                 </div>
-                <div className="flex justify-between">
-                    <span>Tax (5%):</span>
-                    <span>{data.taxAmount.toLocaleString()} MMK</span>
+                <div className="flex justify-between text-xs">
+                    <span className="font-bold">Tax (5%)</span>
+                    <span className="font-mono tabular-nums">{data.taxAmount.toLocaleString()} Ks</span>
                 </div>
-                <div className="flex justify-between font-bold text-sm border-t border-black pt-1 mt-1">
-                    <span>TOTAL:</span>
-                    <span>{data.finalAmount.toLocaleString()} MMK</span>
+                <div className="flex justify-between text-base font-black border-t-2 border-black pt-2 mt-2">
+                    <span>TOTAL</span>
+                    <span className="font-mono tabular-nums">{data.finalAmount.toLocaleString()} Ks</span>
                 </div>
             </div>
 
             {/* Footer */}
-            <div className="text-center mt-6">
-                <p className="font-bold">Thank You!</p>
-                <p className="text-[10px] mt-1">Please come again.</p>
-                <p className="text-[10px] mt-4">- - - - - - - - - - - - - - - - -</p>
+            <div className="text-center mt-8 pt-4 border-t-2 border-black border-solid">
+                <p className="font-black text-sm uppercase tracking-widest mb-1">Thank You</p>
+                <p className="text-xs font-bold">Please come again!</p>
+                
+                {/* Barcode Mockup */}
+                <div className="mt-4 flex flex-col items-center">
+                    <div className="h-8 w-4/5 border-l-2 border-r-[4px] border-black flex gap-[2px] justify-center bg-black/5">
+                        <div className="w-[3px] bg-black h-full"></div>
+                        <div className="w-[1px] bg-black h-full"></div>
+                        <div className="w-[4px] bg-black h-full"></div>
+                        <div className="w-[2px] bg-black h-full"></div>
+                        <div className="w-[5px] bg-black h-full"></div>
+                        <div className="w-[1px] bg-black h-full"></div>
+                        <div className="w-[3px] bg-black h-full"></div>
+                        <div className="w-[2px] bg-black h-full"></div>
+                        <div className="w-[4px] bg-black h-full"></div>
+                    </div>
+                    <span className="text-[10px] font-mono mt-1">{data.orderId.substring(0,12).toUpperCase()}</span>
+                </div>
+
+                <p className="text-[9px] mt-4 text-gray-500 font-bold uppercase tracking-widest">BiteCraft POS Systems</p>
             </div>
         </div>
+        </>
     )
 }

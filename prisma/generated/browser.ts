@@ -82,3 +82,13 @@ export type Menu = Prisma.MenuModel
  * 
  */
 export type MenuOnBranch = Prisma.MenuOnBranchModel
+/**
+ * Model PromoCode
+ * 
+ */
+export type PromoCode = Prisma.PromoCodeModel
+/**
+ * Model BranchDailySales
+ * 
+ */
+export type BranchDailySales = Prisma.BranchDailySalesModel

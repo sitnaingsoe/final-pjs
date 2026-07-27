@@ -63,7 +63,9 @@ export const ModelName = {
   Order: 'Order',
   Invoice: 'Invoice',
   Menu: 'Menu',
-  MenuOnBranch: 'MenuOnBranch'
+  MenuOnBranch: 'MenuOnBranch',
+  PromoCode: 'PromoCode',
+  BranchDailySales: 'BranchDailySales'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -275,6 +277,35 @@ export const MenuOnBranchScalarFieldEnum = {
 } as const
 
 export type MenuOnBranchScalarFieldEnum = (typeof MenuOnBranchScalarFieldEnum)[keyof typeof MenuOnBranchScalarFieldEnum]
+
+
+export const PromoCodeScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  discountType: 'discountType',
+  discountValue: 'discountValue',
+  minOrderAmount: 'minOrderAmount',
+  maxUsageLimit: 'maxUsageLimit',
+  usedCount: 'usedCount',
+  expiryDate: 'expiryDate',
+  isActive: 'isActive',
+  branchId: 'branchId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PromoCodeScalarFieldEnum = (typeof PromoCodeScalarFieldEnum)[keyof typeof PromoCodeScalarFieldEnum]
+
+
+export const BranchDailySalesScalarFieldEnum = {
+  branchId: 'branchId',
+  branchName: 'branchName',
+  date: 'date',
+  totalRevenue: 'totalRevenue',
+  totalInvoices: 'totalInvoices'
+} as const
+
+export type BranchDailySalesScalarFieldEnum = (typeof BranchDailySalesScalarFieldEnum)[keyof typeof BranchDailySalesScalarFieldEnum]
 
 
 export const SortOrder = {

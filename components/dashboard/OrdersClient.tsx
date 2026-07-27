@@ -2,11 +2,8 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import { OrderStatus } from '../../prisma/generated/enums'
-import { getOrders, updateOrderStatus } from '@/server/actions/orders'
+import { getOrders, updateOrderItemsStatus } from '@/server/actions/orders'
 
-// Optional: you can place a small ding.mp3 in the public folder.
-// Since we might not have one, we can fallback to a native browser beep using AudioContext, 
-// or point to a reliable public URL for a gentle notification sound.
 const NOTIFICATION_SOUND = 'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'
 
 export default function OrdersClient({ initialOrders }: { initialOrders: any[] }) {
@@ -15,7 +12,6 @@ export default function OrdersClient({ initialOrders }: { initialOrders: any[] }
     const [isPolling, setIsPolling] = useState(true)
     const prevPendingCountRef = useRef(initialOrders.filter(o => o.status === OrderStatus.PENDING).length)
 
-    // Poll for new orders every 5 seconds
     useEffect(() => {
         if (!isPolling) return;
 
@@ -26,7 +22,6 @@ export default function OrdersClient({ initialOrders }: { initialOrders: any[] }
                     const newOrders = res.data
                     const newPendingCount = newOrders.filter((o: any) => o.status === OrderStatus.PENDING).length
 
-                    // Play sound if new pending orders arrived and sound is enabled
                     if (newPendingCount > prevPendingCountRef.current && soundEnabled) {
                         try {
                             const audio = new Audio(NOTIFICATION_SOUND)
@@ -36,209 +31,242 @@ export default function OrdersClient({ initialOrders }: { initialOrders: any[] }
                         }
                     }
 
-                    // Update refs and state
                     prevPendingCountRef.current = newPendingCount
                     setOrders(newOrders)
                 }
-            } catch (error) {
+            } catch (error: any) {
                 console.error("Polling error:", error)
+                if (error?.message?.includes('unexpected response') || error?.message?.includes('Unexpected token')) {
+                    window.location.href = '/login?error=session_expired'
+                }
             }
         }, 5000)
 
         return () => clearInterval(interval)
     }, [isPolling, soundEnabled])
 
-    // Optimistic UI Update function
-    const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
-        // Optimistically update the UI immediately
-        setOrders(prev => prev.map(order =>
-            order.id === orderId ? { ...order, status: newStatus } : order
-        ))
+    const handleStatusChange = async (orderId: string, currentStatus: string, newStatus: string) => {
+        setOrders(prev => prev.map(order => {
+            if (order.id === orderId) {
+                return {
+                    ...order,
+                    items: (order.items as any[]).map(item => 
+                        (item.status || 'PENDING') === currentStatus ? { ...item, status: newStatus } : item
+                    )
+                }
+            }
+            return order
+        }))
 
-        // Update ref if pending count drops because we moved it to COOKING
-        if (newStatus !== OrderStatus.PENDING) {
-            prevPendingCountRef.current = Math.max(0, prevPendingCountRef.current - 1)
-        }
-
-        // Send request to server
-        const res = await updateOrderStatus(orderId, newStatus)
+        const res = await updateOrderItemsStatus(orderId, currentStatus, newStatus)
         if (!res.success) {
-            // Revert if failed by refetching actual data
             alert('အော်ဒါပြောင်းလဲခြင်း မအောင်မြင်ပါ')
             const fallback = await getOrders()
             if (fallback.success && fallback.data) setOrders(fallback.data)
         }
     }
 
-    const pendingOrders = orders.filter(o => o.status === OrderStatus.PENDING)
-    const cookingOrders = orders.filter(o => o.status === OrderStatus.COOKING)
-    const readyOrders = orders.filter(o => o.status === OrderStatus.READY)
+    const pendingOrders = orders.filter(o => (o.items as any[]).some(i => (i.status || 'PENDING') === OrderStatus.PENDING))
+    const cookingOrders = orders.filter(o => (o.items as any[]).some(i => (i.status || 'PENDING') === OrderStatus.COOKING))
+    const readyOrders = orders.filter(o => (o.items as any[]).some(i => (i.status || 'PENDING') === OrderStatus.READY))
 
     return (
-        <div className="space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
-                        <span className="text-black">🍳</span> မီးဖိုချောင် အော်ဒါဘုတ် (Kitchen Board)
-                    </h2>
-                    <p className="text-sm text-gray-500 mt-1">အော်ဒါအသစ်ဝင်လာလျှင် အလိုအလျောက် ပြသပေးပါမည်</p>
+        <div className="space-y-6 lg:space-y-8 animate-in fade-in zoom-in-95 duration-500">
+            {/* Page Header */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 md:p-8 bg-white/60 backdrop-blur-xl rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                <div className="flex items-center gap-5">
+                    <div className="w-14 h-14 bg-black rounded-2xl flex items-center justify-center text-white shadow-xl shadow-black/10 shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                    <div>
+                        <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-black">Kitchen Board</h1>
+                        <p className="text-[10px] md:text-xs font-bold text-gray-400 mt-1 uppercase tracking-widest">မီးဖိုချောင် အော်ဒါဘုတ်</p>
+                    </div>
                 </div>
 
                 {/* Control Panel */}
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
+                    <a 
+                        href="/kitchen" 
+                        target="_blank" 
+                        className="flex items-center gap-2 px-4 py-2.5 bg-black hover:bg-gray-900 text-white rounded-xl text-[10px] uppercase tracking-widest font-black transition-all shadow-md shadow-black/10 hover:shadow-lg hover:-translate-y-0.5"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
+                        Full KDS
+                    </a>
+                    
                     <button
                         onClick={() => setIsPolling(!isPolling)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${isPolling ? 'bg-green-500/20 text-green-600 border border-green-500/30' : 'bg-gray-200 text-gray-500 border border-gray-300'}`}
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] uppercase tracking-widest font-black transition-all shadow-sm ${isPolling ? 'bg-white text-black border border-gray-200 hover:shadow-md' : 'bg-gray-50 text-gray-400 border border-gray-200'}`}
                     >
-                        <span className={`w-2 h-2 rounded-full ${isPolling ? 'bg-green-500 animate-pulse' : 'bg-slate-500'}`}></span>
+                        <span className={`w-2 h-2 rounded-full ${isPolling ? 'bg-black animate-pulse' : 'bg-gray-300'}`}></span>
                         {isPolling ? 'Auto-Refresh (On)' : 'Auto-Refresh (Off)'}
                     </button>
 
                     <button
                         onClick={() => setSoundEnabled(!soundEnabled)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${soundEnabled ? 'bg-black/20 text-gray-800 border border-black/30' : 'bg-gray-200 text-gray-500 border border-gray-300'}`}
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] uppercase tracking-widest font-black transition-all shadow-sm ${soundEnabled ? 'bg-white text-black border border-gray-200 hover:shadow-md' : 'bg-gray-50 text-gray-400 border border-gray-200'}`}
                     >
-                        <span>{soundEnabled ? '🔊' : '🔇'}</span>
-                        {soundEnabled ? 'အသံဖွင့်ထားသည်' : 'အသံပိတ်ထားသည်'}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            {soundEnabled ? (
+                                <><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></>
+                            ) : (
+                                <><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></>
+                            )}
+                        </svg>
+                        {soundEnabled ? 'Sound On' : 'Sound Off'}
                     </button>
                 </div>
             </div>
 
             {/* 3-Column Kanban Board Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
 
                 {/* ကော်လံ ၁ - စောင့်ဆိုင်းဆဲ (PENDING) */}
-                <div className="bg-gray-50/50 p-5 rounded-2xl border border-gray-200 min-h-[500px] flex flex-col">
-                    <h3 className="font-black text-gray-800 mb-5 flex justify-between items-center pb-3 border-b border-gray-200">
-                        <span className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                            စောင့်ဆိုင်းဆဲ (Pending)
+                <div className="bg-white/60 backdrop-blur-xl p-6 rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] min-h-[500px] flex flex-col relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <h3 className="font-black text-black mb-6 flex justify-between items-center pb-4 border-b border-gray-100 relative z-10">
+                        <span className="flex items-center gap-2 uppercase tracking-wider text-sm">
+                            <span className="w-2.5 h-2.5 rounded-full bg-black animate-pulse shadow-[0_0_10px_rgba(0,0,0,0.5)]"></span>
+                            Pending <span className="text-[10px] font-bold text-gray-400 ml-1 tracking-normal">(စောင့်ဆိုင်းဆဲ)</span>
                         </span>
-                        <span className="bg-gray-200 text-gray-700 text-xs px-3 py-1 rounded-lg font-bold border border-gray-300">{pendingOrders.length}</span>
+                        <span className="bg-gray-50 text-black text-[10px] px-3 py-1 rounded-md font-black font-mono border border-gray-200">{pendingOrders.length}</span>
                     </h3>
-                    <div className="space-y-4 flex-1 overflow-y-auto pr-1 custom-scrollbar">
+                    <div className="space-y-4 flex-1 overflow-y-auto pr-2 custom-scrollbar relative z-10">
                         {pendingOrders.map(order => (
-                            <div key={order.id} className="bg-white p-5 rounded-xl border border-gray-200 space-y-4 hover:border-red-500/50 transition-colors shadow-lg shadow-black/20 group animate-in fade-in slide-in-from-bottom-2">
-                                <div className="flex justify-between items-center border-b border-gray-200/50 pb-3">
-                                    <span className="font-black text-sm text-gray-800">#Ord-{order.orderNumber}</span>
-                                    <span className="text-xs font-bold text-gray-400 bg-gray-50 px-2 py-1 rounded-md">{new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            <div key={order.id} className="bg-white p-5 rounded-2xl border border-gray-100 space-y-4 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 relative group/card">
+                                <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-gray-100/50 to-transparent rounded-tr-2xl"></div>
+                                <div className="flex justify-between items-center border-b border-gray-100 pb-3 relative z-10">
+                                    <span className="font-black text-sm text-black uppercase tracking-wider">{order.table ? `Table ${order.table.number}` : "Takeaway"}</span>
+                                    <span className="text-[10px] font-black font-mono text-gray-500 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-100">{new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                 </div>
-                                {/* မှာယူသည့် မီနူးပစ္စည်းများ */}
-                                <div className="text-sm space-y-2">
-                                    {order.items.map((item: any, idx: number) => (
-                                        <div key={item.id || item.menuItemId || idx} className="font-bold text-gray-700">
-                                            <div className="flex justify-between">
-                                                <span>• {item.name || item.menuItem?.name || "Unknown Item"}</span>
-                                                <span className="text-red-600 font-black px-2 bg-red-500/10 rounded">x{item.quantity}</span>
+                                <div className="text-sm space-y-2 relative z-10">
+                                    {order.items.filter((item: any) => (item.status || 'PENDING') === OrderStatus.PENDING).map((item: any, idx: number) => (
+                                        <div key={'item-' + idx} className="font-bold text-gray-700">
+                                            <div className="flex justify-between items-start">
+                                                <span className="text-xs uppercase tracking-wide leading-tight mt-0.5">• {item.name || item.menuItem?.name || "Unknown Item"}</span>
+                                                <span className="text-black font-black text-xs px-2 py-0.5 bg-gray-50 border border-gray-200 rounded-md shrink-0">x{item.quantity}</span>
                                             </div>
                                             {item.addons?.map((a: any, idx: number) => (
-                                                <div key={a.id || idx} className="text-xs text-gray-400 pl-4 mt-0.5">↳ {a.name || a.addon?.name || "Addon"}</div>
+                                                <div key={'addon-' + idx} className="text-[10px] text-gray-400 pl-4 mt-1 font-semibold">↳ {a.name || a.addon?.name || "Addon"}</div>
                                             ))}
                                         </div>
                                     ))}
                                 </div>
-                                {order.notes && <div className="text-xs bg-red-500/10 border border-red-500/20 p-3 rounded-lg text-red-300 italic font-medium">📝 {order.notes}</div>}
+                                {order.notes && <div className="text-[10px] bg-gray-50 border border-gray-200 p-3 rounded-xl text-gray-600 font-bold uppercase tracking-widest relative z-10"><span className="mr-1">📝</span> {order.notes}</div>}
 
-                                <button onClick={() => handleStatusChange(order.id, OrderStatus.COOKING)} className="w-full bg-gray-200 hover:bg-red-500 hover:text-black text-gray-700 text-xs font-black py-3 rounded-lg transition-all border border-gray-300 hover:border-red-500 flex justify-center items-center gap-2">
-                                    👨‍🍳 လက်ခံပြီး ချက်ပြုတ်မည်
+                                <button onClick={() => handleStatusChange(order.id, OrderStatus.PENDING, OrderStatus.COOKING)} className="w-full bg-white hover:bg-black text-black hover:text-white text-[10px] uppercase tracking-widest font-black py-3.5 rounded-xl transition-all border border-gray-200 shadow-sm hover:shadow-md flex justify-center items-center gap-2 relative z-10">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                    Start Cooking
                                 </button>
                             </div>
                         ))}
                         {pendingOrders.length === 0 && (
-                            <div className="h-full flex flex-col items-center justify-center text-gray-300 opacity-50 space-y-2">
-                                <span className="text-4xl">📥</span>
-                                <span className="text-xs font-bold">အော်ဒါအသစ်မရှိပါ</span>
+                            <div className="h-full flex flex-col items-center justify-center text-gray-300 opacity-60 space-y-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                                <span className="text-[10px] font-black uppercase tracking-widest">No Pending Orders</span>
                             </div>
                         )}
                     </div>
                 </div>
 
                 {/* ကော်လံ ၂ - ချက်ပြုတ်ဆဲ (COOKING) */}
-                <div className="bg-gray-50/50 p-5 rounded-2xl border border-gray-200 min-h-[500px] flex flex-col">
-                    <h3 className="font-black text-gray-800 mb-5 flex justify-between items-center pb-3 border-b border-gray-200">
-                        <span className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-                            ချက်ပြုတ်ဆဲ (Cooking)
+                <div className="bg-white/60 backdrop-blur-xl p-6 rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] min-h-[500px] flex flex-col relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                    <h3 className="font-black text-black mb-6 flex justify-between items-center pb-4 border-b border-gray-100 relative z-10">
+                        <span className="flex items-center gap-2 uppercase tracking-wider text-sm">
+                            <span className="w-2.5 h-2.5 rounded-full bg-gray-500 animate-pulse shadow-[0_0_10px_rgba(0,0,0,0.2)]"></span>
+                            Cooking <span className="text-[10px] font-bold text-gray-400 ml-1 tracking-normal">(ချက်ပြုတ်ဆဲ)</span>
                         </span>
-                        <span className="bg-gray-200 text-gray-700 text-xs px-3 py-1 rounded-lg font-bold border border-gray-300">{cookingOrders.length}</span>
+                        <span className="bg-gray-50 text-black text-[10px] px-3 py-1 rounded-md font-black font-mono border border-gray-200">{cookingOrders.length}</span>
                     </h3>
-                    <div className="space-y-4 flex-1 overflow-y-auto pr-1 custom-scrollbar">
+                    <div className="space-y-4 flex-1 overflow-y-auto pr-2 custom-scrollbar relative z-10">
                         {cookingOrders.map(order => (
-                            <div key={order.id} className="bg-white p-5 rounded-xl border border-gray-200 space-y-4 hover:border-blue-500/50 transition-colors shadow-lg shadow-black/20 group animate-in fade-in slide-in-from-bottom-2">
-                                <div className="flex justify-between items-center border-b border-gray-200/50 pb-3">
-                                    <span className="font-black text-sm text-gray-800">#Ord-{order.orderNumber}</span>
-                                    <span className="text-xs font-bold text-gray-400 bg-gray-50 px-2 py-1 rounded-md">{new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            <div key={order.id} className="bg-white p-5 rounded-2xl border border-gray-100 space-y-4 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 relative group/card">
+                                <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-gray-200/40 to-transparent rounded-tr-2xl"></div>
+                                <div className="flex justify-between items-center border-b border-gray-100 pb-3 relative z-10">
+                                    <span className="font-black text-sm text-black uppercase tracking-wider">{order.table ? `Table ${order.table.number}` : "Takeaway"}</span>
+                                    <span className="text-[10px] font-black font-mono text-gray-500 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-100">{new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                 </div>
-                                <div className="text-sm space-y-2">
-                                    {order.items.map((item: any, idx: number) => (
-                                        <div key={item.id || item.menuItemId || idx} className="font-bold text-gray-700">
-                                            <div className="flex justify-between">
-                                                <span>• {item.name || item.menuItem?.name || "Unknown Item"}</span>
-                                                <span className="text-blue-400 font-black px-2 bg-blue-500/10 rounded">x{item.quantity}</span>
+                                <div className="text-sm space-y-2 relative z-10">
+                                    {order.items.filter((item: any) => (item.status || 'PENDING') === OrderStatus.COOKING).map((item: any, idx: number) => (
+                                        <div key={'item-' + idx} className="font-bold text-gray-700">
+                                            <div className="flex justify-between items-start">
+                                                <span className="text-xs uppercase tracking-wide leading-tight mt-0.5">• {item.name || item.menuItem?.name || "Unknown Item"}</span>
+                                                <span className="text-black font-black text-xs px-2 py-0.5 bg-gray-50 border border-gray-200 rounded-md shrink-0">x{item.quantity}</span>
                                             </div>
                                             {item.addons?.map((a: any, idx: number) => (
-                                                <div key={a.id || idx} className="text-xs text-gray-400 pl-4 mt-0.5">↳ {a.name || a.addon?.name || "Addon"}</div>
+                                                <div key={'addon-' + idx} className="text-[10px] text-gray-400 pl-4 mt-1 font-semibold">↳ {a.name || a.addon?.name || "Addon"}</div>
                                             ))}
                                         </div>
                                     ))}
                                 </div>
-                                {order.notes && <div className="text-xs bg-gray-50 p-3 rounded-lg text-gray-500 italic">📝 {order.notes}</div>}
+                                {order.notes && <div className="text-[10px] bg-gray-50 border border-gray-200 p-3 rounded-xl text-gray-600 font-bold uppercase tracking-widest relative z-10"><span className="mr-1">📝</span> {order.notes}</div>}
 
-                                <button onClick={() => handleStatusChange(order.id, OrderStatus.READY)} className="w-full bg-gray-200 hover:bg-blue-500 hover:text-black text-gray-700 text-xs font-black py-3 rounded-lg transition-all border border-gray-300 hover:border-blue-500 flex justify-center items-center gap-2">
-                                    ✅ ချက်ပြုတ်ပြီး (ပွဲထွက်မည်)
+                                <button onClick={() => handleStatusChange(order.id, OrderStatus.COOKING, OrderStatus.READY)} className="w-full bg-black hover:bg-gray-900 text-white text-[10px] uppercase tracking-widest font-black py-3.5 rounded-xl transition-all shadow-md shadow-black/10 hover:shadow-lg flex justify-center items-center gap-2 relative z-10">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                    Mark as Ready
                                 </button>
                             </div>
                         ))}
                         {cookingOrders.length === 0 && (
-                            <div className="h-full flex flex-col items-center justify-center text-gray-300 opacity-50 space-y-2">
-                                <span className="text-4xl">🔥</span>
-                                <span className="text-xs font-bold">ချက်ပြုတ်နေသော အော်ဒါမရှိပါ</span>
+                            <div className="h-full flex flex-col items-center justify-center text-gray-300 opacity-60 space-y-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                <span className="text-[10px] font-black uppercase tracking-widest">No Cooking Orders</span>
                             </div>
                         )}
                     </div>
                 </div>
 
                 {/* ကော်လံ ၃ - အဆင်သင့်ဖြစ်ပြီ (READY) */}
-                <div className="bg-gray-50/50 p-5 rounded-2xl border border-gray-200 min-h-[500px] flex flex-col">
-                    <h3 className="font-black text-gray-800 mb-5 flex justify-between items-center pb-3 border-b border-gray-200">
-                        <span className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                            ပွဲထွက်ရန် (Ready)
+                <div className="bg-white/60 backdrop-blur-xl p-6 rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] min-h-[500px] flex flex-col relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
+                    <h3 className="font-black text-black mb-6 flex justify-between items-center pb-4 border-b border-gray-100 relative z-10">
+                        <span className="flex items-center gap-2 uppercase tracking-wider text-sm">
+                            <span className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]"></span>
+                            Ready <span className="text-[10px] font-bold text-gray-400 ml-1 tracking-normal">(ပွဲထွက်ရန်)</span>
                         </span>
-                        <span className="bg-gray-200 text-gray-700 text-xs px-3 py-1 rounded-lg font-bold border border-gray-300">{readyOrders.length}</span>
+                        <span className="bg-gray-50 text-black text-[10px] px-3 py-1 rounded-md font-black font-mono border border-gray-200">{readyOrders.length}</span>
                     </h3>
-                    <div className="space-y-4 flex-1 overflow-y-auto pr-1 custom-scrollbar">
+                    <div className="space-y-4 flex-1 overflow-y-auto pr-2 custom-scrollbar relative z-10">
                         {readyOrders.map(order => (
-                            <div key={order.id} className="bg-white p-5 rounded-xl border border-green-500/30 space-y-4 shadow-lg shadow-green-500/5 relative overflow-hidden animate-in fade-in slide-in-from-bottom-2">
-                                <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-green-500/20 to-transparent"></div>
-                                <div className="flex justify-between items-center border-b border-gray-200/50 pb-3 relative z-10">
-                                    <span className="font-black text-sm text-gray-800">#Ord-{order.orderNumber}</span>
-                                    <span className="text-xs font-bold text-gray-400 bg-gray-50 px-2 py-1 rounded-md">{new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            <div key={order.id} className="bg-white p-5 rounded-2xl border border-gray-100 space-y-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden group/card hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all">
+                                <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-green-500/10 to-transparent rounded-tr-2xl"></div>
+                                <div className="flex justify-between items-center border-b border-gray-100 pb-3 relative z-10">
+                                    <span className="font-black text-sm text-black uppercase tracking-wider">{order.table ? `Table ${order.table.number}` : "Takeaway"}</span>
+                                    <span className="text-[10px] font-black font-mono text-gray-500 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-100">{new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                 </div>
                                 <div className="text-sm space-y-2 relative z-10">
-                                    {order.items.map((item: any, idx: number) => (
-                                        <div key={item.id || item.menuItemId || idx} className="font-bold text-gray-700">
-                                            <div className="flex justify-between">
-                                                <span>• {item.name || item.menuItem?.name || "Unknown Item"}</span>
-                                                <span className="text-green-600 font-black px-2 bg-green-500/10 rounded">x{item.quantity}</span>
+                                    {order.items.filter((item: any) => (item.status || 'PENDING') === OrderStatus.READY).map((item: any, idx: number) => (
+                                        <div key={'item-' + idx} className="font-bold text-gray-700">
+                                            <div className="flex justify-between items-start">
+                                                <span className="text-xs uppercase tracking-wide leading-tight mt-0.5">• {item.name || item.menuItem?.name || "Unknown Item"}</span>
+                                                <span className="text-green-600 font-black text-xs px-2 py-0.5 bg-green-50 border border-green-100 rounded-md shrink-0">x{item.quantity}</span>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
-                                <div className="mt-4 pt-3 border-t border-gray-200/50 flex justify-between items-center relative z-10">
-                                    <span className="text-xs font-bold text-green-600 flex items-center gap-1">
-                                        ✨ အသင့်ဖြစ်ပါပြီ
+                                <div className="mt-5 pt-4 border-t border-gray-100 flex justify-between items-center relative z-10">
+                                    <span className="text-[10px] font-black text-green-600 uppercase tracking-widest flex items-center gap-1.5">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                        Ready
                                     </span>
-                                    <button onClick={() => handleStatusChange(order.id, OrderStatus.DELIVERED)} className="bg-gray-200 hover:bg-green-500 hover:text-black text-gray-500 text-xs font-bold px-4 py-2 rounded-lg transition-all border border-gray-300 hover:border-green-500">
-                                        ရှင်းမည်
+                                    <button onClick={() => handleStatusChange(order.id, OrderStatus.READY, OrderStatus.DELIVERED)} className="bg-white hover:bg-gray-50 text-black text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl transition-all border border-gray-200 shadow-sm hover:shadow-md">
+                                        Clear
                                     </button>
                                 </div>
                             </div>
                         ))}
                         {readyOrders.length === 0 && (
-                            <div className="h-full flex flex-col items-center justify-center text-gray-300 opacity-50 space-y-2">
-                                <span className="text-4xl">🛎️</span>
-                                <span className="text-xs font-bold">အဆင်သင့်ဖြစ်သော အော်ဒါမရှိပါ</span>
+                            <div className="h-full flex flex-col items-center justify-center text-gray-300 opacity-60 space-y-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                                <span className="text-[10px] font-black uppercase tracking-widest">No Ready Orders</span>
                             </div>
                         )}
                     </div>

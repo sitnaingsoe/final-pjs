@@ -33,7 +33,7 @@ export default async function KitchenPage() {
         <div className="min-h-[100dvh] w-full bg-white text-gray-800 flex flex-col">
             <header className="bg-gray-900 border-b border-gray-800 p-4 flex items-center justify-between shrink-0 shadow-lg">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-rose-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20 text-black font-black text-2xl">
+                    <div className="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center shadow-lg shadow-gray-900/10 text-black font-black text-2xl">
                         🍳
                     </div>
                     <div>

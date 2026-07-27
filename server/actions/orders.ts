@@ -13,6 +13,7 @@ export async function getOrders() {
     try {
         const orders = await prisma.order.findMany({
             where: { branchId: session.user.branchId },
+            include: { table: true },
             orderBy: {
                 createdAt: 'desc' // နောက်ဆုံးမှာတဲ့အော်ဒါကို အပေါ်ဆုံးကပြမည်
             }
@@ -174,7 +175,8 @@ export async function sendOrderToKitchen(data: {
                 name: menu?.name || "Unknown Item",
                 quantity: item.quantity,
                 price: menuPrice,
-                addons: item.addons || []
+                addons: item.addons || [],
+                status: 'PENDING'
             }
         })
 
@@ -198,7 +200,8 @@ export async function sendOrderToKitchen(data: {
                     totalAmount: newTotalAmount,
                     taxAmount: newTaxAmount,
                     finalAmount: newFinalAmount,
-                    items: newItems
+                    items: newItems,
+                    status: 'PENDING' // Reset to pending so the kitchen gets notified of the new items
                 }
             })
         } else {
@@ -229,7 +232,7 @@ export async function sendOrderToKitchen(data: {
     }
 }
 
-export async function checkoutOrder(orderId: string, paymentMethod: string = 'CASH') {
+export async function checkoutOrder(orderId: string, paymentMethod: string = 'CASH', promoCode?: string) {
     const session = await auth()
     if (!session?.user?.branchId) return { success: false, error: "Unauthorized" }
 
@@ -239,6 +242,22 @@ export async function checkoutOrder(orderId: string, paymentMethod: string = 'CA
         })
 
         if (!order) return { success: false, error: "Order not found" }
+
+        // Process Promo Code if provided
+        let appliedDiscount = 0
+        let validPromoId: string | null = null
+        if (promoCode) {
+            const { validatePromoCode } = await import('./promocodes')
+            const promoValidation = await validatePromoCode(promoCode, session.user.branchId, order.finalAmount)
+            if (promoValidation.success && promoValidation.discountAmount) {
+                appliedDiscount = promoValidation.discountAmount
+                validPromoId = promoValidation.promoId || null
+            } else {
+                return { success: false, error: promoValidation.error || "ပရိုမိုကုဒ် မှားယွင်းနေပါသည်" }
+            }
+        }
+
+        const invoiceFinalAmount = Math.max(0, order.finalAmount - appliedDiscount)
 
         // Generate unique invoice number
         const invoiceNumber = `INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`
@@ -251,10 +270,19 @@ export async function checkoutOrder(orderId: string, paymentMethod: string = 'CA
                 paymentStatus: 'PAID',
                 subTotal: order.totalAmount,
                 taxAmount: order.taxAmount,
-                finalAmount: order.finalAmount,
+                discountAmount: appliedDiscount, // Apply the promo discount here
+                finalAmount: invoiceFinalAmount,
                 branchId: session.user.branchId
             }
         })
+
+        // 2. If Promo was applied, increment usedCount
+        if (validPromoId) {
+            await prisma.promoCode.update({
+                where: { id: validPromoId },
+                data: { usedCount: { increment: 1 } }
+            })
+        }
 
         // 2. Link Invoice to Order and set status to PAID
         const updatedOrder = await prisma.order.update({
@@ -271,5 +299,60 @@ export async function checkoutOrder(orderId: string, paymentMethod: string = 'CA
     } catch (error) {
         console.error("Error in checkout:", error)
         return { success: false, error: "ဘေလ်ရှင်း၍မရပါ" }
+    }
+}
+
+export async function updateOrderItemsStatus(orderId: string, currentStatus: string, newStatus: string) {
+    const session = await auth()
+    if (!session?.user?.branchId) return { success: false, error: "Unauthorized" }
+
+    try {
+        const order = await prisma.order.findUnique({
+            where: { id: orderId, branchId: session.user.branchId }
+        })
+        if (!order) return { success: false, error: "Order not found" }
+
+        const items = (order.items as any[]) || []
+        
+        let changed = false
+        const newItems = items.map(item => {
+            // Default to PENDING if not set (for backwards compatibility)
+            const itemStatus = item.status || 'PENDING'
+            if (itemStatus === currentStatus) {
+                changed = true
+                return { ...item, status: newStatus }
+            }
+            return item
+        })
+
+        if (!changed) return { success: true } // Nothing to change
+
+        // Calculate if we should update top-level status too
+        // E.g. if all items are newStatus, update top-level to newStatus
+        const allSame = newItems.every(i => (i.status || 'PENDING') === newStatus)
+        const updateData: any = { items: newItems }
+        
+        // Let's also update the top-level status if we're moving them along, 
+        // to avoid KDS confusion or other parts of the app.
+        if (allSame && ['PENDING', 'COOKING', 'READY'].includes(newStatus)) {
+            updateData.status = newStatus as OrderStatus
+        } else if (newStatus === 'COOKING') {
+            // If even some items are cooking, the order is at least cooking
+            updateData.status = 'COOKING'
+        } else if (newStatus === 'READY' && !newItems.some(i => (i.status || 'PENDING') === 'PENDING' || (i.status || 'PENDING') === 'COOKING')) {
+            updateData.status = 'READY'
+        }
+
+        await prisma.order.update({
+            where: { id: orderId },
+            data: updateData
+        })
+
+        revalidatePath('/pos')
+        revalidatePath('/dashboard/store/orders')
+        return { success: true }
+    } catch (error) {
+        console.error("Error updating item statuses:", error)
+        return { success: false, error: "Update failed" }
     }
 }

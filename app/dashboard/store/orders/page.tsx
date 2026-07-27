@@ -10,17 +10,7 @@ export default async function OrdersPage() {
     const orders = result.data || []
 
     return (
-        <div className="space-y-4">
-            <div className="flex justify-end">
-                <a 
-                    href="/kitchen" 
-                    target="_blank" 
-                    className="flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-5 py-2.5 rounded-xl font-bold text-xs transition-all shadow-lg"
-                >
-                    <span>📺</span>
-                    Open Full-Screen KDS
-                </a>
-            </div>
+        <div className="space-y-6 lg:space-y-8 animate-in fade-in zoom-in-95 duration-500">
             <OrdersClient initialOrders={orders} />
         </div>
     )

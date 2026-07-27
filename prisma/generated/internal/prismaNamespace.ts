@@ -396,7 +396,9 @@ export const ModelName = {
   Order: 'Order',
   Invoice: 'Invoice',
   Menu: 'Menu',
-  MenuOnBranch: 'MenuOnBranch'
+  MenuOnBranch: 'MenuOnBranch',
+  PromoCode: 'PromoCode',
+  BranchDailySales: 'BranchDailySales'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -412,7 +414,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "company" | "branch" | "user" | "menuCategory" | "menuItem" | "addonCategory" | "addon" | "discount" | "table" | "order" | "invoice" | "menu" | "menuOnBranch"
+    modelProps: "company" | "branch" | "user" | "menuCategory" | "menuItem" | "addonCategory" | "addon" | "discount" | "table" | "order" | "invoice" | "menu" | "menuOnBranch" | "promoCode" | "branchDailySales"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1378,6 +1380,118 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PromoCode: {
+      payload: Prisma.$PromoCodePayload<ExtArgs>
+      fields: Prisma.PromoCodeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PromoCodeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PromoCodePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PromoCodeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PromoCodePayload>
+        }
+        findFirst: {
+          args: Prisma.PromoCodeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PromoCodePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PromoCodeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PromoCodePayload>
+        }
+        findMany: {
+          args: Prisma.PromoCodeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PromoCodePayload>[]
+        }
+        create: {
+          args: Prisma.PromoCodeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PromoCodePayload>
+        }
+        createMany: {
+          args: Prisma.PromoCodeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PromoCodeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PromoCodePayload>[]
+        }
+        delete: {
+          args: Prisma.PromoCodeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PromoCodePayload>
+        }
+        update: {
+          args: Prisma.PromoCodeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PromoCodePayload>
+        }
+        deleteMany: {
+          args: Prisma.PromoCodeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PromoCodeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PromoCodeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PromoCodePayload>[]
+        }
+        upsert: {
+          args: Prisma.PromoCodeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PromoCodePayload>
+        }
+        aggregate: {
+          args: Prisma.PromoCodeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePromoCode>
+        }
+        groupBy: {
+          args: Prisma.PromoCodeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PromoCodeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PromoCodeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PromoCodeCountAggregateOutputType> | number
+        }
+      }
+    }
+    BranchDailySales: {
+      payload: Prisma.$BranchDailySalesPayload<ExtArgs>
+      fields: Prisma.BranchDailySalesFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BranchDailySalesFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchDailySalesPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BranchDailySalesFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchDailySalesPayload>
+        }
+        findFirst: {
+          args: Prisma.BranchDailySalesFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchDailySalesPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BranchDailySalesFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchDailySalesPayload>
+        }
+        findMany: {
+          args: Prisma.BranchDailySalesFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BranchDailySalesPayload>[]
+        }
+        aggregate: {
+          args: Prisma.BranchDailySalesAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBranchDailySales>
+        }
+        groupBy: {
+          args: Prisma.BranchDailySalesGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BranchDailySalesGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BranchDailySalesCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BranchDailySalesCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1610,6 +1724,35 @@ export const MenuOnBranchScalarFieldEnum = {
 } as const
 
 export type MenuOnBranchScalarFieldEnum = (typeof MenuOnBranchScalarFieldEnum)[keyof typeof MenuOnBranchScalarFieldEnum]
+
+
+export const PromoCodeScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  discountType: 'discountType',
+  discountValue: 'discountValue',
+  minOrderAmount: 'minOrderAmount',
+  maxUsageLimit: 'maxUsageLimit',
+  usedCount: 'usedCount',
+  expiryDate: 'expiryDate',
+  isActive: 'isActive',
+  branchId: 'branchId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PromoCodeScalarFieldEnum = (typeof PromoCodeScalarFieldEnum)[keyof typeof PromoCodeScalarFieldEnum]
+
+
+export const BranchDailySalesScalarFieldEnum = {
+  branchId: 'branchId',
+  branchName: 'branchName',
+  date: 'date',
+  totalRevenue: 'totalRevenue',
+  totalInvoices: 'totalInvoices'
+} as const
+
+export type BranchDailySalesScalarFieldEnum = (typeof BranchDailySalesScalarFieldEnum)[keyof typeof BranchDailySalesScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1899,6 +2042,8 @@ export type GlobalOmitConfig = {
   invoice?: Prisma.InvoiceOmit
   menu?: Prisma.MenuOmit
   menuOnBranch?: Prisma.MenuOnBranchOmit
+  promoCode?: Prisma.PromoCodeOmit
+  branchDailySales?: Prisma.BranchDailySalesOmit
 }
 
 /* Types for Logging */

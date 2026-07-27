@@ -55,9 +55,13 @@ export default function AdvancedCustomerScanPage() {
 
         // Poll for order status every 10 seconds
         const intervalId = setInterval(async () => {
-            const orderRes = await getActiveOrderForTableNumber(tableNumber)
-            if (orderRes && orderRes.success) {
-                setActiveOrder(orderRes.data)
+            try {
+                const orderRes = await getActiveOrderForTableNumber(tableNumber)
+                if (orderRes && orderRes.success) {
+                    setActiveOrder(orderRes.data)
+                }
+            } catch (err) {
+                console.error("Scan polling error:", err)
             }
         }, 10000)
 
@@ -68,7 +72,7 @@ export default function AdvancedCustomerScanPage() {
     const handleItemClick = (item: any) => {
         if (!item) return
         const allAddons = item.addonCategories?.flatMap(
-            (bridge: any) => bridge?.addonCategory?.addons || []
+            (cat: any) => cat?.addons || []
         ) || []
 
         setActiveItem({ ...item, flattenAddons: allAddons })
@@ -80,7 +84,7 @@ export default function AdvancedCustomerScanPage() {
     const handleQuickAdd = (e: React.MouseEvent, item: any) => {
         e.stopPropagation() // Prevent opening detail view
         const allAddons = item.addonCategories?.flatMap(
-            (bridge: any) => bridge?.addonCategory?.addons || []
+            (cat: any) => cat?.addons || []
         ) || []
         
         if (allAddons.length > 0) {
@@ -163,7 +167,7 @@ export default function AdvancedCustomerScanPage() {
         const orderItems = cart.map(item => ({
             menuItemId: item.menuItem.id,
             quantity: item.quantity,
-            addons: item.selectedAddons?.map((a: any) => ({ addonId: a.id, price: a.price }))
+            addons: item.selectedAddons?.map((a: any) => ({ addonId: a.id, name: a.name, price: a.price }))
         }))
 
         const res = await placeTableOrder(tableNumber, orderItems, notes)
@@ -238,7 +242,7 @@ export default function AdvancedCustomerScanPage() {
                         <div className="flex gap-2 overflow-x-auto py-1 no-scrollbar">
                             <button
                                 onClick={() => setSelectedCategory('ALL')}
-                                className={`text-xs font-bold px-4 py-2 rounded-full whitespace-nowrap transition ${selectedCategory === 'ALL' ? 'bg-black text-white' : 'bg-gray-200 text-gray-300'}`}
+                                className={`text-xs font-bold px-4 py-2 rounded-full whitespace-nowrap transition ${selectedCategory === 'ALL' ? 'bg-black text-white shadow-md' : 'bg-white text-gray-600 border border-gray-200'}`}
                             >
                                 အားလုံး
                             </button>
@@ -246,7 +250,7 @@ export default function AdvancedCustomerScanPage() {
                                 <button
                                     key={cat.id}
                                     onClick={() => setSelectedCategory(cat.id)}
-                                    className={`text-xs font-bold px-4 py-2 rounded-full whitespace-nowrap transition ${selectedCategory === cat.id ? 'bg-black text-white' : 'bg-gray-200 text-gray-300'}`}
+                                    className={`text-xs font-bold px-4 py-2 rounded-full whitespace-nowrap transition ${selectedCategory === cat.id ? 'bg-black text-white shadow-md' : 'bg-white text-gray-600 border border-gray-200'}`}
                                 >
                                     {cat.name}
                                 </button>
@@ -272,7 +276,7 @@ export default function AdvancedCustomerScanPage() {
                                             <div className="font-bold text-gray-800 text-sm line-clamp-1">{item.name}</div>
                                             <div className="text-[10px] text-gray-400 line-clamp-1 mt-0.5">{item.description || '-'}</div>
                                             {item.addonCategories && item.addonCategories.length > 0 && (
-                                                <span className="inline-block text-[9px] bg-orange-50 text-orange-600 px-1.5 py-0.5 rounded font-bold mt-1 border border-orange-100">
+                                                <span className="inline-block text-[9px] bg-gray-50 text-gray-900 px-1.5 py-0.5 rounded font-bold mt-1 border border-gray-200">
                                                     ➕ Add-ons ရွေးချယ်နိုင်သည်
                                                 </span>
                                             )}
@@ -282,10 +286,10 @@ export default function AdvancedCustomerScanPage() {
                                                 {item.discount && item.discount.isActive ? (
                                                     <div className="flex flex-col">
                                                         <span className="text-[10px] text-gray-400 line-through leading-none">{(item.price || 0).toLocaleString()} MMK</span>
-                                                        <span className="text-orange-600 leading-tight">{getFinalPrice(item).toLocaleString()} MMK</span>
+                                                        <span className="text-gray-900 leading-tight">{getFinalPrice(item).toLocaleString()} MMK</span>
                                                     </div>
                                                 ) : (
-                                                    <span className="text-orange-600">{(item.price || 0).toLocaleString()} MMK</span>
+                                                    <span className="text-gray-900">{(item.price || 0).toLocaleString()} MMK</span>
                                                 )}
                                             </div>
                                             <button onClick={(e) => handleQuickAdd(e, item)} className="bg-gray-50 text-black text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-gray-100">
@@ -324,7 +328,7 @@ export default function AdvancedCustomerScanPage() {
                             </div>
                         )}
                         {cart.length > 0 && (
-                            <button onClick={() => setCurrentView('cart')} className="w-full bg-gradient-to-r from-orange-500 to-rose-500 text-black font-bold py-4 px-6 rounded-2xl shadow-xl shadow-orange-500/30 flex justify-between items-center">
+                            <button onClick={() => setCurrentView('cart')} className="w-full bg-gray-900 text-white font-bold py-4 px-6 rounded-2xl shadow-xl shadow-gray-900/10 flex justify-between items-center">
                                 <span className="flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full text-sm">
                                     🛒 <span>{totalCartItems} ခု</span>
                                 </span>
@@ -359,27 +363,27 @@ export default function AdvancedCustomerScanPage() {
                             <p className="text-sm text-gray-500 mt-2 leading-relaxed">{activeItem.description || "ဖော်ပြချက် မရှိပါ"}</p>
                             {activeItem.discount && activeItem.discount.isActive ? (
                                 <div className="mt-3 flex items-end gap-2">
-                                    <p className="text-xl font-black text-orange-600">{getFinalPrice(activeItem).toLocaleString()} MMK</p>
+                                    <p className="text-xl font-black text-gray-900">{getFinalPrice(activeItem).toLocaleString()} MMK</p>
                                     <p className="text-sm text-gray-400 line-through mb-0.5">{(activeItem.price || 0).toLocaleString()} MMK</p>
                                     <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-bold mb-1 ml-2">
                                         {activeItem.discount.type === 'PERCENTAGE' ? `${activeItem.discount.value}% OFF` : `${activeItem.discount.value} MMK OFF`}
                                     </span>
                                 </div>
                             ) : (
-                                <p className="text-xl font-black text-orange-600 mt-3">{(activeItem.price || 0).toLocaleString()} MMK</p>
+                                <p className="text-xl font-black text-gray-900 mt-3">{(activeItem.price || 0).toLocaleString()} MMK</p>
                             )}
                         </div>
 
                         <div className="flex-1 overflow-y-auto space-y-6 pb-6">
                             {activeItem.addonCategories?.length > 0 && (
                                 <div className="space-y-6">
-                                    {activeItem.addonCategories.map((bridge: any) => {
-                                        const categoryName = bridge?.addonCategory?.name || "Add-ons"
-                                        const addons = bridge?.addonCategory?.addons || []
+                                    {activeItem.addonCategories.map((cat: any) => {
+                                        const categoryName = cat?.name || "Add-ons"
+                                        const addons = cat?.addons || []
                                         if (addons.length === 0) return null
 
                                         return (
-                                            <div key={bridge.addonCategoryId}>
+                                            <div key={cat.id}>
                                                 <h3 className="text-sm font-bold text-gray-800 mb-3 bg-gray-100 py-1.5 px-3 rounded-lg inline-flex items-center gap-2">
                                                     ✨ {categoryName}
                                                 </h3>
@@ -387,10 +391,10 @@ export default function AdvancedCustomerScanPage() {
                                                     {addons.map((addon: any) => {
                                                         const isChecked = !!selectedAddons.find(a => a.id === addon.id)
                                                         return (
-                                                            <label key={addon.id} className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${isChecked ? 'bg-orange-50 border-orange-300' : 'bg-white border-gray-200 hover:border-orange-200'}`}>
+                                                            <label key={addon.id} className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${isChecked ? 'bg-gray-50 border-gray-400' : 'bg-white border-gray-200 hover:border-gray-300'}`}>
                                                                 <div className="flex items-center gap-3">
-                                                                    <input type="checkbox" checked={isChecked} onChange={() => toggleAddon(addon)} className="w-5 h-5 accent-orange-500" />
-                                                                    <span className={`text-sm font-bold ${isChecked ? 'text-orange-900' : 'text-gray-700'}`}>{addon.name}</span>
+                                                                    <input type="checkbox" checked={isChecked} onChange={() => toggleAddon(addon)} className="w-5 h-5 accent-gray-900" />
+                                                                    <span className={`text-sm font-bold ${isChecked ? 'text-black' : 'text-gray-700'}`}>{addon.name}</span>
                                                                 </div>
                                                                 <span className="text-sm font-black text-gray-500">+{(addon.price || 0).toLocaleString()} MMK</span>
                                                             </label>
@@ -409,14 +413,14 @@ export default function AdvancedCustomerScanPage() {
                                 <div className="flex items-center gap-4 bg-white p-1 rounded-xl border border-gray-200 shadow-sm">
                                     <button onClick={() => setDetailQuantity(Math.max(1, detailQuantity - 1))} className="w-8 h-8 flex items-center justify-center text-gray-500 font-bold bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">-</button>
                                     <span className="w-4 text-center font-black text-gray-800">{detailQuantity}</span>
-                                    <button onClick={() => setDetailQuantity(detailQuantity + 1)} className="w-8 h-8 flex items-center justify-center text-black font-bold bg-orange-100 rounded-lg hover:bg-orange-200 transition-colors">+</button>
+                                    <button onClick={() => setDetailQuantity(detailQuantity + 1)} className="w-8 h-8 flex items-center justify-center text-black font-bold bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">+</button>
                                 </div>
                             </div>
                         </div>
 
                         {/* Sticky Add to Cart Footer */}
                         <div className="pt-4 mt-auto shrink-0 bg-white">
-                            <button onClick={confirmAddonToCart} className="w-full bg-gradient-to-r from-orange-500 to-rose-500 text-black text-base font-black py-4 rounded-2xl shadow-xl shadow-orange-500/30 active:scale-95 transition-transform flex justify-center items-center gap-2">
+                            <button onClick={confirmAddonToCart} className="w-full bg-gray-900 text-white text-base font-black py-4 rounded-2xl shadow-xl shadow-gray-900/10 active:scale-95 transition-transform flex justify-center items-center gap-2">
                                 {( (getFinalPrice(activeItem) + selectedAddons.reduce((s,a) => s + a.price, 0)) * detailQuantity ).toLocaleString()} MMK - ခြင်းတောင်းသို့ထည့်မည်
                             </button>
                         </div>
@@ -446,7 +450,7 @@ export default function AdvancedCustomerScanPage() {
                             <div className="flex flex-col items-center justify-center h-full text-gray-400">
                                 <span className="text-6xl mb-4 opacity-50">🛒</span>
                                 <p className="font-bold text-sm text-gray-500">ခြင်းတောင်းထဲတွင် ဘာမှမရှိသေးပါ</p>
-                                <button onClick={() => setCurrentView('home')} className="mt-4 bg-orange-100 text-orange-600 px-6 py-2 rounded-full font-bold text-sm">
+                                <button onClick={() => setCurrentView('home')} className="mt-4 bg-gray-100 text-gray-900 px-6 py-2 rounded-full font-bold text-sm">
                                     မီနူးများ ပြန်ကြည့်မည်
                                 </button>
                             </div>
@@ -468,13 +472,13 @@ export default function AdvancedCustomerScanPage() {
                                                         <h4 className="font-bold text-gray-800 text-sm line-clamp-2">{c.menuItem?.name}</h4>
                                                     </div>
                                                     {c.selectedAddons?.length > 0 && (
-                                                        <p className="text-[10px] text-orange-600 font-bold mt-1 leading-tight bg-orange-50 inline-block px-2 py-0.5 rounded">
+                                                        <p className="text-[10px] text-gray-900 font-bold mt-1 leading-tight bg-gray-50 inline-block px-2 py-0.5 rounded">
                                                             + {c.selectedAddons.map((a: any) => a?.name).join(', ')}
                                                         </p>
                                                     )}
                                                 </div>
                                                 <div className="flex items-center justify-between mt-3">
-                                                    <span className="font-black text-orange-600 text-sm">{(perItemPrice * c.quantity).toLocaleString()} MMK</span>
+                                                    <span className="font-black text-gray-900 text-sm">{(perItemPrice * c.quantity).toLocaleString()} MMK</span>
                                                     <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-lg p-1">
                                                         <button onClick={() => updateCartQuantity(c.cartId, -1)} className="w-7 h-7 flex items-center justify-center text-gray-600 bg-white rounded shadow-sm font-bold hover:bg-gray-100">-</button>
                                                         <span className="font-bold text-sm w-4 text-center">{c.quantity}</span>
@@ -507,7 +511,7 @@ export default function AdvancedCustomerScanPage() {
                                 <span className="text-3xl font-black text-gray-900 tracking-tight">{totalAmount.toLocaleString()} <span className="text-sm text-gray-500 font-bold ml-1">MMK</span></span>
                             </div>
 
-                            <button onClick={handleOrderSubmit} className="w-full bg-gradient-to-r from-orange-500 to-rose-500 hover:from-gray-800 hover:to-gray-500 active:scale-95 text-black text-lg font-black py-4 rounded-2xl transition shadow-xl shadow-orange-500/30 flex justify-center items-center gap-2">
+                            <button onClick={handleOrderSubmit} className="w-full bg-gray-900 hover:bg-black active:scale-95 text-white text-lg font-black py-4 rounded-2xl transition shadow-xl shadow-gray-900/10 flex justify-center items-center gap-2">
                                 🚀 မီးဖိုချောင်သို့ အော်ဒါပို့မည်
                             </button>
                         </div>
@@ -535,7 +539,7 @@ export default function AdvancedCustomerScanPage() {
                     <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 pb-6">
                         <div className="space-y-4">
                             {activeOrder.items?.map((item: any) => {
-                                const addonsPrice = item.addons?.reduce((s: number, a: any) => s + (a?.addon?.price || 0), 0) || 0
+                                const addonsPrice = item.addons?.reduce((s: number, a: any) => s + (a?.price || 0), 0) || 0
                                 const perItemPrice = item.price + addonsPrice
                                 return (
                                     <div key={item.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex gap-4">
@@ -546,8 +550,8 @@ export default function AdvancedCustomerScanPage() {
                                                     <span className="font-bold text-sm text-gray-500">x{item.quantity}</span>
                                                 </div>
                                                 {item.addons?.length > 0 && (
-                                                    <p className="text-[10px] text-orange-600 font-bold mt-1 leading-tight bg-orange-50 inline-block px-2 py-0.5 rounded">
-                                                        + {item.addons.map((a: any) => a?.addon?.name).join(', ')}
+                                                    <p className="text-[10px] text-gray-900 font-bold mt-1 leading-tight bg-gray-50 inline-block px-2 py-0.5 rounded">
+                                                        + {item.addons.map((a: any) => a?.name || "Addon").join(', ')}
                                                     </p>
                                                 )}
                                             </div>

@@ -45,41 +45,48 @@ function ResetPasswordForm() {
 
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-            <div className="bg-white p-8 rounded-2xl shadow-2xl border border-gray-200 w-full max-w-md space-y-6">
+            <div className="bg-white p-8 sm:p-10 rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] border border-gray-100 w-full max-w-md space-y-8 animate-in fade-in zoom-in-95 duration-500">
 
                 {/* Header */}
-                <div className="text-center space-y-2">
-                    <div className="text-3xl">🔒</div>
-                    <h1 className="text-xl font-black text-black uppercase tracking-wider">Reset Password</h1>
-                    <p className="text-xs text-gray-500">သင်၏ အကောင့်အတွက် စကားဝှက်အသစ် သတ်မှတ်ပါ</p>
+                <div className="text-center space-y-3">
+                    <div className="w-16 h-16 bg-black rounded-2xl mx-auto flex items-center justify-center shadow-xl shadow-black/20">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-black text-black tracking-tight uppercase">Reset Password</h1>
+                        <p className="text-sm text-gray-500 mt-1 font-medium">သင်၏ အကောင့်အတွက် စကားဝှက်အသစ် သတ်မှတ်ပါ</p>
+                    </div>
                 </div>
 
                 {/* Token မရှိပါက Warning */}
                 {!token && (
-                    <div className="bg-red-50 border border-red-200 text-red-600 text-xs p-3.5 rounded-xl font-medium">
-                        ⚠️ Reset token ပျောက်ဆုံးနေပါသည်။ Forgot Password page မှ ထပ်မံ တောင်းဆိုပါ။
+                    <div className="bg-red-50 border border-red-100 text-red-600 text-sm p-4 rounded-2xl font-medium flex gap-3 animate-in slide-in-from-top-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        <span className="leading-relaxed">Reset token ပျောက်ဆုံးနေပါသည်။ Forgot Password page မှ ထပ်မံ တောင်းဆိုပါ။</span>
                     </div>
                 )}
 
                 {/* Error / Success Alert */}
                 {message?.error && (
-                    <div className="bg-red-50 border border-red-200 text-red-600 text-xs p-3.5 rounded-xl font-medium">
-                        ⚠️ {message.error}
+                    <div className="bg-red-50 border border-red-100 text-red-600 text-sm p-4 rounded-2xl font-medium flex items-center gap-3 animate-in slide-in-from-top-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        <span>{message.error}</span>
                     </div>
                 )}
                 {message?.success && (
-                    <div className="bg-green-950/50 border border-green-200 text-green-600 text-xs p-3.5 rounded-xl font-medium">
-                        🎉 {message.success} <span className="text-gray-400">(Login page သို့ ပြန်ညွှန်းနေသည်...)</span>
+                    <div className="bg-green-50 border border-green-200 text-green-700 text-sm p-4 rounded-2xl font-medium flex items-center gap-3 animate-in slide-in-from-top-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                        <span>{message.success} <span className="text-gray-500 text-xs ml-2">(Login page သို့ ပြန်ညွှန်းနေသည်...)</span></span>
                     </div>
                 )}
 
                 {/* Form — Token ရှိမှသာ ပြမည် */}
                 {token && !message?.success && (
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-5">
 
                         {/* New Password */}
-                        <div>
-                            <label className="block text-xs font-bold text-gray-500 mb-1.5">
+                        <div className="space-y-1.5">
+                            <label className="block text-xs font-black text-gray-500 uppercase tracking-wider">
                                 စကားဝှက်အသစ် (New Password)
                             </label>
                             <div className="relative">
@@ -87,7 +94,7 @@ function ResetPasswordForm() {
                                     type={showPassword ? 'text' : 'password'}
                                     name="password"
                                     placeholder="••••••••"
-                                    className="w-full border border-gray-200 rounded-xl p-3 pr-10 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition bg-gray-50 text-black placeholder-gray-400"
+                                    className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3.5 pr-12 text-sm text-black placeholder-gray-400 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
                                     required
                                     minLength={6}
                                     disabled={isPending}
@@ -95,16 +102,21 @@ function ResetPasswordForm() {
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black transition text-sm"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors"
+                                    aria-label={showPassword ? 'Hide password' : 'Show password'}
                                 >
-                                    {showPassword ? '🙈' : '👁️'}
+                                    {showPassword ? (
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+                                    ) : (
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    )}
                                 </button>
                             </div>
                         </div>
 
                         {/* Confirm Password */}
-                        <div>
-                            <label className="block text-xs font-bold text-gray-500 mb-1.5">
+                        <div className="space-y-1.5">
+                            <label className="block text-xs font-black text-gray-500 uppercase tracking-wider">
                                 စကားဝှက်အသစ် ထပ်မံရိုက်ပါ (Confirm Password)
                             </label>
                             <div className="relative">
@@ -112,16 +124,21 @@ function ResetPasswordForm() {
                                     type={showConfirm ? 'text' : 'password'}
                                     name="confirmPassword"
                                     placeholder="••••••••"
-                                    className="w-full border border-gray-200 rounded-xl p-3 pr-10 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition bg-gray-50 text-black placeholder-gray-400"
+                                    className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3.5 pr-12 text-sm text-black placeholder-gray-400 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
                                     required
                                     disabled={isPending}
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowConfirm(!showConfirm)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black transition text-sm"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors"
+                                    aria-label={showConfirm ? 'Hide confirm password' : 'Show confirm password'}
                                 >
-                                    {showConfirm ? '🙈' : '👁️'}
+                                    {showConfirm ? (
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+                                    ) : (
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    )}
                                 </button>
                             </div>
                         </div>
@@ -130,25 +147,34 @@ function ResetPasswordForm() {
                         <button
                             type="submit"
                             disabled={isPending}
-                            className="w-full bg-black hover:bg-gray-800 text-white text-sm font-bold py-3.5 rounded-xl transition shadow-md disabled:bg-gray-200 disabled:text-gray-400 flex items-center justify-center gap-2 mt-2"
+                            className="group relative w-full bg-black text-white text-sm font-bold py-4 rounded-xl transition-all overflow-hidden flex items-center justify-center gap-2 mt-4 shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]"
                         >
+                            {!isPending && (
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                            )}
                             {isPending ? (
                                 <>
-                                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                                    <svg className="w-5 h-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                                     <span>လုပ်ဆောင်နေသည်...</span>
                                 </>
                             ) : (
-                                "🔒 စကားဝှက် အသစ်လဲမည်"
+                                <>
+                                    <span>စကားဝှက် အသစ်လဲမည်</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                </>
                             )}
                         </button>
                     </form>
                 )}
 
                 {/* Back to Forgot Password */}
-                <div className="text-center pt-2 border-t border-gray-100">
-                    <a href="/forgot-password" className="text-xs text-gray-500 hover:text-black transition">
-                        Link ထပ်တောင်းရန် <span className="text-black font-bold hover:underline">Forgot Password</span>
-                    </a>
+                <div className="text-center pt-6 border-t border-gray-100">
+                    <p className="text-sm text-gray-500 font-medium">
+                        Link ထပ်တောင်းရန်{' '}
+                        <a href="/forgot-password" className="text-black font-bold hover:underline transition-all">
+                            Forgot Password
+                        </a>
+                    </p>
                 </div>
 
             </div>

@@ -270,6 +270,7 @@ export type BranchWhereInput = {
   tables?: Prisma.TableListRelationFilter
   orders?: Prisma.OrderListRelationFilter
   discounts?: Prisma.DiscountListRelationFilter
+  promoCodes?: Prisma.PromoCodeListRelationFilter
   addonCategories?: Prisma.AddonCategoryListRelationFilter
   addons?: Prisma.AddonListRelationFilter
   menuOnBranches?: Prisma.MenuOnBranchListRelationFilter
@@ -294,6 +295,7 @@ export type BranchOrderByWithRelationInput = {
   tables?: Prisma.TableOrderByRelationAggregateInput
   orders?: Prisma.OrderOrderByRelationAggregateInput
   discounts?: Prisma.DiscountOrderByRelationAggregateInput
+  promoCodes?: Prisma.PromoCodeOrderByRelationAggregateInput
   addonCategories?: Prisma.AddonCategoryOrderByRelationAggregateInput
   addons?: Prisma.AddonOrderByRelationAggregateInput
   menuOnBranches?: Prisma.MenuOnBranchOrderByRelationAggregateInput
@@ -321,6 +323,7 @@ export type BranchWhereUniqueInput = Prisma.AtLeast<{
   tables?: Prisma.TableListRelationFilter
   orders?: Prisma.OrderListRelationFilter
   discounts?: Prisma.DiscountListRelationFilter
+  promoCodes?: Prisma.PromoCodeListRelationFilter
   addonCategories?: Prisma.AddonCategoryListRelationFilter
   addons?: Prisma.AddonListRelationFilter
   menuOnBranches?: Prisma.MenuOnBranchListRelationFilter
@@ -380,6 +383,7 @@ export type BranchCreateInput = {
   tables?: Prisma.TableCreateNestedManyWithoutBranchInput
   orders?: Prisma.OrderCreateNestedManyWithoutBranchInput
   discounts?: Prisma.DiscountCreateNestedManyWithoutBranchInput
+  promoCodes?: Prisma.PromoCodeCreateNestedManyWithoutBranchInput
   addonCategories?: Prisma.AddonCategoryCreateNestedManyWithoutBranchInput
   addons?: Prisma.AddonCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchCreateNestedManyWithoutBranchInput
@@ -403,6 +407,7 @@ export type BranchUncheckedCreateInput = {
   tables?: Prisma.TableUncheckedCreateNestedManyWithoutBranchInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutBranchInput
   discounts?: Prisma.DiscountUncheckedCreateNestedManyWithoutBranchInput
+  promoCodes?: Prisma.PromoCodeUncheckedCreateNestedManyWithoutBranchInput
   addonCategories?: Prisma.AddonCategoryUncheckedCreateNestedManyWithoutBranchInput
   addons?: Prisma.AddonUncheckedCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutBranchInput
@@ -426,6 +431,7 @@ export type BranchUpdateInput = {
   tables?: Prisma.TableUpdateManyWithoutBranchNestedInput
   orders?: Prisma.OrderUpdateManyWithoutBranchNestedInput
   discounts?: Prisma.DiscountUpdateManyWithoutBranchNestedInput
+  promoCodes?: Prisma.PromoCodeUpdateManyWithoutBranchNestedInput
   addonCategories?: Prisma.AddonCategoryUpdateManyWithoutBranchNestedInput
   addons?: Prisma.AddonUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUpdateManyWithoutBranchNestedInput
@@ -449,6 +455,7 @@ export type BranchUncheckedUpdateInput = {
   tables?: Prisma.TableUncheckedUpdateManyWithoutBranchNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutBranchNestedInput
   discounts?: Prisma.DiscountUncheckedUpdateManyWithoutBranchNestedInput
+  promoCodes?: Prisma.PromoCodeUncheckedUpdateManyWithoutBranchNestedInput
   addonCategories?: Prisma.AddonCategoryUncheckedUpdateManyWithoutBranchNestedInput
   addons?: Prisma.AddonUncheckedUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutBranchNestedInput
@@ -754,6 +761,20 @@ export type BranchUpdateOneRequiredWithoutMenuOnBranchesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.BranchUpdateToOneWithWhereWithoutMenuOnBranchesInput, Prisma.BranchUpdateWithoutMenuOnBranchesInput>, Prisma.BranchUncheckedUpdateWithoutMenuOnBranchesInput>
 }
 
+export type BranchCreateNestedOneWithoutPromoCodesInput = {
+  create?: Prisma.XOR<Prisma.BranchCreateWithoutPromoCodesInput, Prisma.BranchUncheckedCreateWithoutPromoCodesInput>
+  connectOrCreate?: Prisma.BranchCreateOrConnectWithoutPromoCodesInput
+  connect?: Prisma.BranchWhereUniqueInput
+}
+
+export type BranchUpdateOneRequiredWithoutPromoCodesNestedInput = {
+  create?: Prisma.XOR<Prisma.BranchCreateWithoutPromoCodesInput, Prisma.BranchUncheckedCreateWithoutPromoCodesInput>
+  connectOrCreate?: Prisma.BranchCreateOrConnectWithoutPromoCodesInput
+  upsert?: Prisma.BranchUpsertWithoutPromoCodesInput
+  connect?: Prisma.BranchWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BranchUpdateToOneWithWhereWithoutPromoCodesInput, Prisma.BranchUpdateWithoutPromoCodesInput>, Prisma.BranchUncheckedUpdateWithoutPromoCodesInput>
+}
+
 export type BranchCreateWithoutCompanyInput = {
   id?: string
   name: string
@@ -770,6 +791,7 @@ export type BranchCreateWithoutCompanyInput = {
   tables?: Prisma.TableCreateNestedManyWithoutBranchInput
   orders?: Prisma.OrderCreateNestedManyWithoutBranchInput
   discounts?: Prisma.DiscountCreateNestedManyWithoutBranchInput
+  promoCodes?: Prisma.PromoCodeCreateNestedManyWithoutBranchInput
   addonCategories?: Prisma.AddonCategoryCreateNestedManyWithoutBranchInput
   addons?: Prisma.AddonCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchCreateNestedManyWithoutBranchInput
@@ -792,6 +814,7 @@ export type BranchUncheckedCreateWithoutCompanyInput = {
   tables?: Prisma.TableUncheckedCreateNestedManyWithoutBranchInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutBranchInput
   discounts?: Prisma.DiscountUncheckedCreateNestedManyWithoutBranchInput
+  promoCodes?: Prisma.PromoCodeUncheckedCreateNestedManyWithoutBranchInput
   addonCategories?: Prisma.AddonCategoryUncheckedCreateNestedManyWithoutBranchInput
   addons?: Prisma.AddonUncheckedCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutBranchInput
@@ -857,6 +880,7 @@ export type BranchCreateWithoutUsersInput = {
   tables?: Prisma.TableCreateNestedManyWithoutBranchInput
   orders?: Prisma.OrderCreateNestedManyWithoutBranchInput
   discounts?: Prisma.DiscountCreateNestedManyWithoutBranchInput
+  promoCodes?: Prisma.PromoCodeCreateNestedManyWithoutBranchInput
   addonCategories?: Prisma.AddonCategoryCreateNestedManyWithoutBranchInput
   addons?: Prisma.AddonCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchCreateNestedManyWithoutBranchInput
@@ -879,6 +903,7 @@ export type BranchUncheckedCreateWithoutUsersInput = {
   tables?: Prisma.TableUncheckedCreateNestedManyWithoutBranchInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutBranchInput
   discounts?: Prisma.DiscountUncheckedCreateNestedManyWithoutBranchInput
+  promoCodes?: Prisma.PromoCodeUncheckedCreateNestedManyWithoutBranchInput
   addonCategories?: Prisma.AddonCategoryUncheckedCreateNestedManyWithoutBranchInput
   addons?: Prisma.AddonUncheckedCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutBranchInput
@@ -917,6 +942,7 @@ export type BranchUpdateWithoutUsersInput = {
   tables?: Prisma.TableUpdateManyWithoutBranchNestedInput
   orders?: Prisma.OrderUpdateManyWithoutBranchNestedInput
   discounts?: Prisma.DiscountUpdateManyWithoutBranchNestedInput
+  promoCodes?: Prisma.PromoCodeUpdateManyWithoutBranchNestedInput
   addonCategories?: Prisma.AddonCategoryUpdateManyWithoutBranchNestedInput
   addons?: Prisma.AddonUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUpdateManyWithoutBranchNestedInput
@@ -939,6 +965,7 @@ export type BranchUncheckedUpdateWithoutUsersInput = {
   tables?: Prisma.TableUncheckedUpdateManyWithoutBranchNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutBranchNestedInput
   discounts?: Prisma.DiscountUncheckedUpdateManyWithoutBranchNestedInput
+  promoCodes?: Prisma.PromoCodeUncheckedUpdateManyWithoutBranchNestedInput
   addonCategories?: Prisma.AddonCategoryUncheckedUpdateManyWithoutBranchNestedInput
   addons?: Prisma.AddonUncheckedUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutBranchNestedInput
@@ -961,6 +988,7 @@ export type BranchCreateWithoutMenuCategoriesInput = {
   tables?: Prisma.TableCreateNestedManyWithoutBranchInput
   orders?: Prisma.OrderCreateNestedManyWithoutBranchInput
   discounts?: Prisma.DiscountCreateNestedManyWithoutBranchInput
+  promoCodes?: Prisma.PromoCodeCreateNestedManyWithoutBranchInput
   addonCategories?: Prisma.AddonCategoryCreateNestedManyWithoutBranchInput
   addons?: Prisma.AddonCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchCreateNestedManyWithoutBranchInput
@@ -983,6 +1011,7 @@ export type BranchUncheckedCreateWithoutMenuCategoriesInput = {
   tables?: Prisma.TableUncheckedCreateNestedManyWithoutBranchInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutBranchInput
   discounts?: Prisma.DiscountUncheckedCreateNestedManyWithoutBranchInput
+  promoCodes?: Prisma.PromoCodeUncheckedCreateNestedManyWithoutBranchInput
   addonCategories?: Prisma.AddonCategoryUncheckedCreateNestedManyWithoutBranchInput
   addons?: Prisma.AddonUncheckedCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutBranchInput
@@ -1021,6 +1050,7 @@ export type BranchUpdateWithoutMenuCategoriesInput = {
   tables?: Prisma.TableUpdateManyWithoutBranchNestedInput
   orders?: Prisma.OrderUpdateManyWithoutBranchNestedInput
   discounts?: Prisma.DiscountUpdateManyWithoutBranchNestedInput
+  promoCodes?: Prisma.PromoCodeUpdateManyWithoutBranchNestedInput
   addonCategories?: Prisma.AddonCategoryUpdateManyWithoutBranchNestedInput
   addons?: Prisma.AddonUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUpdateManyWithoutBranchNestedInput
@@ -1043,6 +1073,7 @@ export type BranchUncheckedUpdateWithoutMenuCategoriesInput = {
   tables?: Prisma.TableUncheckedUpdateManyWithoutBranchNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutBranchNestedInput
   discounts?: Prisma.DiscountUncheckedUpdateManyWithoutBranchNestedInput
+  promoCodes?: Prisma.PromoCodeUncheckedUpdateManyWithoutBranchNestedInput
   addonCategories?: Prisma.AddonCategoryUncheckedUpdateManyWithoutBranchNestedInput
   addons?: Prisma.AddonUncheckedUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutBranchNestedInput
@@ -1066,6 +1097,7 @@ export type BranchCreateWithoutAddonCategoriesInput = {
   tables?: Prisma.TableCreateNestedManyWithoutBranchInput
   orders?: Prisma.OrderCreateNestedManyWithoutBranchInput
   discounts?: Prisma.DiscountCreateNestedManyWithoutBranchInput
+  promoCodes?: Prisma.PromoCodeCreateNestedManyWithoutBranchInput
   addons?: Prisma.AddonCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchCreateNestedManyWithoutBranchInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutBranchInput
@@ -1088,6 +1120,7 @@ export type BranchUncheckedCreateWithoutAddonCategoriesInput = {
   tables?: Prisma.TableUncheckedCreateNestedManyWithoutBranchInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutBranchInput
   discounts?: Prisma.DiscountUncheckedCreateNestedManyWithoutBranchInput
+  promoCodes?: Prisma.PromoCodeUncheckedCreateNestedManyWithoutBranchInput
   addons?: Prisma.AddonUncheckedCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutBranchInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutBranchInput
@@ -1126,6 +1159,7 @@ export type BranchUpdateWithoutAddonCategoriesInput = {
   tables?: Prisma.TableUpdateManyWithoutBranchNestedInput
   orders?: Prisma.OrderUpdateManyWithoutBranchNestedInput
   discounts?: Prisma.DiscountUpdateManyWithoutBranchNestedInput
+  promoCodes?: Prisma.PromoCodeUpdateManyWithoutBranchNestedInput
   addons?: Prisma.AddonUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUpdateManyWithoutBranchNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutBranchNestedInput
@@ -1148,6 +1182,7 @@ export type BranchUncheckedUpdateWithoutAddonCategoriesInput = {
   tables?: Prisma.TableUncheckedUpdateManyWithoutBranchNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutBranchNestedInput
   discounts?: Prisma.DiscountUncheckedUpdateManyWithoutBranchNestedInput
+  promoCodes?: Prisma.PromoCodeUncheckedUpdateManyWithoutBranchNestedInput
   addons?: Prisma.AddonUncheckedUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutBranchNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutBranchNestedInput
@@ -1170,6 +1205,7 @@ export type BranchCreateWithoutAddonsInput = {
   tables?: Prisma.TableCreateNestedManyWithoutBranchInput
   orders?: Prisma.OrderCreateNestedManyWithoutBranchInput
   discounts?: Prisma.DiscountCreateNestedManyWithoutBranchInput
+  promoCodes?: Prisma.PromoCodeCreateNestedManyWithoutBranchInput
   addonCategories?: Prisma.AddonCategoryCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchCreateNestedManyWithoutBranchInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutBranchInput
@@ -1192,6 +1228,7 @@ export type BranchUncheckedCreateWithoutAddonsInput = {
   tables?: Prisma.TableUncheckedCreateNestedManyWithoutBranchInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutBranchInput
   discounts?: Prisma.DiscountUncheckedCreateNestedManyWithoutBranchInput
+  promoCodes?: Prisma.PromoCodeUncheckedCreateNestedManyWithoutBranchInput
   addonCategories?: Prisma.AddonCategoryUncheckedCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutBranchInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutBranchInput
@@ -1230,6 +1267,7 @@ export type BranchUpdateWithoutAddonsInput = {
   tables?: Prisma.TableUpdateManyWithoutBranchNestedInput
   orders?: Prisma.OrderUpdateManyWithoutBranchNestedInput
   discounts?: Prisma.DiscountUpdateManyWithoutBranchNestedInput
+  promoCodes?: Prisma.PromoCodeUpdateManyWithoutBranchNestedInput
   addonCategories?: Prisma.AddonCategoryUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUpdateManyWithoutBranchNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutBranchNestedInput
@@ -1252,6 +1290,7 @@ export type BranchUncheckedUpdateWithoutAddonsInput = {
   tables?: Prisma.TableUncheckedUpdateManyWithoutBranchNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutBranchNestedInput
   discounts?: Prisma.DiscountUncheckedUpdateManyWithoutBranchNestedInput
+  promoCodes?: Prisma.PromoCodeUncheckedUpdateManyWithoutBranchNestedInput
   addonCategories?: Prisma.AddonCategoryUncheckedUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutBranchNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutBranchNestedInput
@@ -1273,6 +1312,7 @@ export type BranchCreateWithoutDiscountsInput = {
   menuCategories?: Prisma.MenuCategoryCreateNestedManyWithoutBranchInput
   tables?: Prisma.TableCreateNestedManyWithoutBranchInput
   orders?: Prisma.OrderCreateNestedManyWithoutBranchInput
+  promoCodes?: Prisma.PromoCodeCreateNestedManyWithoutBranchInput
   addonCategories?: Prisma.AddonCategoryCreateNestedManyWithoutBranchInput
   addons?: Prisma.AddonCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchCreateNestedManyWithoutBranchInput
@@ -1295,6 +1335,7 @@ export type BranchUncheckedCreateWithoutDiscountsInput = {
   menuCategories?: Prisma.MenuCategoryUncheckedCreateNestedManyWithoutBranchInput
   tables?: Prisma.TableUncheckedCreateNestedManyWithoutBranchInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutBranchInput
+  promoCodes?: Prisma.PromoCodeUncheckedCreateNestedManyWithoutBranchInput
   addonCategories?: Prisma.AddonCategoryUncheckedCreateNestedManyWithoutBranchInput
   addons?: Prisma.AddonUncheckedCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutBranchInput
@@ -1333,6 +1374,7 @@ export type BranchUpdateWithoutDiscountsInput = {
   menuCategories?: Prisma.MenuCategoryUpdateManyWithoutBranchNestedInput
   tables?: Prisma.TableUpdateManyWithoutBranchNestedInput
   orders?: Prisma.OrderUpdateManyWithoutBranchNestedInput
+  promoCodes?: Prisma.PromoCodeUpdateManyWithoutBranchNestedInput
   addonCategories?: Prisma.AddonCategoryUpdateManyWithoutBranchNestedInput
   addons?: Prisma.AddonUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUpdateManyWithoutBranchNestedInput
@@ -1355,6 +1397,7 @@ export type BranchUncheckedUpdateWithoutDiscountsInput = {
   menuCategories?: Prisma.MenuCategoryUncheckedUpdateManyWithoutBranchNestedInput
   tables?: Prisma.TableUncheckedUpdateManyWithoutBranchNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutBranchNestedInput
+  promoCodes?: Prisma.PromoCodeUncheckedUpdateManyWithoutBranchNestedInput
   addonCategories?: Prisma.AddonCategoryUncheckedUpdateManyWithoutBranchNestedInput
   addons?: Prisma.AddonUncheckedUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutBranchNestedInput
@@ -1377,6 +1420,7 @@ export type BranchCreateWithoutTablesInput = {
   menuCategories?: Prisma.MenuCategoryCreateNestedManyWithoutBranchInput
   orders?: Prisma.OrderCreateNestedManyWithoutBranchInput
   discounts?: Prisma.DiscountCreateNestedManyWithoutBranchInput
+  promoCodes?: Prisma.PromoCodeCreateNestedManyWithoutBranchInput
   addonCategories?: Prisma.AddonCategoryCreateNestedManyWithoutBranchInput
   addons?: Prisma.AddonCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchCreateNestedManyWithoutBranchInput
@@ -1399,6 +1443,7 @@ export type BranchUncheckedCreateWithoutTablesInput = {
   menuCategories?: Prisma.MenuCategoryUncheckedCreateNestedManyWithoutBranchInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutBranchInput
   discounts?: Prisma.DiscountUncheckedCreateNestedManyWithoutBranchInput
+  promoCodes?: Prisma.PromoCodeUncheckedCreateNestedManyWithoutBranchInput
   addonCategories?: Prisma.AddonCategoryUncheckedCreateNestedManyWithoutBranchInput
   addons?: Prisma.AddonUncheckedCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutBranchInput
@@ -1437,6 +1482,7 @@ export type BranchUpdateWithoutTablesInput = {
   menuCategories?: Prisma.MenuCategoryUpdateManyWithoutBranchNestedInput
   orders?: Prisma.OrderUpdateManyWithoutBranchNestedInput
   discounts?: Prisma.DiscountUpdateManyWithoutBranchNestedInput
+  promoCodes?: Prisma.PromoCodeUpdateManyWithoutBranchNestedInput
   addonCategories?: Prisma.AddonCategoryUpdateManyWithoutBranchNestedInput
   addons?: Prisma.AddonUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUpdateManyWithoutBranchNestedInput
@@ -1459,6 +1505,7 @@ export type BranchUncheckedUpdateWithoutTablesInput = {
   menuCategories?: Prisma.MenuCategoryUncheckedUpdateManyWithoutBranchNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutBranchNestedInput
   discounts?: Prisma.DiscountUncheckedUpdateManyWithoutBranchNestedInput
+  promoCodes?: Prisma.PromoCodeUncheckedUpdateManyWithoutBranchNestedInput
   addonCategories?: Prisma.AddonCategoryUncheckedUpdateManyWithoutBranchNestedInput
   addons?: Prisma.AddonUncheckedUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutBranchNestedInput
@@ -1481,6 +1528,7 @@ export type BranchCreateWithoutOrdersInput = {
   menuCategories?: Prisma.MenuCategoryCreateNestedManyWithoutBranchInput
   tables?: Prisma.TableCreateNestedManyWithoutBranchInput
   discounts?: Prisma.DiscountCreateNestedManyWithoutBranchInput
+  promoCodes?: Prisma.PromoCodeCreateNestedManyWithoutBranchInput
   addonCategories?: Prisma.AddonCategoryCreateNestedManyWithoutBranchInput
   addons?: Prisma.AddonCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchCreateNestedManyWithoutBranchInput
@@ -1503,6 +1551,7 @@ export type BranchUncheckedCreateWithoutOrdersInput = {
   menuCategories?: Prisma.MenuCategoryUncheckedCreateNestedManyWithoutBranchInput
   tables?: Prisma.TableUncheckedCreateNestedManyWithoutBranchInput
   discounts?: Prisma.DiscountUncheckedCreateNestedManyWithoutBranchInput
+  promoCodes?: Prisma.PromoCodeUncheckedCreateNestedManyWithoutBranchInput
   addonCategories?: Prisma.AddonCategoryUncheckedCreateNestedManyWithoutBranchInput
   addons?: Prisma.AddonUncheckedCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutBranchInput
@@ -1541,6 +1590,7 @@ export type BranchUpdateWithoutOrdersInput = {
   menuCategories?: Prisma.MenuCategoryUpdateManyWithoutBranchNestedInput
   tables?: Prisma.TableUpdateManyWithoutBranchNestedInput
   discounts?: Prisma.DiscountUpdateManyWithoutBranchNestedInput
+  promoCodes?: Prisma.PromoCodeUpdateManyWithoutBranchNestedInput
   addonCategories?: Prisma.AddonCategoryUpdateManyWithoutBranchNestedInput
   addons?: Prisma.AddonUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUpdateManyWithoutBranchNestedInput
@@ -1563,6 +1613,7 @@ export type BranchUncheckedUpdateWithoutOrdersInput = {
   menuCategories?: Prisma.MenuCategoryUncheckedUpdateManyWithoutBranchNestedInput
   tables?: Prisma.TableUncheckedUpdateManyWithoutBranchNestedInput
   discounts?: Prisma.DiscountUncheckedUpdateManyWithoutBranchNestedInput
+  promoCodes?: Prisma.PromoCodeUncheckedUpdateManyWithoutBranchNestedInput
   addonCategories?: Prisma.AddonCategoryUncheckedUpdateManyWithoutBranchNestedInput
   addons?: Prisma.AddonUncheckedUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutBranchNestedInput
@@ -1586,6 +1637,7 @@ export type BranchCreateWithoutInvoicesInput = {
   tables?: Prisma.TableCreateNestedManyWithoutBranchInput
   orders?: Prisma.OrderCreateNestedManyWithoutBranchInput
   discounts?: Prisma.DiscountCreateNestedManyWithoutBranchInput
+  promoCodes?: Prisma.PromoCodeCreateNestedManyWithoutBranchInput
   addonCategories?: Prisma.AddonCategoryCreateNestedManyWithoutBranchInput
   addons?: Prisma.AddonCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchCreateNestedManyWithoutBranchInput
@@ -1608,6 +1660,7 @@ export type BranchUncheckedCreateWithoutInvoicesInput = {
   tables?: Prisma.TableUncheckedCreateNestedManyWithoutBranchInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutBranchInput
   discounts?: Prisma.DiscountUncheckedCreateNestedManyWithoutBranchInput
+  promoCodes?: Prisma.PromoCodeUncheckedCreateNestedManyWithoutBranchInput
   addonCategories?: Prisma.AddonCategoryUncheckedCreateNestedManyWithoutBranchInput
   addons?: Prisma.AddonUncheckedCreateNestedManyWithoutBranchInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutBranchInput
@@ -1646,6 +1699,7 @@ export type BranchUpdateWithoutInvoicesInput = {
   tables?: Prisma.TableUpdateManyWithoutBranchNestedInput
   orders?: Prisma.OrderUpdateManyWithoutBranchNestedInput
   discounts?: Prisma.DiscountUpdateManyWithoutBranchNestedInput
+  promoCodes?: Prisma.PromoCodeUpdateManyWithoutBranchNestedInput
   addonCategories?: Prisma.AddonCategoryUpdateManyWithoutBranchNestedInput
   addons?: Prisma.AddonUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUpdateManyWithoutBranchNestedInput
@@ -1668,6 +1722,7 @@ export type BranchUncheckedUpdateWithoutInvoicesInput = {
   tables?: Prisma.TableUncheckedUpdateManyWithoutBranchNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutBranchNestedInput
   discounts?: Prisma.DiscountUncheckedUpdateManyWithoutBranchNestedInput
+  promoCodes?: Prisma.PromoCodeUncheckedUpdateManyWithoutBranchNestedInput
   addonCategories?: Prisma.AddonCategoryUncheckedUpdateManyWithoutBranchNestedInput
   addons?: Prisma.AddonUncheckedUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutBranchNestedInput
@@ -1690,6 +1745,7 @@ export type BranchCreateWithoutMenuOnBranchesInput = {
   tables?: Prisma.TableCreateNestedManyWithoutBranchInput
   orders?: Prisma.OrderCreateNestedManyWithoutBranchInput
   discounts?: Prisma.DiscountCreateNestedManyWithoutBranchInput
+  promoCodes?: Prisma.PromoCodeCreateNestedManyWithoutBranchInput
   addonCategories?: Prisma.AddonCategoryCreateNestedManyWithoutBranchInput
   addons?: Prisma.AddonCreateNestedManyWithoutBranchInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutBranchInput
@@ -1712,6 +1768,7 @@ export type BranchUncheckedCreateWithoutMenuOnBranchesInput = {
   tables?: Prisma.TableUncheckedCreateNestedManyWithoutBranchInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutBranchInput
   discounts?: Prisma.DiscountUncheckedCreateNestedManyWithoutBranchInput
+  promoCodes?: Prisma.PromoCodeUncheckedCreateNestedManyWithoutBranchInput
   addonCategories?: Prisma.AddonCategoryUncheckedCreateNestedManyWithoutBranchInput
   addons?: Prisma.AddonUncheckedCreateNestedManyWithoutBranchInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutBranchInput
@@ -1750,6 +1807,7 @@ export type BranchUpdateWithoutMenuOnBranchesInput = {
   tables?: Prisma.TableUpdateManyWithoutBranchNestedInput
   orders?: Prisma.OrderUpdateManyWithoutBranchNestedInput
   discounts?: Prisma.DiscountUpdateManyWithoutBranchNestedInput
+  promoCodes?: Prisma.PromoCodeUpdateManyWithoutBranchNestedInput
   addonCategories?: Prisma.AddonCategoryUpdateManyWithoutBranchNestedInput
   addons?: Prisma.AddonUpdateManyWithoutBranchNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutBranchNestedInput
@@ -1772,8 +1830,117 @@ export type BranchUncheckedUpdateWithoutMenuOnBranchesInput = {
   tables?: Prisma.TableUncheckedUpdateManyWithoutBranchNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutBranchNestedInput
   discounts?: Prisma.DiscountUncheckedUpdateManyWithoutBranchNestedInput
+  promoCodes?: Prisma.PromoCodeUncheckedUpdateManyWithoutBranchNestedInput
   addonCategories?: Prisma.AddonCategoryUncheckedUpdateManyWithoutBranchNestedInput
   addons?: Prisma.AddonUncheckedUpdateManyWithoutBranchNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutBranchNestedInput
+}
+
+export type BranchCreateWithoutPromoCodesInput = {
+  id?: string
+  name: string
+  address?: string | null
+  phone?: string | null
+  restaurantName?: string
+  currency?: string
+  taxRate?: number
+  isAcceptingOrders?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutBranchesInput
+  users?: Prisma.UserCreateNestedManyWithoutBranchInput
+  menuCategories?: Prisma.MenuCategoryCreateNestedManyWithoutBranchInput
+  tables?: Prisma.TableCreateNestedManyWithoutBranchInput
+  orders?: Prisma.OrderCreateNestedManyWithoutBranchInput
+  discounts?: Prisma.DiscountCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryCreateNestedManyWithoutBranchInput
+  addons?: Prisma.AddonCreateNestedManyWithoutBranchInput
+  menuOnBranches?: Prisma.MenuOnBranchCreateNestedManyWithoutBranchInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutBranchInput
+}
+
+export type BranchUncheckedCreateWithoutPromoCodesInput = {
+  id?: string
+  name: string
+  address?: string | null
+  phone?: string | null
+  companyId: string
+  restaurantName?: string
+  currency?: string
+  taxRate?: number
+  isAcceptingOrders?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutBranchInput
+  menuCategories?: Prisma.MenuCategoryUncheckedCreateNestedManyWithoutBranchInput
+  tables?: Prisma.TableUncheckedCreateNestedManyWithoutBranchInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutBranchInput
+  discounts?: Prisma.DiscountUncheckedCreateNestedManyWithoutBranchInput
+  addonCategories?: Prisma.AddonCategoryUncheckedCreateNestedManyWithoutBranchInput
+  addons?: Prisma.AddonUncheckedCreateNestedManyWithoutBranchInput
+  menuOnBranches?: Prisma.MenuOnBranchUncheckedCreateNestedManyWithoutBranchInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutBranchInput
+}
+
+export type BranchCreateOrConnectWithoutPromoCodesInput = {
+  where: Prisma.BranchWhereUniqueInput
+  create: Prisma.XOR<Prisma.BranchCreateWithoutPromoCodesInput, Prisma.BranchUncheckedCreateWithoutPromoCodesInput>
+}
+
+export type BranchUpsertWithoutPromoCodesInput = {
+  update: Prisma.XOR<Prisma.BranchUpdateWithoutPromoCodesInput, Prisma.BranchUncheckedUpdateWithoutPromoCodesInput>
+  create: Prisma.XOR<Prisma.BranchCreateWithoutPromoCodesInput, Prisma.BranchUncheckedCreateWithoutPromoCodesInput>
+  where?: Prisma.BranchWhereInput
+}
+
+export type BranchUpdateToOneWithWhereWithoutPromoCodesInput = {
+  where?: Prisma.BranchWhereInput
+  data: Prisma.XOR<Prisma.BranchUpdateWithoutPromoCodesInput, Prisma.BranchUncheckedUpdateWithoutPromoCodesInput>
+}
+
+export type BranchUpdateWithoutPromoCodesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  restaurantName?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutBranchesNestedInput
+  users?: Prisma.UserUpdateManyWithoutBranchNestedInput
+  menuCategories?: Prisma.MenuCategoryUpdateManyWithoutBranchNestedInput
+  tables?: Prisma.TableUpdateManyWithoutBranchNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutBranchNestedInput
+  discounts?: Prisma.DiscountUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUpdateManyWithoutBranchNestedInput
+  addons?: Prisma.AddonUpdateManyWithoutBranchNestedInput
+  menuOnBranches?: Prisma.MenuOnBranchUpdateManyWithoutBranchNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutBranchNestedInput
+}
+
+export type BranchUncheckedUpdateWithoutPromoCodesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  companyId?: Prisma.StringFieldUpdateOperationsInput | string
+  restaurantName?: Prisma.StringFieldUpdateOperationsInput | string
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UserUncheckedUpdateManyWithoutBranchNestedInput
+  menuCategories?: Prisma.MenuCategoryUncheckedUpdateManyWithoutBranchNestedInput
+  tables?: Prisma.TableUncheckedUpdateManyWithoutBranchNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutBranchNestedInput
+  discounts?: Prisma.DiscountUncheckedUpdateManyWithoutBranchNestedInput
+  addonCategories?: Prisma.AddonCategoryUncheckedUpdateManyWithoutBranchNestedInput
+  addons?: Prisma.AddonUncheckedUpdateManyWithoutBranchNestedInput
+  menuOnBranches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutBranchNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutBranchNestedInput
 }
 
@@ -1806,6 +1973,7 @@ export type BranchUpdateWithoutCompanyInput = {
   tables?: Prisma.TableUpdateManyWithoutBranchNestedInput
   orders?: Prisma.OrderUpdateManyWithoutBranchNestedInput
   discounts?: Prisma.DiscountUpdateManyWithoutBranchNestedInput
+  promoCodes?: Prisma.PromoCodeUpdateManyWithoutBranchNestedInput
   addonCategories?: Prisma.AddonCategoryUpdateManyWithoutBranchNestedInput
   addons?: Prisma.AddonUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUpdateManyWithoutBranchNestedInput
@@ -1828,6 +1996,7 @@ export type BranchUncheckedUpdateWithoutCompanyInput = {
   tables?: Prisma.TableUncheckedUpdateManyWithoutBranchNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutBranchNestedInput
   discounts?: Prisma.DiscountUncheckedUpdateManyWithoutBranchNestedInput
+  promoCodes?: Prisma.PromoCodeUncheckedUpdateManyWithoutBranchNestedInput
   addonCategories?: Prisma.AddonCategoryUncheckedUpdateManyWithoutBranchNestedInput
   addons?: Prisma.AddonUncheckedUpdateManyWithoutBranchNestedInput
   menuOnBranches?: Prisma.MenuOnBranchUncheckedUpdateManyWithoutBranchNestedInput
@@ -1858,6 +2027,7 @@ export type BranchCountOutputType = {
   tables: number
   orders: number
   discounts: number
+  promoCodes: number
   addonCategories: number
   addons: number
   menuOnBranches: number
@@ -1870,6 +2040,7 @@ export type BranchCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions
   tables?: boolean | BranchCountOutputTypeCountTablesArgs
   orders?: boolean | BranchCountOutputTypeCountOrdersArgs
   discounts?: boolean | BranchCountOutputTypeCountDiscountsArgs
+  promoCodes?: boolean | BranchCountOutputTypeCountPromoCodesArgs
   addonCategories?: boolean | BranchCountOutputTypeCountAddonCategoriesArgs
   addons?: boolean | BranchCountOutputTypeCountAddonsArgs
   menuOnBranches?: boolean | BranchCountOutputTypeCountMenuOnBranchesArgs
@@ -1924,6 +2095,13 @@ export type BranchCountOutputTypeCountDiscountsArgs<ExtArgs extends runtime.Type
 /**
  * BranchCountOutputType without action
  */
+export type BranchCountOutputTypeCountPromoCodesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PromoCodeWhereInput
+}
+
+/**
+ * BranchCountOutputType without action
+ */
 export type BranchCountOutputTypeCountAddonCategoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.AddonCategoryWhereInput
 }
@@ -1968,6 +2146,7 @@ export type BranchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   tables?: boolean | Prisma.Branch$tablesArgs<ExtArgs>
   orders?: boolean | Prisma.Branch$ordersArgs<ExtArgs>
   discounts?: boolean | Prisma.Branch$discountsArgs<ExtArgs>
+  promoCodes?: boolean | Prisma.Branch$promoCodesArgs<ExtArgs>
   addonCategories?: boolean | Prisma.Branch$addonCategoriesArgs<ExtArgs>
   addons?: boolean | Prisma.Branch$addonsArgs<ExtArgs>
   menuOnBranches?: boolean | Prisma.Branch$menuOnBranchesArgs<ExtArgs>
@@ -2027,6 +2206,7 @@ export type BranchInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   tables?: boolean | Prisma.Branch$tablesArgs<ExtArgs>
   orders?: boolean | Prisma.Branch$ordersArgs<ExtArgs>
   discounts?: boolean | Prisma.Branch$discountsArgs<ExtArgs>
+  promoCodes?: boolean | Prisma.Branch$promoCodesArgs<ExtArgs>
   addonCategories?: boolean | Prisma.Branch$addonCategoriesArgs<ExtArgs>
   addons?: boolean | Prisma.Branch$addonsArgs<ExtArgs>
   menuOnBranches?: boolean | Prisma.Branch$menuOnBranchesArgs<ExtArgs>
@@ -2049,6 +2229,7 @@ export type $BranchPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     tables: Prisma.$TablePayload<ExtArgs>[]
     orders: Prisma.$OrderPayload<ExtArgs>[]
     discounts: Prisma.$DiscountPayload<ExtArgs>[]
+    promoCodes: Prisma.$PromoCodePayload<ExtArgs>[]
     addonCategories: Prisma.$AddonCategoryPayload<ExtArgs>[]
     addons: Prisma.$AddonPayload<ExtArgs>[]
     menuOnBranches: Prisma.$MenuOnBranchPayload<ExtArgs>[]
@@ -2466,6 +2647,7 @@ export interface Prisma__BranchClient<T, Null = never, ExtArgs extends runtime.T
   tables<T extends Prisma.Branch$tablesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$tablesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TablePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   orders<T extends Prisma.Branch$ordersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   discounts<T extends Prisma.Branch$discountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$discountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiscountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  promoCodes<T extends Prisma.Branch$promoCodesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$promoCodesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PromoCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   addonCategories<T extends Prisma.Branch$addonCategoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$addonCategoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AddonCategoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   addons<T extends Prisma.Branch$addonsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$addonsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AddonPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   menuOnBranches<T extends Prisma.Branch$menuOnBranchesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$menuOnBranchesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MenuOnBranchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3028,6 +3210,30 @@ export type Branch$discountsArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.DiscountScalarFieldEnum | Prisma.DiscountScalarFieldEnum[]
+}
+
+/**
+ * Branch.promoCodes
+ */
+export type Branch$promoCodesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PromoCode
+   */
+  select?: Prisma.PromoCodeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PromoCode
+   */
+  omit?: Prisma.PromoCodeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PromoCodeInclude<ExtArgs> | null
+  where?: Prisma.PromoCodeWhereInput
+  orderBy?: Prisma.PromoCodeOrderByWithRelationInput | Prisma.PromoCodeOrderByWithRelationInput[]
+  cursor?: Prisma.PromoCodeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PromoCodeScalarFieldEnum | Prisma.PromoCodeScalarFieldEnum[]
 }
 
 /**

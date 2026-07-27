@@ -43,79 +43,101 @@ export default async function CentralMenuPage() {
     const menus = await getMasterMenus(companyId)
 
     return (
-        <div className="space-y-6 text-black min-h-screen">
+        <div className="space-y-6 lg:space-y-8 animate-in fade-in zoom-in-95 duration-500">
 
-            {/* Header + Action Button */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                <div>
-                    <h1 className="text-xl font-black uppercase tracking-wider text-black">🍔 Master Menu Catalog</h1>
-                    <p className="text-xs text-gray-500 mt-0.5">ဗဟိုမှ ဟင်းပွဲ/မီနူးအသစ်များ သတ်မှတ်ခြင်းနှင့် ဆိုင်ခွဲများသို့ ဖြန့်ဝေခြင်း</p>
+            {/* Header Area */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-6 md:p-8 bg-white/60 backdrop-blur-xl rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative z-50">
+                <div className="flex items-center gap-5">
+                    <div className="w-14 h-14 bg-black rounded-2xl flex items-center justify-center text-white shadow-xl shadow-black/10 shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+                    </div>
+                    <div>
+                        <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-black">Main Menu Catalog</h1>
+                        <p className="text-sm font-bold text-gray-400 mt-1 uppercase tracking-widest">ဗဟိုမှ ဟင်းပွဲ/မီနူးအသစ်များ သတ်မှတ်ခြင်းနှင့် ဆိုင်ခွဲများသို့ ဖြန့်ဝေခြင်း</p>
+                    </div>
                 </div>
-
-                {/* Reusable Dialog Box ကို ဆိုင်ခွဲစာရင်းပတ်ပြီး ခေါ်သုံးမည် */}
-                <CreateMenuDialog branches={branches} />
+                <div className="shrink-0">
+                    <CreateMenuDialog branches={branches} />
+                </div>
             </div>
 
-            {/* Master Menu List Table */}
-            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-4">
-                <h2 className="text-sm font-bold uppercase text-gray-700">Global Menu Items ({menus.length})</h2>
+            {/* Main Menu List Table */}
+            <div className="bg-white/60 backdrop-blur-xl border border-gray-100 rounded-[2rem] p-6 lg:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                <div className="flex items-center gap-3 mb-6 md:mb-8">
+                    <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white shadow-md shadow-black/10 shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+                    </div>
+                    <h2 className="text-base font-black uppercase tracking-wider text-black">Global Menu Items <span className="font-bold text-gray-400 tracking-normal ml-1 text-sm">({menus.length})</span></h2>
+                </div>
 
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs text-gray-600">
-                        <thead className="bg-gray-50 text-2xs uppercase font-bold text-gray-500 border-b border-gray-200">
+                <div className="overflow-x-auto custom-scrollbar">
+                    <table className="w-full text-left text-sm text-gray-700 min-w-[1000px]">
+                        <thead className="text-xs uppercase font-black tracking-widest text-gray-400 border-b border-gray-100">
                             <tr>
-                                <th className="p-3">Image</th>
-                                <th className="p-3">Menu Item</th>
-                                <th className="p-3">Description</th>
-                                <th className="p-3 text-right">Standard Price</th>
-                                <th className="p-3">Active Branches (ရောင်းချနေသည့်ဆိုင်များ)</th>
-                                <th className="p-3 text-center">Status</th>
-                                <th className="p-3 text-center">Actions</th>
+                                <th className="pb-4 pl-4 font-black">Image</th>
+                                <th className="pb-4 font-black">Menu Item</th>
+                                <th className="pb-4 font-black">Description</th>
+                                <th className="pb-4 text-right font-black">Standard Price</th>
+                                <th className="pb-4 font-black pl-8">Active Branches (ရောင်းချနေသည့်ဆိုင်များ)</th>
+                                <th className="pb-4 text-center font-black">Status</th>
+                                <th className="pb-4 text-right font-black pr-4">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-gray-50">
                             {menus.length === 0 ? (
                                 <tr>
-                                    <td colSpan={7} className="p-8 text-center text-gray-400">
-                                        ဗဟိုတွင် မည်သည့် မီနူးပစ္စည်းမျှ မဆောက်ရသေးပါ။ အပေါ်က ခလုတ်ကို နှိပ်၍ အသစ်ဆောက်ပါ။
+                                    <td colSpan={7} className="py-12">
+                                        <div className="flex flex-col items-center justify-center text-center">
+                                            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center text-gray-300 mb-4 border border-dashed border-gray-200">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+                                            </div>
+                                            <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest mb-1">No Menu Items Found</h3>
+                                            <p className="text-xs text-gray-500 font-bold">ဗဟိုတွင် မည်သည့် မီနူးပစ္စည်းမျှ မဆောက်ရသေးပါ။ အပေါ်က ခလုတ်ကို နှိပ်၍ အသစ်ဆောက်ပါ။</p>
+                                        </div>
                                     </td>
                                 </tr>
                             ) : (
                                 menus.map((menu) => (
-                                    <tr key={menu.id} className="hover:bg-gray-50/50 transition">
-                                        <td className="p-3">
+                                    <tr key={menu.id} className="hover:bg-black/5 transition-colors group">
+                                        <td className="py-4 pl-4">
                                             {menu.image ? (
-                                                <img src={menu.image} alt={menu.name} className="w-10 h-10 object-cover rounded-lg border border-gray-200" />
+                                                <img src={menu.image} alt={menu.name} className="w-12 h-12 object-cover rounded-xl border border-gray-200 shadow-sm" />
                                             ) : (
-                                                <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 text-xs border border-gray-200">No Img</div>
+                                                <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400 border border-gray-200 shadow-sm">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                                                </div>
                                             )}
                                         </td>
-                                        <td className="p-3 font-bold text-gray-900 text-sm">{menu.name}</td>
-                                        <td className="p-3 text-gray-500 max-w-xs truncate">{menu.description || '-'}</td>
-                                        <td className="p-3 text-right font-mono font-bold text-gray-900 text-sm">{menu.basePrice.toLocaleString()} MMK</td>
-                                        <td className="p-3">
-                                            <div className="flex flex-wrap gap-1.5">
+                                        <td className="py-4 font-bold text-gray-900 text-base">{menu.name}</td>
+                                        <td className="py-4 text-gray-500 max-w-xs pr-4 font-medium">
+                                            <div className="line-clamp-2">{menu.description || '-'}</div>
+                                        </td>
+                                        <td className="py-4 text-right font-black text-gray-900">{menu.basePrice.toLocaleString()} <span className="text-[10px] text-gray-400 uppercase tracking-widest ml-1">MMK</span></td>
+                                        <td className="py-4 pl-8">
+                                            <div className="flex flex-wrap gap-2">
                                                 {menu.branches.length === 0 ? (
-                                                    <span className="text-3xs text-gray-400 italic">မည်သည့်ဆိုင်မျှ မဖြန့်ရသေးပါ</span>
+                                                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">မည်သည့်ဆိုင်မျှ မဖြန့်ရသေးပါ</span>
                                                 ) : (
                                                     menu.branches.map((b: any) => (
-                                                        <span key={b.branchId} className="bg-gray-50 border border-gray-200 text-gray-600 px-2 py-0.5 rounded text-3xs font-semibold">
-                                                            📍 {b.branch.name}
+                                                        <span key={b.branchId} className="bg-white border border-gray-200 text-gray-600 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest shadow-sm flex items-center gap-1.5">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                                                            {b.branch.name}
                                                         </span>
                                                     ))
                                                 )}
                                             </div>
                                         </td>
-                                        <td className="p-3 text-center">
-                                            <span className={`inline-block px-2.5 py-0.5 rounded-full text-3xs font-black uppercase tracking-wider border ${menu.isActive
-                                                ? 'bg-green-50 border-green-200 text-green-700'
-                                                : 'bg-red-50 border-red-200 text-red-700'
-                                                }`}>
+                                        <td className="py-4 text-center">
+                                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-widest ${
+                                                menu.isActive 
+                                                ? 'bg-green-50 text-green-700' 
+                                                : 'bg-red-50 text-red-600'
+                                            }`}>
+                                                <span className={`w-1.5 h-1.5 rounded-full ${menu.isActive ? 'bg-green-500' : 'bg-red-500'}`}></span>
                                                 {menu.isActive ? 'Active' : 'Archived'}
                                             </span>
                                         </td>
-                                        {/* 🎯 Edit & Toggle Actions ခလုတ်များ */}
-                                        <td className="p-3 text-center">
+                                        <td className="py-4 text-right pr-4">
                                             <MenuRowActions menu={menu} branches={branches} />
                                         </td>
                                     </tr>

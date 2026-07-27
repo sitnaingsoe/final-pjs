@@ -19,7 +19,7 @@ export default function AddonSelectionModal({ isOpen, onClose, menuItem, onAddTo
 
     if (!isOpen || !menuItem) return null;
 
-    const addonCategories = menuItem.addonCategories?.map((ac: any) => ac.addonCategory) || []
+    const addonCategories = menuItem.addonCategories || []
 
     const handleAddonChange = (category: any, addon: any, isChecked: boolean) => {
         setSelectedAddons(prev => {
@@ -114,7 +114,11 @@ export default function AddonSelectionModal({ isOpen, onClose, menuItem, onAddTo
                                         const isRadio = cat.maxSelect === 1;
 
                                         return (
-                                            <label key={addon.id} className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors ${isChecked ? 'bg-black/10 border-black/50' : 'bg-white border-gray-200 hover:border-gray-300'}`}>
+                                            <div 
+                                                key={addon.id} 
+                                                onClick={() => handleAddonChange(cat, addon, !isChecked)}
+                                                className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors select-none ${isChecked ? 'bg-black/10 border-black/50' : 'bg-white border-gray-200 hover:border-gray-300'}`}
+                                            >
                                                 <div className="flex items-center gap-3">
                                                     <div className={`w-5 h-5 flex items-center justify-center border ${isRadio ? 'rounded-full' : 'rounded'} ${isChecked ? 'bg-black border-black' : 'bg-gray-50 border-slate-600'}`}>
                                                         {isChecked && !isRadio && <span className="text-black text-xs">✓</span>}
@@ -127,13 +131,7 @@ export default function AddonSelectionModal({ isOpen, onClose, menuItem, onAddTo
                                                 ) : (
                                                     <span className="text-xs text-gray-400">Free</span>
                                                 )}
-                                                <input 
-                                                    type={isRadio ? "radio" : "checkbox"} 
-                                                    className="hidden"
-                                                    checked={isChecked}
-                                                    onChange={(e) => handleAddonChange(cat, addon, e.target.checked)}
-                                                />
-                                            </label>
+                                            </div>
                                         )
                                     })}
                                 </div>
@@ -152,7 +150,7 @@ export default function AddonSelectionModal({ isOpen, onClose, menuItem, onAddTo
                     <button 
                         onClick={handleAdd}
                         disabled={!isValid}
-                        className="w-full bg-gradient-to-r from-orange-500 to-rose-500 hover:from-gray-800 hover:to-gray-500 disabled:from-slate-800 disabled:to-slate-800 disabled:text-gray-400 text-black font-black py-4 rounded-xl transition-all shadow-lg hover:shadow-orange-500/25 flex items-center justify-between px-6"
+                        className="w-full bg-gray-900 hover:bg-black disabled:from-slate-800 disabled:to-slate-800 disabled:text-gray-400 text-white font-black py-4 rounded-xl transition-all shadow-lg hover:shadow-gray-900/10 flex items-center justify-between px-6"
                     >
                         <span>Add to Cart</span>
                         <span className="font-mono text-lg">{calculateTotalPrice().toLocaleString()} MMK</span>

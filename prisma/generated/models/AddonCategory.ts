@@ -239,6 +239,7 @@ export type AddonCategoryWhereInput = {
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
   addons?: Prisma.AddonListRelationFilter
   menuItems?: Prisma.MenuItemListRelationFilter
+  masterMenus?: Prisma.MenuListRelationFilter
 }
 
 export type AddonCategoryOrderByWithRelationInput = {
@@ -252,6 +253,7 @@ export type AddonCategoryOrderByWithRelationInput = {
   branch?: Prisma.BranchOrderByWithRelationInput
   addons?: Prisma.AddonOrderByRelationAggregateInput
   menuItems?: Prisma.MenuItemOrderByRelationAggregateInput
+  masterMenus?: Prisma.MenuOrderByRelationAggregateInput
 }
 
 export type AddonCategoryWhereUniqueInput = Prisma.AtLeast<{
@@ -268,6 +270,7 @@ export type AddonCategoryWhereUniqueInput = Prisma.AtLeast<{
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
   addons?: Prisma.AddonListRelationFilter
   menuItems?: Prisma.MenuItemListRelationFilter
+  masterMenus?: Prisma.MenuListRelationFilter
 }, "id">
 
 export type AddonCategoryOrderByWithAggregationInput = {
@@ -308,6 +311,7 @@ export type AddonCategoryCreateInput = {
   branch: Prisma.BranchCreateNestedOneWithoutAddonCategoriesInput
   addons?: Prisma.AddonCreateNestedManyWithoutAddonCategoryInput
   menuItems?: Prisma.MenuItemCreateNestedManyWithoutAddonCategoriesInput
+  masterMenus?: Prisma.MenuCreateNestedManyWithoutAddonCategoriesInput
 }
 
 export type AddonCategoryUncheckedCreateInput = {
@@ -320,6 +324,7 @@ export type AddonCategoryUncheckedCreateInput = {
   updatedAt?: Date | string
   addons?: Prisma.AddonUncheckedCreateNestedManyWithoutAddonCategoryInput
   menuItems?: Prisma.MenuItemUncheckedCreateNestedManyWithoutAddonCategoriesInput
+  masterMenus?: Prisma.MenuUncheckedCreateNestedManyWithoutAddonCategoriesInput
 }
 
 export type AddonCategoryUpdateInput = {
@@ -332,6 +337,7 @@ export type AddonCategoryUpdateInput = {
   branch?: Prisma.BranchUpdateOneRequiredWithoutAddonCategoriesNestedInput
   addons?: Prisma.AddonUpdateManyWithoutAddonCategoryNestedInput
   menuItems?: Prisma.MenuItemUpdateManyWithoutAddonCategoriesNestedInput
+  masterMenus?: Prisma.MenuUpdateManyWithoutAddonCategoriesNestedInput
 }
 
 export type AddonCategoryUncheckedUpdateInput = {
@@ -344,6 +350,7 @@ export type AddonCategoryUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addons?: Prisma.AddonUncheckedUpdateManyWithoutAddonCategoryNestedInput
   menuItems?: Prisma.MenuItemUncheckedUpdateManyWithoutAddonCategoriesNestedInput
+  masterMenus?: Prisma.MenuUncheckedUpdateManyWithoutAddonCategoriesNestedInput
 }
 
 export type AddonCategoryCreateManyInput = {
@@ -524,6 +531,44 @@ export type AddonCategoryUpdateOneRequiredWithoutAddonsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AddonCategoryUpdateToOneWithWhereWithoutAddonsInput, Prisma.AddonCategoryUpdateWithoutAddonsInput>, Prisma.AddonCategoryUncheckedUpdateWithoutAddonsInput>
 }
 
+export type AddonCategoryCreateNestedManyWithoutMasterMenusInput = {
+  create?: Prisma.XOR<Prisma.AddonCategoryCreateWithoutMasterMenusInput, Prisma.AddonCategoryUncheckedCreateWithoutMasterMenusInput> | Prisma.AddonCategoryCreateWithoutMasterMenusInput[] | Prisma.AddonCategoryUncheckedCreateWithoutMasterMenusInput[]
+  connectOrCreate?: Prisma.AddonCategoryCreateOrConnectWithoutMasterMenusInput | Prisma.AddonCategoryCreateOrConnectWithoutMasterMenusInput[]
+  connect?: Prisma.AddonCategoryWhereUniqueInput | Prisma.AddonCategoryWhereUniqueInput[]
+}
+
+export type AddonCategoryUncheckedCreateNestedManyWithoutMasterMenusInput = {
+  create?: Prisma.XOR<Prisma.AddonCategoryCreateWithoutMasterMenusInput, Prisma.AddonCategoryUncheckedCreateWithoutMasterMenusInput> | Prisma.AddonCategoryCreateWithoutMasterMenusInput[] | Prisma.AddonCategoryUncheckedCreateWithoutMasterMenusInput[]
+  connectOrCreate?: Prisma.AddonCategoryCreateOrConnectWithoutMasterMenusInput | Prisma.AddonCategoryCreateOrConnectWithoutMasterMenusInput[]
+  connect?: Prisma.AddonCategoryWhereUniqueInput | Prisma.AddonCategoryWhereUniqueInput[]
+}
+
+export type AddonCategoryUpdateManyWithoutMasterMenusNestedInput = {
+  create?: Prisma.XOR<Prisma.AddonCategoryCreateWithoutMasterMenusInput, Prisma.AddonCategoryUncheckedCreateWithoutMasterMenusInput> | Prisma.AddonCategoryCreateWithoutMasterMenusInput[] | Prisma.AddonCategoryUncheckedCreateWithoutMasterMenusInput[]
+  connectOrCreate?: Prisma.AddonCategoryCreateOrConnectWithoutMasterMenusInput | Prisma.AddonCategoryCreateOrConnectWithoutMasterMenusInput[]
+  upsert?: Prisma.AddonCategoryUpsertWithWhereUniqueWithoutMasterMenusInput | Prisma.AddonCategoryUpsertWithWhereUniqueWithoutMasterMenusInput[]
+  set?: Prisma.AddonCategoryWhereUniqueInput | Prisma.AddonCategoryWhereUniqueInput[]
+  disconnect?: Prisma.AddonCategoryWhereUniqueInput | Prisma.AddonCategoryWhereUniqueInput[]
+  delete?: Prisma.AddonCategoryWhereUniqueInput | Prisma.AddonCategoryWhereUniqueInput[]
+  connect?: Prisma.AddonCategoryWhereUniqueInput | Prisma.AddonCategoryWhereUniqueInput[]
+  update?: Prisma.AddonCategoryUpdateWithWhereUniqueWithoutMasterMenusInput | Prisma.AddonCategoryUpdateWithWhereUniqueWithoutMasterMenusInput[]
+  updateMany?: Prisma.AddonCategoryUpdateManyWithWhereWithoutMasterMenusInput | Prisma.AddonCategoryUpdateManyWithWhereWithoutMasterMenusInput[]
+  deleteMany?: Prisma.AddonCategoryScalarWhereInput | Prisma.AddonCategoryScalarWhereInput[]
+}
+
+export type AddonCategoryUncheckedUpdateManyWithoutMasterMenusNestedInput = {
+  create?: Prisma.XOR<Prisma.AddonCategoryCreateWithoutMasterMenusInput, Prisma.AddonCategoryUncheckedCreateWithoutMasterMenusInput> | Prisma.AddonCategoryCreateWithoutMasterMenusInput[] | Prisma.AddonCategoryUncheckedCreateWithoutMasterMenusInput[]
+  connectOrCreate?: Prisma.AddonCategoryCreateOrConnectWithoutMasterMenusInput | Prisma.AddonCategoryCreateOrConnectWithoutMasterMenusInput[]
+  upsert?: Prisma.AddonCategoryUpsertWithWhereUniqueWithoutMasterMenusInput | Prisma.AddonCategoryUpsertWithWhereUniqueWithoutMasterMenusInput[]
+  set?: Prisma.AddonCategoryWhereUniqueInput | Prisma.AddonCategoryWhereUniqueInput[]
+  disconnect?: Prisma.AddonCategoryWhereUniqueInput | Prisma.AddonCategoryWhereUniqueInput[]
+  delete?: Prisma.AddonCategoryWhereUniqueInput | Prisma.AddonCategoryWhereUniqueInput[]
+  connect?: Prisma.AddonCategoryWhereUniqueInput | Prisma.AddonCategoryWhereUniqueInput[]
+  update?: Prisma.AddonCategoryUpdateWithWhereUniqueWithoutMasterMenusInput | Prisma.AddonCategoryUpdateWithWhereUniqueWithoutMasterMenusInput[]
+  updateMany?: Prisma.AddonCategoryUpdateManyWithWhereWithoutMasterMenusInput | Prisma.AddonCategoryUpdateManyWithWhereWithoutMasterMenusInput[]
+  deleteMany?: Prisma.AddonCategoryScalarWhereInput | Prisma.AddonCategoryScalarWhereInput[]
+}
+
 export type AddonCategoryCreateWithoutBranchInput = {
   id?: string
   name: string
@@ -533,6 +578,7 @@ export type AddonCategoryCreateWithoutBranchInput = {
   updatedAt?: Date | string
   addons?: Prisma.AddonCreateNestedManyWithoutAddonCategoryInput
   menuItems?: Prisma.MenuItemCreateNestedManyWithoutAddonCategoriesInput
+  masterMenus?: Prisma.MenuCreateNestedManyWithoutAddonCategoriesInput
 }
 
 export type AddonCategoryUncheckedCreateWithoutBranchInput = {
@@ -544,6 +590,7 @@ export type AddonCategoryUncheckedCreateWithoutBranchInput = {
   updatedAt?: Date | string
   addons?: Prisma.AddonUncheckedCreateNestedManyWithoutAddonCategoryInput
   menuItems?: Prisma.MenuItemUncheckedCreateNestedManyWithoutAddonCategoriesInput
+  masterMenus?: Prisma.MenuUncheckedCreateNestedManyWithoutAddonCategoriesInput
 }
 
 export type AddonCategoryCreateOrConnectWithoutBranchInput = {
@@ -594,6 +641,7 @@ export type AddonCategoryCreateWithoutMenuItemsInput = {
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutAddonCategoriesInput
   addons?: Prisma.AddonCreateNestedManyWithoutAddonCategoryInput
+  masterMenus?: Prisma.MenuCreateNestedManyWithoutAddonCategoriesInput
 }
 
 export type AddonCategoryUncheckedCreateWithoutMenuItemsInput = {
@@ -605,6 +653,7 @@ export type AddonCategoryUncheckedCreateWithoutMenuItemsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   addons?: Prisma.AddonUncheckedCreateNestedManyWithoutAddonCategoryInput
+  masterMenus?: Prisma.MenuUncheckedCreateNestedManyWithoutAddonCategoriesInput
 }
 
 export type AddonCategoryCreateOrConnectWithoutMenuItemsInput = {
@@ -637,6 +686,7 @@ export type AddonCategoryCreateWithoutAddonsInput = {
   updatedAt?: Date | string
   branch: Prisma.BranchCreateNestedOneWithoutAddonCategoriesInput
   menuItems?: Prisma.MenuItemCreateNestedManyWithoutAddonCategoriesInput
+  masterMenus?: Prisma.MenuCreateNestedManyWithoutAddonCategoriesInput
 }
 
 export type AddonCategoryUncheckedCreateWithoutAddonsInput = {
@@ -648,6 +698,7 @@ export type AddonCategoryUncheckedCreateWithoutAddonsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   menuItems?: Prisma.MenuItemUncheckedCreateNestedManyWithoutAddonCategoriesInput
+  masterMenus?: Prisma.MenuUncheckedCreateNestedManyWithoutAddonCategoriesInput
 }
 
 export type AddonCategoryCreateOrConnectWithoutAddonsInput = {
@@ -675,6 +726,7 @@ export type AddonCategoryUpdateWithoutAddonsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutAddonCategoriesNestedInput
   menuItems?: Prisma.MenuItemUpdateManyWithoutAddonCategoriesNestedInput
+  masterMenus?: Prisma.MenuUpdateManyWithoutAddonCategoriesNestedInput
 }
 
 export type AddonCategoryUncheckedUpdateWithoutAddonsInput = {
@@ -686,6 +738,52 @@ export type AddonCategoryUncheckedUpdateWithoutAddonsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   menuItems?: Prisma.MenuItemUncheckedUpdateManyWithoutAddonCategoriesNestedInput
+  masterMenus?: Prisma.MenuUncheckedUpdateManyWithoutAddonCategoriesNestedInput
+}
+
+export type AddonCategoryCreateWithoutMasterMenusInput = {
+  id?: string
+  name: string
+  minSelect?: number
+  maxSelect?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branch: Prisma.BranchCreateNestedOneWithoutAddonCategoriesInput
+  addons?: Prisma.AddonCreateNestedManyWithoutAddonCategoryInput
+  menuItems?: Prisma.MenuItemCreateNestedManyWithoutAddonCategoriesInput
+}
+
+export type AddonCategoryUncheckedCreateWithoutMasterMenusInput = {
+  id?: string
+  name: string
+  minSelect?: number
+  maxSelect?: number
+  branchId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  addons?: Prisma.AddonUncheckedCreateNestedManyWithoutAddonCategoryInput
+  menuItems?: Prisma.MenuItemUncheckedCreateNestedManyWithoutAddonCategoriesInput
+}
+
+export type AddonCategoryCreateOrConnectWithoutMasterMenusInput = {
+  where: Prisma.AddonCategoryWhereUniqueInput
+  create: Prisma.XOR<Prisma.AddonCategoryCreateWithoutMasterMenusInput, Prisma.AddonCategoryUncheckedCreateWithoutMasterMenusInput>
+}
+
+export type AddonCategoryUpsertWithWhereUniqueWithoutMasterMenusInput = {
+  where: Prisma.AddonCategoryWhereUniqueInput
+  update: Prisma.XOR<Prisma.AddonCategoryUpdateWithoutMasterMenusInput, Prisma.AddonCategoryUncheckedUpdateWithoutMasterMenusInput>
+  create: Prisma.XOR<Prisma.AddonCategoryCreateWithoutMasterMenusInput, Prisma.AddonCategoryUncheckedCreateWithoutMasterMenusInput>
+}
+
+export type AddonCategoryUpdateWithWhereUniqueWithoutMasterMenusInput = {
+  where: Prisma.AddonCategoryWhereUniqueInput
+  data: Prisma.XOR<Prisma.AddonCategoryUpdateWithoutMasterMenusInput, Prisma.AddonCategoryUncheckedUpdateWithoutMasterMenusInput>
+}
+
+export type AddonCategoryUpdateManyWithWhereWithoutMasterMenusInput = {
+  where: Prisma.AddonCategoryScalarWhereInput
+  data: Prisma.XOR<Prisma.AddonCategoryUpdateManyMutationInput, Prisma.AddonCategoryUncheckedUpdateManyWithoutMasterMenusInput>
 }
 
 export type AddonCategoryCreateManyBranchInput = {
@@ -706,6 +804,7 @@ export type AddonCategoryUpdateWithoutBranchInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addons?: Prisma.AddonUpdateManyWithoutAddonCategoryNestedInput
   menuItems?: Prisma.MenuItemUpdateManyWithoutAddonCategoriesNestedInput
+  masterMenus?: Prisma.MenuUpdateManyWithoutAddonCategoriesNestedInput
 }
 
 export type AddonCategoryUncheckedUpdateWithoutBranchInput = {
@@ -717,6 +816,7 @@ export type AddonCategoryUncheckedUpdateWithoutBranchInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addons?: Prisma.AddonUncheckedUpdateManyWithoutAddonCategoryNestedInput
   menuItems?: Prisma.MenuItemUncheckedUpdateManyWithoutAddonCategoriesNestedInput
+  masterMenus?: Prisma.MenuUncheckedUpdateManyWithoutAddonCategoriesNestedInput
 }
 
 export type AddonCategoryUncheckedUpdateManyWithoutBranchInput = {
@@ -737,6 +837,7 @@ export type AddonCategoryUpdateWithoutMenuItemsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneRequiredWithoutAddonCategoriesNestedInput
   addons?: Prisma.AddonUpdateManyWithoutAddonCategoryNestedInput
+  masterMenus?: Prisma.MenuUpdateManyWithoutAddonCategoriesNestedInput
 }
 
 export type AddonCategoryUncheckedUpdateWithoutMenuItemsInput = {
@@ -748,9 +849,44 @@ export type AddonCategoryUncheckedUpdateWithoutMenuItemsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   addons?: Prisma.AddonUncheckedUpdateManyWithoutAddonCategoryNestedInput
+  masterMenus?: Prisma.MenuUncheckedUpdateManyWithoutAddonCategoriesNestedInput
 }
 
 export type AddonCategoryUncheckedUpdateManyWithoutMenuItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  minSelect?: Prisma.IntFieldUpdateOperationsInput | number
+  maxSelect?: Prisma.IntFieldUpdateOperationsInput | number
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type AddonCategoryUpdateWithoutMasterMenusInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  minSelect?: Prisma.IntFieldUpdateOperationsInput | number
+  maxSelect?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneRequiredWithoutAddonCategoriesNestedInput
+  addons?: Prisma.AddonUpdateManyWithoutAddonCategoryNestedInput
+  menuItems?: Prisma.MenuItemUpdateManyWithoutAddonCategoriesNestedInput
+}
+
+export type AddonCategoryUncheckedUpdateWithoutMasterMenusInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  minSelect?: Prisma.IntFieldUpdateOperationsInput | number
+  maxSelect?: Prisma.IntFieldUpdateOperationsInput | number
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  addons?: Prisma.AddonUncheckedUpdateManyWithoutAddonCategoryNestedInput
+  menuItems?: Prisma.MenuItemUncheckedUpdateManyWithoutAddonCategoriesNestedInput
+}
+
+export type AddonCategoryUncheckedUpdateManyWithoutMasterMenusInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   minSelect?: Prisma.IntFieldUpdateOperationsInput | number
@@ -768,11 +904,13 @@ export type AddonCategoryUncheckedUpdateManyWithoutMenuItemsInput = {
 export type AddonCategoryCountOutputType = {
   addons: number
   menuItems: number
+  masterMenus: number
 }
 
 export type AddonCategoryCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   addons?: boolean | AddonCategoryCountOutputTypeCountAddonsArgs
   menuItems?: boolean | AddonCategoryCountOutputTypeCountMenuItemsArgs
+  masterMenus?: boolean | AddonCategoryCountOutputTypeCountMasterMenusArgs
 }
 
 /**
@@ -799,6 +937,13 @@ export type AddonCategoryCountOutputTypeCountMenuItemsArgs<ExtArgs extends runti
   where?: Prisma.MenuItemWhereInput
 }
 
+/**
+ * AddonCategoryCountOutputType without action
+ */
+export type AddonCategoryCountOutputTypeCountMasterMenusArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MenuWhereInput
+}
+
 
 export type AddonCategorySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -811,6 +956,7 @@ export type AddonCategorySelect<ExtArgs extends runtime.Types.Extensions.Interna
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   addons?: boolean | Prisma.AddonCategory$addonsArgs<ExtArgs>
   menuItems?: boolean | Prisma.AddonCategory$menuItemsArgs<ExtArgs>
+  masterMenus?: boolean | Prisma.AddonCategory$masterMenusArgs<ExtArgs>
   _count?: boolean | Prisma.AddonCategoryCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["addonCategory"]>
 
@@ -851,6 +997,7 @@ export type AddonCategoryInclude<ExtArgs extends runtime.Types.Extensions.Intern
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   addons?: boolean | Prisma.AddonCategory$addonsArgs<ExtArgs>
   menuItems?: boolean | Prisma.AddonCategory$menuItemsArgs<ExtArgs>
+  masterMenus?: boolean | Prisma.AddonCategory$masterMenusArgs<ExtArgs>
   _count?: boolean | Prisma.AddonCategoryCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AddonCategoryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -866,6 +1013,7 @@ export type $AddonCategoryPayload<ExtArgs extends runtime.Types.Extensions.Inter
     branch: Prisma.$BranchPayload<ExtArgs>
     addons: Prisma.$AddonPayload<ExtArgs>[]
     menuItems: Prisma.$MenuItemPayload<ExtArgs>[]
+    masterMenus: Prisma.$MenuPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1272,6 +1420,7 @@ export interface Prisma__AddonCategoryClient<T, Null = never, ExtArgs extends ru
   branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   addons<T extends Prisma.AddonCategory$addonsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AddonCategory$addonsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AddonPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   menuItems<T extends Prisma.AddonCategory$menuItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AddonCategory$menuItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MenuItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  masterMenus<T extends Prisma.AddonCategory$masterMenusArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AddonCategory$masterMenusArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MenuPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1754,6 +1903,30 @@ export type AddonCategory$menuItemsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.MenuItemScalarFieldEnum | Prisma.MenuItemScalarFieldEnum[]
+}
+
+/**
+ * AddonCategory.masterMenus
+ */
+export type AddonCategory$masterMenusArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Menu
+   */
+  select?: Prisma.MenuSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Menu
+   */
+  omit?: Prisma.MenuOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MenuInclude<ExtArgs> | null
+  where?: Prisma.MenuWhereInput
+  orderBy?: Prisma.MenuOrderByWithRelationInput | Prisma.MenuOrderByWithRelationInput[]
+  cursor?: Prisma.MenuWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MenuScalarFieldEnum | Prisma.MenuScalarFieldEnum[]
 }
 
 /**

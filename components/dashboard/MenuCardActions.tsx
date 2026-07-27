@@ -7,7 +7,8 @@ import { updateMenuItem, deleteMenuItem } from '@/server/actions/menu'
 
 export default function MenuCardActions({ item, categories, addonCategories, discounts = [] }: { item: any, categories: any[], addonCategories: any[], discounts?: any[] }) {
     const [isPending, startTransition] = useTransition()
-    const [isOpen, setIsOpen] = useState(false)
+    const [isEditOpen, setIsEditOpen] = useState(false)
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [mounted, setMounted] = useState(false)
 
@@ -16,11 +17,22 @@ export default function MenuCardActions({ item, categories, addonCategories, dis
     }, [])
 
     // လက်ရှိ မီနူးတွင် ရှိနှင့်ပြီးသား Addon IDs များ ယူဆခြင်း
-    const initialAddons = item.addonCategories?.map((a: any) => a.addonCategoryId) || []
+    const initialAddons = item.addonCategories?.map((a: any) => a.id) || []
     const [selectedAddons, setSelectedAddons] = useState<string[]>(initialAddons)
 
     const handleAddonChange = (id: string) => {
         setSelectedAddons(prev => prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id])
+    }
+
+    const [imagePreview, setImagePreview] = useState<string | null>(item.imageUrl || null)
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (file) {
+            setImagePreview(URL.createObjectURL(file))
+        } else {
+            setImagePreview(item.imageUrl || null)
+        }
     }
 
     const handleUpdate = (e: React.FormEvent<HTMLFormElement>) => {
@@ -31,115 +43,187 @@ export default function MenuCardActions({ item, categories, addonCategories, dis
             setError(null)
             const res = await updateMenuItem(item.id, formData, selectedAddons)
             if (res.success) {
-                setIsOpen(false)
+                setIsEditOpen(false)
             } else {
                 setError(res.error || "အမှားအယွင်းရှိနေပါသည်")
             }
         })
     }
 
-    const handleDelete = () => {
-        if (confirm(`"${item.name}" ကို အပြီးတိုင် ဖျက်မှာ သေချာပါသလား?`)) {
-            startTransition(async () => {
-                await deleteMenuItem(item.id)
-            })
-        }
+    const handleDeleteConfirm = () => {
+        startTransition(async () => {
+            const res = await deleteMenuItem(item.id)
+            if (res && !res.success) {
+                alert(res.error)
+            }
+            setIsDeleteOpen(false)
+        })
     }
 
-    const modalContent = isOpen ? (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl relative text-left">
-                {/* Close button */}
-                <button 
-                    onClick={() => !isPending && setIsOpen(false)}
-                    disabled={isPending}
-                    className="absolute top-4 right-4 text-gray-500 hover:text-black bg-gray-50 hover:bg-gray-100 p-2 rounded-lg transition-colors disabled:opacity-50"
-                >
-                    ✕
-                </button>
+    const modalsContent = (
+        <>
+            {isEditOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-300">
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-md transition-opacity" onClick={() => !isPending && setIsEditOpen(false)}></div>
+                    
+                    <div className="bg-white/90 backdrop-blur-2xl rounded-[2rem] w-full max-w-2xl max-h-[90vh] overflow-y-auto relative z-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] animate-in zoom-in-95 duration-300 flex flex-col text-left border border-white custom-scrollbar">
+                        <div className="sticky top-0 z-20 bg-gradient-to-r from-white/60 to-white/40 border-b border-gray-100 p-6 sm:p-8 flex justify-between items-start backdrop-blur-xl">
+                            <div className="flex gap-4 items-start">
+                                <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center shrink-0 shadow-lg shadow-black/10">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M12 22h6"/><path d="M15.5 3.5a2.12 2.12 0 0 1 3 3L7 17l-4 1 1-4Z"/></svg>
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-black text-black tracking-tight">Edit Menu Item</h3>
+                                    <p className="text-[10px] text-gray-400 mt-1 font-bold uppercase tracking-widest">ဟင်းပွဲအသေးစိတ်ကို ပြင်ဆင်ရန်</p>
+                                </div>
+                            </div>
+                        </div>
 
-                <div className="mb-6">
-                    <h3 className="text-xl font-black text-black flex items-center gap-2">
-                        <span>✏️</span> ပြင်ဆင်မည်
-                    </h3>
-                    <p className="text-xs text-gray-500 mt-1">ဟင်းပွဲအသေးစိတ်ကို ပြင်ဆင်ပါ</p>
+                        <div className="p-6 sm:p-8 bg-white/40">
+                            {error && (
+                                <div className="mb-6 bg-red-50 border border-red-100 text-red-600 text-xs font-bold p-4 rounded-xl flex items-center gap-3 animate-in slide-in-from-top-2 shadow-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                    <span>{error}</span>
+                                </div>
+                            )}
+
+                            <form onSubmit={handleUpdate} className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-1.5">
+                                        <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest">ဟင်းပွဲ/မုန့် အမည် <span className="text-black">*</span></label>
+                                        <input type="text" name="name" defaultValue={item.name} required disabled={isPending} className="w-full bg-white border border-gray-200 rounded-xl p-3 text-xs font-bold text-black placeholder-slate-400 focus:outline-none focus:border-black transition-all shadow-sm focus:shadow-md" />
+                                    </div>
+
+                                    <div className="space-y-1.5">
+                                        <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest">ဈေးနှုန်း (MMK) <span className="text-black">*</span></label>
+                                        <input type="number" name="price" defaultValue={item.price} required disabled={isPending} className="w-full bg-white border border-gray-200 rounded-xl p-3 text-xs font-bold text-black placeholder-slate-400 focus:outline-none focus:border-black transition-all shadow-sm focus:shadow-md font-mono" />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-1.5">
+                                        <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest">အုပ်စု ရွေးချယ်ရန် <span className="text-black">*</span></label>
+                                        <div className="relative">
+                                            <select name="categoryId" defaultValue={item.categoryId} required disabled={isPending} className="w-full bg-white border border-gray-200 rounded-xl p-3 text-xs font-bold text-black focus:outline-none focus:border-black appearance-none transition-all shadow-sm focus:shadow-md">
+                                                {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+                                            </select>
+                                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-1.5">
+                                        <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest">လျှော့စျေး (Discount)</label>
+                                        <div className="relative">
+                                            <select name="discountId" defaultValue={item.discountId || ""} disabled={isPending} className="w-full bg-white border border-gray-200 rounded-xl p-3 text-xs font-bold text-black focus:outline-none focus:border-black appearance-none transition-all shadow-sm focus:shadow-md">
+                                                <option value="">-- လျှော့စျေး မရှိပါ --</option>
+                                                {discounts.map(disc => (
+                                                    <option key={disc.id} value={disc.id}>
+                                                        {disc.name} ({disc.type === 'PERCENTAGE' ? `${disc.value}%` : `${disc.value} MMK`} OFF)
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest">ဓာတ်ပုံ (ချန်လှပ်ထားနိုင်သည်)</label>
+                                    <div className="flex items-center gap-4 bg-white border border-gray-200 rounded-xl p-2 shadow-sm">
+                                        {imagePreview && (
+                                            <div className="w-12 h-12 rounded-lg overflow-hidden border border-gray-100 shrink-0 shadow-inner">
+                                                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                                            </div>
+                                        )}
+                                        <input type="file" name="image" accept="image/*" onChange={handleImageChange} disabled={isPending} className="w-full text-xs font-bold text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-[10px] file:uppercase file:tracking-widest file:font-black file:bg-black file:text-white hover:file:bg-gray-900 transition-colors cursor-pointer" />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest">တွဲဖက်စားစရာ (Addon Categories)</label>
+                                    <div className="bg-white border border-gray-200 rounded-xl p-3 max-h-40 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-2 shadow-inner custom-scrollbar">
+                                        {addonCategories.map(addon => (
+                                            <label key={addon.id} className="flex items-center gap-3 text-xs text-gray-700 cursor-pointer select-none hover:text-black transition-colors bg-gray-50 p-3 rounded-xl border border-gray-100 hover:border-black/20 hover:bg-white shadow-sm">
+                                                <input type="checkbox" checked={selectedAddons.includes(addon.id)} onChange={() => handleAddonChange(addon.id)} className="accent-black rounded border-gray-200 bg-white w-4 h-4 cursor-pointer" disabled={isPending} />
+                                                <span className="truncate font-bold text-[10px] uppercase tracking-widest">{addon.name}</span>
+                                            </label>
+                                        ))}
+                                        {addonCategories.length === 0 && (
+                                            <div className="col-span-1 sm:col-span-2 text-[10px] text-gray-400 font-bold p-2 text-center py-4 uppercase tracking-widest">အပိုပစ္စည်းများ မရှိသေးပါ</div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest">ပါဝင်ပစ္စည်း / ဖော်ပြချက်</label>
+                                    <textarea name="description" defaultValue={item.description || ""} disabled={isPending} className="w-full bg-white border border-gray-200 rounded-xl p-3 text-xs font-bold text-black placeholder-slate-400 focus:outline-none focus:border-black h-24 resize-none transition-all shadow-sm focus:shadow-md" placeholder="Enter description..."></textarea>
+                                </div>
+
+                                <div className="flex justify-end gap-3 pt-6 border-t border-gray-200/50">
+                                    <button type="button" onClick={() => setIsEditOpen(false)} disabled={isPending} className="bg-white hover:bg-gray-50 border border-gray-200 text-gray-600 hover:text-black font-bold px-6 py-3 rounded-xl text-[10px] uppercase tracking-widest transition-colors shadow-sm">
+                                        Cancel
+                                    </button>
+                                    <button type="submit" disabled={isPending} className="group relative bg-black hover:bg-gray-900 text-white font-bold px-8 py-3 rounded-xl text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-black/10 hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 flex items-center gap-2">
+                                        {isPending ? (
+                                            <>
+                                                <svg className="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                                <span>Saving...</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span>Save Changes</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
+            )}
 
-                {error && <div className="text-xs text-red-600 bg-red-950/20 p-3 rounded-lg mb-4">⚠️ {error}</div>}
-
-                <form onSubmit={handleUpdate} className="space-y-5">
-                    <div className="space-y-2">
-                        <label className="block text-xs font-bold text-gray-700">ဟင်းပွဲအမည်</label>
-                        <input type="text" name="name" defaultValue={item.name} required disabled={isPending} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm text-black focus:outline-none focus:border-black transition-colors" />
-                    </div>
-
-                    <div className="space-y-2">
-                        <label className="block text-xs font-bold text-gray-700">ဓာတ်ပုံ (ချန်လှပ်ထားနိုင်သည်)</label>
-                        <input type="file" name="image" accept="image/*" disabled={isPending} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm text-gray-500 file:mr-4 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-black/10 file:text-black hover:file:bg-black/20" />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <label className="block text-xs font-bold text-gray-700">ဈေးနှုန်း (MMK)</label>
-                            <input type="number" name="price" defaultValue={item.price} required disabled={isPending} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm text-black focus:outline-none focus:border-black transition-colors" />
+            {isDeleteOpen && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-300">
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-md transition-opacity" onClick={() => !isPending && setIsDeleteOpen(false)}></div>
+                    <div className="bg-white/90 backdrop-blur-2xl rounded-[2rem] w-full max-w-sm relative z-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden animate-in zoom-in-95 duration-300 p-8 text-center border border-white">
+                        <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-red-500"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
                         </div>
-
-                        <div className="space-y-2">
-                            <label className="block text-xs font-bold text-gray-700">အုပ်စု ရွေးချယ်ရန်</label>
-                            <select name="categoryId" defaultValue={item.categoryId} required disabled={isPending} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm text-black focus:outline-none focus:border-black transition-colors">
-                                {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
-                            </select>
+                        <h3 className="text-xl font-black text-black mb-2 tracking-tight">Delete Menu Item?</h3>
+                        <p className="text-xs font-bold text-gray-500 mb-8 leading-relaxed">
+                            Are you sure you want to delete <strong className="text-black">{item.name}</strong>? This action cannot be undone.
+                        </p>
+                        
+                        <div className="flex gap-3">
+                            <button type="button" onClick={() => setIsDeleteOpen(false)} disabled={isPending} className="flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 hover:text-black font-black py-3.5 rounded-xl transition-colors text-[10px] uppercase tracking-widest shadow-sm">
+                                Cancel
+                            </button>
+                            <button type="button" onClick={handleDeleteConfirm} disabled={isPending} className="flex-1 bg-red-600 hover:bg-red-700 text-white font-black py-3.5 rounded-xl shadow-lg shadow-red-600/20 transition-all hover:-translate-y-0.5 text-[10px] uppercase tracking-widest disabled:opacity-50 disabled:hover:translate-y-0">
+                                {isPending ? "Deleting..." : "Yes, Delete"}
+                            </button>
                         </div>
                     </div>
-
-                    <div className="space-y-2">
-                        <label className="block text-xs font-bold text-gray-700">လျှော့စျေး (Discount)</label>
-                        <select name="discountId" defaultValue={item.discountId || ""} disabled={isPending} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm text-black focus:outline-none focus:border-black transition-colors">
-                            <option value="">-- လျှော့စျေး မရှိပါ --</option>
-                            {discounts.map(disc => (
-                                <option key={disc.id} value={disc.id}>
-                                    {disc.name} ({disc.type === 'PERCENTAGE' ? `${disc.value}%` : `${disc.value} MMK`} OFF)
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="space-y-2">
-                        <label className="block text-xs font-bold text-gray-700">ပါဝင်ပစ္စည်း / ဖော်ပြချက် (Description)</label>
-                        <textarea name="description" defaultValue={item.description || ""} disabled={isPending} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm text-black focus:outline-none focus:border-black transition-colors h-24 resize-none" placeholder="ဖော်ပြချက် ထည့်သွင်းရန်"></textarea>
-                    </div>
-
-                    <div className="space-y-2">
-                        <label className="block text-xs font-bold text-gray-700">Add-on Categories ထည့်သွင်းရန်</label>
-                        <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 max-h-40 overflow-y-auto grid grid-cols-2 gap-3">
-                            {addonCategories.map(addon => (
-                                <label key={addon.id} className="flex items-center gap-3 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 p-2 rounded-lg transition-colors">
-                                    <input type="checkbox" checked={selectedAddons.includes(addon.id)} onChange={() => handleAddonChange(addon.id)} className="w-4 h-4 accent-orange-500 rounded" />
-                                    <span className="font-medium">{addon.name}</span>
-                                </label>
-                            ))}
-                            {addonCategories.length === 0 && <span className="text-xs text-gray-400 italic col-span-2">Add-on အမျိုးအစားများ မရှိသေးပါ။</span>}
-                        </div>
-                    </div>
-
-                    <div className="pt-4 border-t border-gray-200 flex justify-end">
-                        <button type="submit" disabled={isPending} className="bg-gradient-to-r from-orange-500 to-rose-500 hover:from-gray-800 hover:to-gray-500 disabled:from-slate-800 disabled:to-slate-800 disabled:text-gray-400 text-black px-8 py-3 rounded-xl text-sm font-bold shadow-lg shadow-orange-500/20 transition-all flex items-center justify-center min-w-[140px]">
-                            {isPending ? "သိမ်းဆည်းနေပါသည်..." : "သိမ်းမည် (Save)"}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    ) : null
+                </div>
+            )}
+        </>
+    )
 
     return (
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
-            <button onClick={() => setIsOpen(true)} className="p-1.5 text-gray-500 hover:text-gray-800 hover:bg-black/10 rounded-lg transition" title="ပြင်ဆင်မည်">✏️</button>
-            <button onClick={handleDelete} disabled={isPending} className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-400/10 rounded-lg transition disabled:opacity-50" title="ဖျက်မည်">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" /></svg>
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all bg-white/80 backdrop-blur-md rounded-xl p-1 shadow-sm border border-gray-100">
+            <button onClick={() => setIsEditOpen(true)} className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-black hover:bg-black/5 rounded-lg transition-colors" title="Edit">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22h6"/><path d="M15.5 3.5a2.12 2.12 0 0 1 3 3L7 17l-4 1 1-4Z"/></svg>
+            </button>
+            <div className="w-px h-4 bg-gray-200"></div>
+            <button onClick={() => setIsDeleteOpen(true)} disabled={isPending} className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50" title="Delete">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
             </button>
 
-            {mounted && createPortal(modalContent, document.body)}
+            {mounted && createPortal(modalsContent, document.body)}
         </div>
     )
 }

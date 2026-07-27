@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // server/actions/tables.ts
 'use server'
 
@@ -53,9 +54,9 @@ export async function getMenuForTable(tableNumber: string) {
 
     const tableBranchId = table.branchId
 
-    const [menuItems, categories] = await Promise.all([
+    const [localMenuItems, localCategories, masterMenusData] = await Promise.all([
       prisma.menuItem.findMany({
-        where: { category: { branchId: tableBranchId } },
+        where: { category: { branchId: tableBranchId }, isDeleted: false },
         include: {
           category: { select: { name: true } },
           addonCategories: { include: { addons: true } },
@@ -64,8 +65,28 @@ export async function getMenuForTable(tableNumber: string) {
       }),
       prisma.menuCategory.findMany({
         where: { branchId: tableBranchId }
+      }),
+      prisma.menuOnBranch.findMany({
+        where: { branchId: tableBranchId, isAvailable: true },
+        include: { menu: true }
       })
     ])
+
+    const formattedMasterMenus = masterMenusData.map(mb => ({
+        id: mb.menuId,
+        name: mb.menu.name,
+        description: mb.menu.description,
+        price: mb.menu.basePrice,
+        imageUrl: mb.menu.image,
+        isActive: mb.menu.isActive,
+        categoryId: 'master', // Virtual category
+        isMasterMenu: true
+    }))
+
+    const menuItems = [...localMenuItems, ...formattedMasterMenus]
+    const categories = masterMenusData.length > 0
+        ? [...localCategories, { id: 'master', name: 'Main Menu' }]
+        : localCategories
 
     return { success: true, menuItems, categories, tableId: table.id }
   } catch (error) {
@@ -75,7 +96,7 @@ export async function getMenuForTable(tableNumber: string) {
 
 export async function placeTableOrder(
   tableNumber: string,
-  items: { menuItemId: string, quantity: number, addons?: any[] }[],
+  items: { menuItemId: string, quantity: number, addons?: { price: number }[] }[],
   notes: string
 ) {
   try {
@@ -96,6 +117,7 @@ export async function placeTableOrder(
     })
 
     // Calculate discounted price
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getFinalPrice = (item: any) => {
         let finalPrice = item.price;
         if (item.discount && item.discount.isActive) {
@@ -124,7 +146,8 @@ export async function placeTableOrder(
         name: matchedMenu?.name || "Unknown Item",
         quantity: item.quantity,
         price: menuPrice,
-        addons: item.addons || []
+        addons: item.addons || [],
+        status: 'PENDING'
       }
     })
 
@@ -141,6 +164,7 @@ export async function placeTableOrder(
 
     if (activeOrder) {
         // Append to existing order items JSON array
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const existingItems = (activeOrder.items as any[]) || []
         const newItems = [...existingItems, ...orderItemsData]
 
@@ -156,7 +180,8 @@ export async function placeTableOrder(
                 finalAmount: newFinalAmount,
                 isBillRequested: false, // Reset because they ordered more!
                 notes: notes ? (activeOrder.notes ? activeOrder.notes + '\n' + notes : notes) : activeOrder.notes,
-                items: newItems
+                items: newItems,
+                status: 'PENDING' // Reset so the kitchen knows new items arrived
             }
         })
     } else {
@@ -233,4 +258,4 @@ export async function requestBillForTable(tableNumber: string) {
     console.error("Error requesting bill:", error)
     return { success: false, error: "ဘေလ်တောင်း၍မရပါ" }
   }
-}
+}

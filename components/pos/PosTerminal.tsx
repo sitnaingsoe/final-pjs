@@ -41,16 +41,20 @@ export default function PosTerminal({
     const [isOnline, setIsOnline] = useState(true)
     const [offlineOrders, setOfflineOrders] = useState<any[]>([])
     const [billRequests, setBillRequests] = useState<any[]>([])
-
+    
     // Find initial table if provided via scan
     const initialTable = tables.find(t => t.number === initialTableNumber)
     const [selectedTableId, setSelectedTableId] = useState<string | null>(initialTable ? initialTable.id : null)
 
     // Active Table Order State
-    const [activeOrderId, setActiveOrderId] = useState<string | null>(null)
-    const [existingItems, setExistingItems] = useState<{name: string, quantity: number, price: number, addons?: any[]}[]>([])
-    const [existingTotal, setExistingTotal] = useState(0)
+    const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const [existingItems, setExistingItems] = useState<{menuItemId?: string, name: string, quantity: number, price: number, addons?: any[]}[]>([])
     const [isBillRequested, setIsBillRequested] = useState(false)
+    const [promoCodeInput, setPromoCodeInput] = useState("")
+    const [appliedPromo, setAppliedPromo] = useState<{code: string, amount: number} | null>(null)
+    const [promoError, setPromoError] = useState("")
+    const [activeOrderId, setActiveOrderId] = useState<string | null>(null)
+    const [existingTotal, setExistingTotal] = useState(0)
 
     // Load active order when table changes
     useEffect(() => {
@@ -100,7 +104,11 @@ export default function PosTerminal({
                 if (res.success && res.data) {
                     setBillRequests(res.data)
                 }
-            } catch (e) {}
+            } catch (e: any) {
+                if (e?.message?.includes('unexpected response') || e?.message?.includes('Unexpected token')) {
+                    window.location.href = '/login?error=session_expired'
+                }
+            }
         }
         
         fetchRequests()
@@ -139,25 +147,20 @@ export default function PosTerminal({
 
     const syncOfflineOrders = async () => {
         if (offlineOrders.length === 0) return;
-        const { createPosOrder } = await import('@/server/actions/orders')
+        const { syncOfflineTransactions } = await import('@/server/actions/offlineSync')
         
-        let remainingOrders = [...offlineOrders]
-        
-        for (const order of offlineOrders) {
-            try {
-                const res = await createPosOrder(order)
-                if (res.success) {
-                    // Remove successfully sent order from queue
-                    remainingOrders = remainingOrders.filter(o => o.id !== order.id)
-                }
-            } catch (e) {
-                // Keep it in queue if network still fails
-                break; 
+        const res = await syncOfflineTransactions(offlineOrders)
+        if (res.success) {
+            if (res.failedOrders && res.failedOrders.length > 0) {
+                setOfflineOrders(res.failedOrders)
+                localStorage.setItem('pos_offline_orders', JSON.stringify(res.failedOrders))
+                alert(`⚠️ တချို့အော်ဒါများ Sync လုပ်၍မရပါ။`)
+            } else {
+                setOfflineOrders([])
+                localStorage.removeItem('pos_offline_orders')
+                alert(`✅ Offline အော်ဒါများကို ဆာဗာသို့ အောင်မြင်စွာ ပို့ဆောင်ပြီးပါပြီ!`)
             }
         }
-        
-        setOfflineOrders(remainingOrders)
-        localStorage.setItem('pos_offline_orders', JSON.stringify(remainingOrders))
     }
     
     
@@ -218,14 +221,39 @@ export default function PosTerminal({
         setCart(prev => prev.filter(item => item.id !== id))
     }
 
-    const cartTotalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-    const totalAmount = existingTotal + cartTotalAmount
+    const cartTotal = existingTotal + cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+    const totalAmount = Math.max(0, cartTotal - (appliedPromo?.amount || 0))
+
+    const handleApplyPromo = async () => {
+        setPromoError("")
+        if (!promoCodeInput.trim()) return
+        
+        setIsSubmitting(true)
+        try {
+            const { validatePromoCode } = await import('@/server/actions/promocodes')
+            const res = await validatePromoCode(promoCodeInput, branchId, cartTotal)
+            if (res.success && res.discountAmount) {
+                setAppliedPromo({ code: promoCodeInput, amount: res.discountAmount })
+                setPromoCodeInput("")
+            } else {
+                setPromoError(res.error || "Invalid code")
+                setAppliedPromo(null)
+            }
+        } catch (error) {
+            setPromoError("Failed to apply code")
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
 
     const handleSendOrder = async () => {
         if (cart.length === 0) return;
         setIsSubmitting(true)
         try {
-            if (!isOnline) throw new Error("Offline")
+            if (!isOnline) {
+                alert("⚠️ KDS သို့ အော်ဒါပို့ရန် အင်တာနက်ချိတ်ဆက်မှု လိုအပ်ပါသည်။ ကျေးဇူးပြု၍ 'ဘေလ်ရှင်းမည်' ကို တိုက်ရိုက်အသုံးပြုပါ။");
+                return;
+            }
             const { sendOrderToKitchen } = await import('@/server/actions/orders')
             const res = await sendOrderToKitchen({
                 orderId: activeOrderId || undefined,
@@ -259,7 +287,58 @@ export default function PosTerminal({
         setIsSubmitting(true)
 
         try {
-            if (!isOnline) throw new Error("Offline")
+            if (!isOnline) {
+                // OFF-LINE MODE CHECKOUT
+                const tax = totalAmount * 0.05;
+                const final = totalAmount + tax;
+
+                const offlineTxn = {
+                    id: Math.random().toString(36).substring(7),
+                    branchId,
+                    tableId: selectedTableId,
+                    items: [
+                        ...existingItems.map(c => ({ menuItemId: c.menuItemId || '', name: c.name, quantity: c.quantity, price: c.price, addons: c.addons || [] })),
+                        ...cart.map(c => ({ menuItemId: c.menuItemId, name: c.name, quantity: c.quantity, price: c.price, addons: c.addons || [] }))
+                    ],
+                    totalAmount: cartTotal,
+                    taxAmount: tax,
+                    finalAmount: final,
+                    discountAmount: appliedPromo?.amount || 0,
+                    promoCode: appliedPromo?.code || null,
+                    createdAt: new Date().toISOString()
+                }
+
+                const newOfflineOrders = [...offlineOrders, offlineTxn]
+                setOfflineOrders(newOfflineOrders)
+                localStorage.setItem('pos_offline_orders', JSON.stringify(newOfflineOrders))
+
+                // Print receipt
+                setReceiptData({
+                    orderId: "OFFLINE-" + offlineTxn.id,
+                    date: new Date(),
+                    items: offlineTxn.items.map(c => ({
+                        name: c.name + (c.addons?.length ? ` (${c.addons.map((a: any) => a.name).join(', ')})` : ''),
+                        price: c.price,
+                        quantity: c.quantity
+                    })),
+                    totalAmount: cartTotal,
+                    taxAmount: tax,
+                    finalAmount: final
+                })
+                setTimeout(() => window.print(), 100)
+
+                alert(`✅ အော့ဖ်လိုင်း (Offline) ဖြင့် ဘေလ်ရှင်းရန် အောင်မြင်ပါသည်! (စက်ထဲတွင် သိမ်းဆည်းထားပါသည်)`)
+                setAppliedPromo(null)
+                setCart([])
+                setExistingItems([])
+                setExistingTotal(0)
+                setActiveOrderId(null)
+                setIsBillRequested(false)
+                setIsCartOpen(false)
+                setSelectedTableId(null)
+                setIsSubmitting(false)
+                return;
+            }
             
             const { sendOrderToKitchen, checkoutOrder } = await import('@/server/actions/orders')
             
@@ -287,7 +366,7 @@ export default function PosTerminal({
             if (!currentOrderId) throw new Error("No active order to checkout")
 
             // Checkout
-            const checkRes = await checkoutOrder(currentOrderId)
+            const checkRes = await checkoutOrder(currentOrderId, 'CASH', appliedPromo?.code)
             if (checkRes.success && checkRes.order) {
                 // Print receipt
                 setReceiptData({
@@ -312,6 +391,7 @@ export default function PosTerminal({
                 setTimeout(() => window.print(), 100)
 
                 alert(`✅ ဘေလ်ရှင်းရန် အောင်မြင်ပါသည်! စုစုပေါင်း: ${checkRes.order.finalAmount} MMK`)
+                setAppliedPromo(null)
                 setCart([])
                 setExistingItems([])
                 setExistingTotal(0)
@@ -330,67 +410,78 @@ export default function PosTerminal({
     }
 
     return (
-        <div className="flex h-full relative">
+        <div className="flex h-full relative print:block">
             <ReceiptPrinter data={receiptData} />
-            <AddonSelectionModal 
-                isOpen={isAddonModalOpen}
-                onClose={() => {
-                    setIsAddonModalOpen(false);
-                    setSelectedMenuItemForAddon(null);
-                }}
-                menuItem={selectedMenuItemForAddon}
-                onAddToCart={addToCart}
-            />
+            
+            <div className="flex flex-1 h-full w-full relative print:hidden">
+                <AddonSelectionModal 
+                    isOpen={isAddonModalOpen}
+                    onClose={() => {
+                        setIsAddonModalOpen(false);
+                        setSelectedMenuItemForAddon(null);
+                    }}
+                    menuItem={selectedMenuItemForAddon}
+                    onAddToCart={addToCart}
+                />
 
-            {/* Bill Requests Notifications */}
-            {billRequests.length > 0 && (
-                <div className="absolute top-4 right-4 md:right-[420px] z-50 flex flex-col gap-2 w-full max-w-xs">
-                    {billRequests.map(req => (
-                        <div key={req.id} className="bg-gradient-to-r from-rose-600 to-red-600 text-black p-3 rounded-2xl shadow-2xl flex items-center justify-between gap-3 animate-in slide-in-from-top-4 border border-rose-400">
-                            <div className="flex items-center gap-3">
-                                <span className="text-2xl origin-top animate-[wiggle_1s_ease-in-out_infinite]">🔔</span>
-                                <div className="leading-tight">
-                                    <p className="font-bold text-sm">ဘေလ်တောင်းထားသည်</p>
-                                    <p className="text-xs text-rose-200 mt-0.5">စားပွဲ {req.table?.number}</p>
+                {/* Bill Requests Notifications */}
+                {billRequests.length > 0 && (
+                    <div className="absolute top-4 right-4 md:right-[420px] z-50 flex flex-col gap-2 w-full max-w-xs">
+                        {billRequests.map(req => (
+                            <div key={req.id} className="bg-gradient-to-r from-rose-600 to-red-600 text-black p-3 rounded-2xl shadow-2xl flex items-center justify-between gap-3 animate-in slide-in-from-top-4 border border-rose-400">
+                                <div className="flex items-center gap-3">
+                                    <span className="text-2xl origin-top animate-[wiggle_1s_ease-in-out_infinite]">🔔</span>
+                                    <div className="leading-tight">
+                                        <p className="font-bold text-sm">ဘေလ်တောင်းထားသည်</p>
+                                        <p className="text-xs text-rose-200 mt-0.5">စားပွဲ {req.table?.number}</p>
+                                    </div>
                                 </div>
+                                <button 
+                                    onClick={() => {
+                                        setSelectedTableId(req.tableId)
+                                        if (window.innerWidth < 768) setIsCartOpen(true)
+                                    }}
+                                    className="bg-white text-rose-600 px-3 py-2 rounded-xl text-xs font-black shadow-md hover:bg-rose-50 active:scale-95 transition-all"
+                                >
+                                    ကြည့်မည်
+                                </button>
                             </div>
-                            <button 
-                                onClick={() => {
-                                    setSelectedTableId(req.tableId)
-                                    if (window.innerWidth < 768) setIsCartOpen(true)
-                                }}
-                                className="bg-white text-rose-600 px-3 py-2 rounded-xl text-xs font-black shadow-md hover:bg-rose-50 active:scale-95 transition-all"
-                            >
-                                ကြည့်မည်
-                            </button>
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {/* === ဘယ်ဘက်ခြမ်း: Menu Items & Categories === */}
-            <div className="flex-1 flex flex-col h-full bg-white overflow-hidden">
-                {/* Categories Banner */}
-                <div className="p-4 bg-gray-50/50 border-b border-gray-200 overflow-x-auto no-scrollbar shrink-0">
-                    <div className="flex gap-3">
-                        <button
-                            onClick={() => setSelectedCategory('all')}
-                            className={`whitespace-nowrap px-5 py-2.5 rounded-full text-xs font-bold transition-all ${selectedCategory === 'all' ? 'bg-black text-white shadow-lg shadow-orange-500/25' : 'bg-gray-200 text-gray-500 hover:bg-slate-700 hover:text-gray-800'}`}
-                        >
-                            အားလုံး (All)
-                        </button>
-                        {categories.map(cat => (
-                            <button
-                                key={cat.id}
-                                onClick={() => setSelectedCategory(cat.id)}
-                                className={`whitespace-nowrap px-5 py-2.5 rounded-full text-xs font-bold transition-all ${selectedCategory === cat.id ? 'bg-black text-white shadow-lg shadow-orange-500/25' : 'bg-gray-200 text-gray-500 hover:bg-slate-700 hover:text-gray-800'}`}
-                            >
-                                {cat.name}
-                            </button>
                         ))}
                     </div>
-                </div>
+                )}
 
+                {/* === ဘယ်ဘက်ခြမ်း: Menu Items & Categories === */}
+                <div className="flex-1 flex flex-col h-full bg-white overflow-hidden">
+                    {!isOnline && (
+                        <div className="bg-red-600 text-white text-xs font-bold p-2 text-center flex justify-center items-center gap-2 shadow-sm shrink-0">
+                            <span>🔴 အော့ဖ်လိုင်း (Offline Mode) - အင်တာနက်မရှိပါ</span>
+                            {offlineOrders.length > 0 && (
+                                <span className="bg-white text-red-600 px-2 py-0.5 rounded-full text-3xs shadow-inner">
+                                    {offlineOrders.length} Pending Orders
+                                </span>
+                            )}
+                        </div>
+                    )}
+                    {/* Categories Banner */}
+                    <div className="p-4 bg-gray-50/50 border-b border-gray-200 overflow-x-auto no-scrollbar shrink-0">
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setSelectedCategory('all')}
+                                className={`whitespace-nowrap px-5 py-2.5 rounded-full text-xs font-bold transition-all ${selectedCategory === 'all' ? 'bg-black text-white shadow-lg shadow-gray-900/10' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:text-black'}`}
+                            >
+                                အားလုံး (All)
+                            </button>
+                            {categories.map(cat => (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => setSelectedCategory(cat.id)}
+                                    className={`whitespace-nowrap px-5 py-2.5 rounded-full text-xs font-bold transition-all ${selectedCategory === cat.id ? 'bg-black text-white shadow-lg shadow-gray-900/10' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:text-black'}`}
+                                >
+                                    {cat.name}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 {/* Menu Items Grid */}
                 <div className="flex-1 overflow-y-auto p-4 lg:p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pb-28 lg:pb-6 content-start">
                     {displayItems.map(item => (
@@ -543,6 +634,39 @@ export default function PosTerminal({
                     )}
                 </div>
 
+                {/* Promo Code Section */}
+                <div className="px-5 py-3 bg-gray-50 border-t border-gray-200">
+                    {appliedPromo ? (
+                        <div className="flex justify-between items-center bg-green-50 text-green-700 px-4 py-2 rounded-lg border border-green-200 shadow-sm">
+                            <span className="font-bold text-xs flex items-center gap-2">🎟️ Promo Applied: {appliedPromo.code}</span>
+                            <div className="flex items-center gap-3">
+                                <span className="font-black font-mono">-{appliedPromo.amount.toLocaleString()} MMK</span>
+                                <button onClick={() => setAppliedPromo(null)} className="text-red-500 hover:text-red-700 font-black text-xs">✕</button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div>
+                            <div className="flex gap-2">
+                                <input 
+                                    type="text" 
+                                    placeholder="Enter Promo Code" 
+                                    value={promoCodeInput}
+                                    onChange={(e) => setPromoCodeInput(e.target.value.toUpperCase())}
+                                    className="flex-1 bg-white border border-gray-300 rounded-xl px-4 py-2 text-xs font-bold uppercase outline-none focus:border-gray-1000"
+                                />
+                                <button 
+                                    onClick={handleApplyPromo}
+                                    disabled={!promoCodeInput || isSubmitting}
+                                    className="bg-gray-800 hover:bg-black text-white px-4 py-2 rounded-xl text-xs font-bold transition-colors shadow-sm disabled:opacity-50"
+                                >
+                                    Apply
+                                </button>
+                            </div>
+                            {promoError && <p className="text-red-500 text-3xs font-bold mt-1.5 ml-1">{promoError}</p>}
+                        </div>
+                    )}
+                </div>
+
                 <div className="p-5 bg-white border-t border-gray-200 shrink-0">
                     <div className="flex justify-between items-center mb-4">
                         <span className="text-sm font-bold text-gray-500 uppercase tracking-wider">Total</span>
@@ -561,7 +685,7 @@ export default function PosTerminal({
                         <button
                             onClick={handleCheckout}
                             disabled={((cart.length === 0 && !activeOrderId) || isSubmitting) ? true : undefined}
-                            className="flex-[2] bg-gradient-to-r from-orange-500 to-rose-500 hover:from-gray-800 hover:to-gray-500 disabled:from-slate-800 disabled:to-slate-800 disabled:text-gray-400 text-black text-sm font-black py-3 rounded-xl transition-all shadow-lg hover:shadow-orange-500/25 flex items-center justify-center gap-2"
+                            className="flex-[2] bg-gray-900 hover:bg-black disabled:from-slate-800 disabled:to-slate-800 disabled:text-gray-400 text-white text-sm font-black py-3 rounded-xl transition-all shadow-lg hover:shadow-gray-900/10 flex items-center justify-center gap-2"
                         >
                             {isSubmitting ? "Processing..." : "💸 ဘေလ်ရှင်းမည်"}
                         </button>
@@ -574,13 +698,14 @@ export default function PosTerminal({
                 <div className="md:hidden fixed bottom-6 left-4 right-4 z-30 pb-[env(safe-area-inset-bottom)]">
                     <button
                         onClick={() => setIsCartOpen(true)}
-                        className="w-full bg-gradient-to-r from-orange-500 to-rose-500 text-black text-sm font-black py-4 rounded-2xl shadow-2xl shadow-orange-500/30 flex justify-between items-center px-6"
+                        className="w-full bg-gray-900 text-white text-sm font-black py-4 rounded-2xl shadow-2xl shadow-gray-900/10 flex justify-between items-center px-6"
                     >
                         <span className="flex items-center gap-2">🛒 <span>{cart.length} Items</span></span>
                         <span>{totalAmount.toLocaleString()} MMK</span>
                     </button>
                 </div>
             )}
+            </div>
         </div>
     )
 }
