@@ -46,14 +46,14 @@ export default async function CentralMenuPage() {
         <div className="space-y-6 lg:space-y-8 animate-in fade-in zoom-in-95 duration-500">
 
             {/* Header Area */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-6 md:p-8 bg-white/60 backdrop-blur-xl rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative z-50">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-6 md:p-8 glass rounded-[2rem] border border-border/50 shadow-2xl relative z-50">
                 <div className="flex items-center gap-5">
-                    <div className="w-14 h-14 bg-black rounded-2xl flex items-center justify-center text-white shadow-xl shadow-black/10 shrink-0">
+                    <div className="w-14 h-14 bg-gradient-to-tr from-orange-500 to-amber-500 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-orange-500/20 shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
                     </div>
                     <div>
-                        <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-black">Main Menu Catalog</h1>
-                        <p className="text-sm font-bold text-gray-400 mt-1 uppercase tracking-widest">ဗဟိုမှ ဟင်းပွဲ/မီနူးအသစ်များ သတ်မှတ်ခြင်းနှင့် ဆိုင်ခွဲများသို့ ဖြန့်ဝေခြင်း</p>
+                        <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-foreground">Main Menu Catalog</h1>
+
                     </div>
                 </div>
                 <div className="shrink-0">
@@ -62,17 +62,17 @@ export default async function CentralMenuPage() {
             </div>
 
             {/* Main Menu List Table */}
-            <div className="bg-white/60 backdrop-blur-xl border border-gray-100 rounded-[2rem] p-6 lg:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <div className="glass rounded-[2rem] shadow-2xl">
                 <div className="flex items-center gap-3 mb-6 md:mb-8">
                     <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white shadow-md shadow-black/10 shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
                     </div>
-                    <h2 className="text-base font-black uppercase tracking-wider text-black">Global Menu Items <span className="font-bold text-gray-400 tracking-normal ml-1 text-sm">({menus.length})</span></h2>
+                    <h2 className="text-base font-black uppercase tracking-wider text-foreground">Global Menu Items <span className="font-bold text-muted-foreground tracking-normal ml-1 text-sm">({menus.length})</span></h2>
                 </div>
 
                 <div className="overflow-x-auto custom-scrollbar">
-                    <table className="w-full text-left text-sm text-gray-700 min-w-[1000px]">
-                        <thead className="text-xs uppercase font-black tracking-widest text-gray-400 border-b border-gray-100">
+                    <table className="w-full text-left text-sm text-foreground min-w-[1000px]">
+                        <thead className="text-xs uppercase font-black tracking-widest text-muted-foreground border-b border-border/50">
                             <tr>
                                 <th className="pb-4 pl-4 font-black">Image</th>
                                 <th className="pb-4 font-black">Menu Item</th>
@@ -88,11 +88,11 @@ export default async function CentralMenuPage() {
                                 <tr>
                                     <td colSpan={7} className="py-12">
                                         <div className="flex flex-col items-center justify-center text-center">
-                                            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center text-gray-300 mb-4 border border-dashed border-gray-200">
+                                            <div className="w-16 h-16 bg-muted/50 rounded-full flex items-center justify-center text-muted-foreground/50 mb-4 border border-dashed border-border">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
                                             </div>
-                                            <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest mb-1">No Menu Items Found</h3>
-                                            <p className="text-xs text-gray-500 font-bold">ဗဟိုတွင် မည်သည့် မီနူးပစ္စည်းမျှ မဆောက်ရသေးပါ။ အပေါ်က ခလုတ်ကို နှိပ်၍ အသစ်ဆောက်ပါ။</p>
+                                            <h3 className="text-sm font-black text-foreground uppercase tracking-widest mb-1">No Menu Items Found</h3>
+                                            <p className="text-xs text-muted-foreground font-bold">ဗဟိုတွင် မည်သည့် မီနူးပစ္စည်းမျှ မဆောက်ရသေးပါ။ အပေါ်က ခလုတ်ကို နှိပ်၍ အသစ်ဆောက်ပါ။</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -101,26 +101,26 @@ export default async function CentralMenuPage() {
                                     <tr key={menu.id} className="hover:bg-black/5 transition-colors group">
                                         <td className="py-4 pl-4">
                                             {menu.image ? (
-                                                <img src={menu.image} alt={menu.name} className="w-12 h-12 object-cover rounded-xl border border-gray-200 shadow-sm" />
+                                                <img src={menu.image} alt={menu.name} className="w-12 h-12 object-cover rounded-xl border border-border shadow-sm" />
                                             ) : (
-                                                <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400 border border-gray-200 shadow-sm">
+                                                <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-muted-foreground border border-border shadow-sm">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
                                                 </div>
                                             )}
                                         </td>
-                                        <td className="py-4 font-bold text-gray-900 text-base">{menu.name}</td>
-                                        <td className="py-4 text-gray-500 max-w-xs pr-4 font-medium">
+                                        <td className="py-4 font-bold text-foreground text-base">{menu.name}</td>
+                                        <td className="py-4 text-muted-foreground max-w-xs pr-4 font-medium">
                                             <div className="line-clamp-2">{menu.description || '-'}</div>
                                         </td>
-                                        <td className="py-4 text-right font-black text-gray-900">{menu.basePrice.toLocaleString()} <span className="text-[10px] text-gray-400 uppercase tracking-widest ml-1">MMK</span></td>
+                                        <td className="py-4 text-right font-black text-foreground">{menu.basePrice.toLocaleString()} <span className="text-[10px] text-muted-foreground uppercase tracking-widest ml-1">MMK</span></td>
                                         <td className="py-4 pl-8">
                                             <div className="flex flex-wrap gap-2">
                                                 {menu.branches.length === 0 ? (
-                                                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">မည်သည့်ဆိုင်မျှ မဖြန့်ရသေးပါ</span>
+                                                    <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">မည်သည့်ဆိုင်မျှ မဖြန့်ရသေးပါ</span>
                                                 ) : (
                                                     menu.branches.map((b: any) => (
-                                                        <span key={b.branchId} className="bg-white border border-gray-200 text-gray-600 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest shadow-sm flex items-center gap-1.5">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                                                        <span key={b.branchId} className="bg-card border border-border text-muted-foreground px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest shadow-sm flex items-center gap-1.5">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                                                             {b.branch.name}
                                                         </span>
                                                     ))

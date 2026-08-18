@@ -39,11 +39,11 @@ export default async function HQHomePage({ searchParams }: PageProps) {
 
   if (!companyId) {
       return (
-          <div className="p-8 text-center bg-white rounded-2xl shadow-sm border border-red-100 mt-6">
-              <div className="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3">
+          <div className="p-8 text-center bg-card rounded-2xl shadow-sm border border-red-500/20 mt-6 glass">
+              <div className="w-12 h-12 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
               </div>
-              <p className="text-sm font-bold text-red-600 uppercase tracking-wider">ကုမ္ပဏီအချက်အလက် ရှာမတွေ့ပါ။</p>
+              <p className="text-sm font-bold text-red-500 uppercase tracking-wider">ကုမ္ပဏီအချက်အလက် ရှာမတွေ့ပါ။</p>
           </div>
       )
   }
@@ -120,14 +120,14 @@ export default async function HQHomePage({ searchParams }: PageProps) {
     <div className="space-y-6 lg:space-y-8 animate-in fade-in zoom-in-95 duration-500">
       
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 md:p-8 bg-white/60 backdrop-blur-xl rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 md:p-8 glass rounded-[2rem] border border-border/50 shadow-2xl relative z-10">
         <div className="flex items-center gap-5">
-            <div className="w-14 h-14 bg-black rounded-2xl flex items-center justify-center text-white shadow-xl shadow-black/10 shrink-0">
+            <div className="w-14 h-14 bg-gradient-to-tr from-orange-500 to-amber-500 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-orange-500/20 shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             </div>
             <div>
-                <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-black">Central Control</h1>
-                <p className="text-sm font-bold text-gray-400 mt-1 uppercase tracking-widest">လုပ်ငန်းစုချုပ် စီမံခန့်ခွဲမှုဗဟို</p>
+                <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-foreground">Central Control</h1>
+
             </div>
         </div>
         <div className="shrink-0 w-full md:w-auto">

@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
-import { getMenuForTable, placeTableOrder, getActiveOrderForTableNumber, requestBillForTable } from '@/server/actions/tables'
+import { getMenuForTable, placeTableOrder, getActiveOrderForTableNumber, requestBillForTable, cancelTableOrder, cancelTableOrderItem } from '@/server/actions/tables'
 
 export default function AdvancedCustomerScanPage() {
     const searchParams = useSearchParams()
@@ -24,6 +24,7 @@ export default function AdvancedCustomerScanPage() {
     const [currentView, setCurrentView] = useState<'home' | 'detail' | 'cart' | 'status'>('home')
     const [activeOrder, setActiveOrder] = useState<any | null>(null)
     const [isRequestingBill, setIsRequestingBill] = useState(false)
+    const [isCancelling, setIsCancelling] = useState(false)
 
     const [activeItem, setActiveItem] = useState<any | null>(null)
     const [selectedAddons, setSelectedAddons] = useState<any[]>([])
@@ -203,6 +204,48 @@ export default function AdvancedCustomerScanPage() {
             }
         } else {
             alert(res.error || 'ဘေလ်တောင်း၍မရပါ')
+        }
+    }
+
+    const handleCancelOrder = async () => {
+        if (!activeOrder) return
+        if (!confirm('အော်ဒါကို ပယ်ဖျက်ရန် သေချာပါသလား။')) return
+
+        setIsCancelling(true)
+        const res = await cancelTableOrder(activeOrder.id)
+        setIsCancelling(false)
+
+        if (res.success) {
+            alert('အော်ဒါကို ပယ်ဖျက်လိုက်ပါပြီ။')
+            setIsOrdered(false)
+            setActiveOrder(null)
+            setCurrentView('home')
+        } else {
+            alert(res.error || 'အော်ဒါဖျက်၍မရပါ')
+        }
+    }
+
+    const handleCancelOrderItem = async (itemIndex: number) => {
+        if (!activeOrder) return
+        if (!confirm('ဤဟင်းပွဲကို ဖျက်ရန် သေချာပါသလား။')) return
+
+        setIsCancelling(true)
+        const res = await cancelTableOrderItem(activeOrder.id, itemIndex)
+        setIsCancelling(false)
+
+        if (res.success) {
+            alert('ဟင်းပွဲကို ပယ်ဖျက်လိုက်ပါပြီ။')
+            const updatedOrder = res.data
+            const hasActiveItems = updatedOrder.items?.some((i: any) => i.status !== 'CANCELLED')
+            if (!hasActiveItems) {
+                setIsOrdered(false)
+                setActiveOrder(null)
+                setCurrentView('home')
+            } else {
+                setActiveOrder(updatedOrder)
+            }
+        } else {
+            alert(res.error || 'ဟင်းပွဲဖျက်၍မရပါ')
         }
     }
 
@@ -675,15 +718,16 @@ export default function AdvancedCustomerScanPage() {
 
                     <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 pb-6">
                         <div className="space-y-4">
-                            {activeOrder.items?.map((item: any) => {
+                            {activeOrder.items?.map((item: any, originalIdx: number) => {
+                                if (item.status === 'CANCELLED') return null
                                 const addonsPrice = item.addons?.reduce((s: number, a: any) => s + (a?.price || 0), 0) || 0
                                 const perItemPrice = item.price + addonsPrice
                                 return (
-                                    <div key={item.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex gap-4">
+                                    <div key={`${item.menuItemId}-${originalIdx}`} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex gap-4">
                                         <div className="flex-1 flex flex-col justify-between">
                                             <div>
                                                 <div className="flex justify-between items-start gap-2">
-                                                    <h4 className="font-bold text-gray-800 text-sm line-clamp-2">{item.menuItem?.name}</h4>
+                                                    <h4 className="font-bold text-gray-800 text-sm line-clamp-2">{item.name || item.menuItem?.name || "ဟင်းပွဲ"}</h4>
                                                     <span className="font-bold text-sm text-gray-500">x{item.quantity}</span>
                                                 </div>
                                                 {item.addons?.length > 0 && (
@@ -692,8 +736,16 @@ export default function AdvancedCustomerScanPage() {
                                                     </p>
                                                 )}
                                             </div>
-                                            <div className="mt-3">
+                                            <div className="mt-3 flex justify-between items-center">
                                                 <span className="font-black text-slate-800 text-sm">{(perItemPrice * item.quantity).toLocaleString()} MMK</span>
+                                                {(item.status || 'PENDING') === 'PENDING' && (
+                                                    <button 
+                                                        onClick={() => handleCancelOrderItem(originalIdx)}
+                                                        className="text-xs text-red-600 bg-red-50 hover:bg-red-100 font-bold px-3 py-1.5 rounded-xl transition active:scale-95"
+                                                    >
+                                                        ❌ ဖျက်မည်
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -707,6 +759,15 @@ export default function AdvancedCustomerScanPage() {
                             <span className="text-sm font-bold text-gray-500">စုစုပေါင်းကျသင့်ငွေ</span>
                             <span className="text-3xl font-black text-gray-900 tracking-tight">{activeOrder.totalAmount?.toLocaleString()} <span className="text-sm text-gray-500 font-bold ml-1">MMK</span></span>
                         </div>
+                        {activeOrder.items?.some((item: any) => (item.status || 'PENDING') === 'PENDING') && (
+                            <button
+                                onClick={handleCancelOrder}
+                                disabled={isCancelling}
+                                className="w-full bg-red-600 hover:bg-red-700 disabled:bg-slate-300 text-white font-bold py-3.5 px-4 mt-4 rounded-2xl shadow-lg flex justify-center items-center gap-1 transition-all active:scale-98"
+                            >
+                                {isCancelling ? 'ပယ်ဖျက်နေပါသည်...' : '❌ အော်ဒါဖျက်မည် (Cancel)'}
+                            </button>
+                        )}
                     </div>
                 </div>
             )}

@@ -44,6 +44,9 @@ model Branch {
   taxRate           Float   @default(5.0)
   isAcceptingOrders Boolean @default(true)
 
+  latitude  Float?
+  longitude Float?
+
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   addonCategories AddonCategory[]
@@ -88,6 +91,7 @@ enum UserRole {
   COMPANY_HEAD
   BRANCH_ADMIN
   STAFF
+  CUSTOMER
 }
 
 // =================================================================
@@ -127,17 +131,17 @@ model MenuItem {
 }
 
 model AddonCategory {
-  id        String     @id @default(cuid())
-  name      String
-  minSelect Int        @default(0)
-  maxSelect Int        @default(1)
-  branchId  String
-  branch    Branch     @relation(fields: [branchId], references: [id], onDelete: Cascade)
-  addons    Addon[]
-  menuItems MenuItem[] // Implicit Many-to-Many
-  masterMenus Menu[]   // Implicit Many-to-Many with HQ Master Menus
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id          String     @id @default(cuid())
+  name        String
+  minSelect   Int        @default(0)
+  maxSelect   Int        @default(1)
+  branchId    String
+  branch      Branch     @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  addons      Addon[]
+  menuItems   MenuItem[] // Implicit Many-to-Many
+  masterMenus Menu[] // Implicit Many-to-Many with HQ Master Menus
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 model Addon {
@@ -256,7 +260,7 @@ model Menu {
   companyId String?
   company   Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  branches MenuOnBranch[]
+  branches        MenuOnBranch[]
   addonCategories AddonCategory[] // Implicit Many-to-Many with Branch local AddonCategories
 
   createdAt DateTime @default(now())
@@ -275,29 +279,29 @@ model MenuOnBranch {
 }
 
 view BranchDailySales {
-  branchId       String
-  branchName     String
-  date           DateTime
-  totalRevenue   Float
-  totalInvoices  Int
+  branchId      String
+  branchName    String
+  date          DateTime
+  totalRevenue  Float
+  totalInvoices Int
 
   @@unique([branchId, date])
 }
 
 model PromoCode {
-  id              String    @id @default(cuid())
-  code            String    @unique
-  discountType    String    // "PERCENTAGE" or "FIXED_AMOUNT"
-  discountValue   Float
-  minOrderAmount  Float?
-  maxUsageLimit   Int?
-  usedCount       Int       @default(0)
-  expiryDate      DateTime?
-  isActive        Boolean   @default(true)
-  
-  branchId        String
-  branch          Branch    @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  id             String    @id @default(cuid())
+  code           String    @unique
+  discountType   String // "PERCENTAGE" or "FIXED_AMOUNT"
+  discountValue  Float
+  minOrderAmount Float?
+  maxUsageLimit  Int?
+  usedCount      Int       @default(0)
+  expiryDate     DateTime?
+  isActive       Boolean   @default(true)
 
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  branchId String
+  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

@@ -14,16 +14,16 @@ export default function BranchStatusChart({ data }: { data: ChartData[] }) {
     React.useEffect(() => { setMounted(true) }, [])
 
     return (
-        <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-xl space-y-4 flex flex-col h-full">
+        <div className="bg-card border border-border p-6 rounded-2xl shadow-xl space-y-4 flex flex-col h-full">
             <div>
                 <h3 className="text-sm font-bold uppercase tracking-wider text-gray-800">📊 Branch Activity (Status)</h3>
-                <p className="text-3xs text-gray-400 font-bold uppercase mt-0.5">ဆိုင်ခွဲများအလိုက် အော်ဒါအရေအတွက် နှိုင်းယှဉ်ချက်</p>
+                <p className="text-3xs text-muted-foreground font-bold uppercase mt-0.5">ဆိုင်ခွဲများအလိုက် အော်ဒါအရေအတွက် နှိုင်းယှဉ်ချက်</p>
             </div>
 
             {/* Recharts Container */}
             <div className="w-full h-64 text-2xs font-mono flex items-center justify-center">
                 {!mounted ? (
-                    <div className="text-gray-400 animate-pulse">Loading Chart...</div>
+                    <div className="text-muted-foreground animate-pulse">Loading Chart...</div>
                 ) : (
                     <ResponsiveContainer width="100%" height="100%">
                         <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>

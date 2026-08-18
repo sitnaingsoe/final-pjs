@@ -28,10 +28,14 @@ export type AggregateBranch = {
 
 export type BranchAvgAggregateOutputType = {
   taxRate: number | null
+  latitude: number | null
+  longitude: number | null
 }
 
 export type BranchSumAggregateOutputType = {
   taxRate: number | null
+  latitude: number | null
+  longitude: number | null
 }
 
 export type BranchMinAggregateOutputType = {
@@ -44,6 +48,8 @@ export type BranchMinAggregateOutputType = {
   currency: string | null
   taxRate: number | null
   isAcceptingOrders: boolean | null
+  latitude: number | null
+  longitude: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -58,6 +64,8 @@ export type BranchMaxAggregateOutputType = {
   currency: string | null
   taxRate: number | null
   isAcceptingOrders: boolean | null
+  latitude: number | null
+  longitude: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -72,6 +80,8 @@ export type BranchCountAggregateOutputType = {
   currency: number
   taxRate: number
   isAcceptingOrders: number
+  latitude: number
+  longitude: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -80,10 +90,14 @@ export type BranchCountAggregateOutputType = {
 
 export type BranchAvgAggregateInputType = {
   taxRate?: true
+  latitude?: true
+  longitude?: true
 }
 
 export type BranchSumAggregateInputType = {
   taxRate?: true
+  latitude?: true
+  longitude?: true
 }
 
 export type BranchMinAggregateInputType = {
@@ -96,6 +110,8 @@ export type BranchMinAggregateInputType = {
   currency?: true
   taxRate?: true
   isAcceptingOrders?: true
+  latitude?: true
+  longitude?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -110,6 +126,8 @@ export type BranchMaxAggregateInputType = {
   currency?: true
   taxRate?: true
   isAcceptingOrders?: true
+  latitude?: true
+  longitude?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -124,6 +142,8 @@ export type BranchCountAggregateInputType = {
   currency?: true
   taxRate?: true
   isAcceptingOrders?: true
+  latitude?: true
+  longitude?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -225,6 +245,8 @@ export type BranchGroupByOutputType = {
   currency: string
   taxRate: number
   isAcceptingOrders: boolean
+  latitude: number | null
+  longitude: number | null
   createdAt: Date
   updatedAt: Date
   _count: BranchCountAggregateOutputType | null
@@ -262,6 +284,8 @@ export type BranchWhereInput = {
   currency?: Prisma.StringFilter<"Branch"> | string
   taxRate?: Prisma.FloatFilter<"Branch"> | number
   isAcceptingOrders?: Prisma.BoolFilter<"Branch"> | boolean
+  latitude?: Prisma.FloatNullableFilter<"Branch"> | number | null
+  longitude?: Prisma.FloatNullableFilter<"Branch"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Branch"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Branch"> | Date | string
   company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
@@ -287,6 +311,8 @@ export type BranchOrderByWithRelationInput = {
   currency?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
   isAcceptingOrders?: Prisma.SortOrder
+  latitude?: Prisma.SortOrderInput | Prisma.SortOrder
+  longitude?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   company?: Prisma.CompanyOrderByWithRelationInput
@@ -315,6 +341,8 @@ export type BranchWhereUniqueInput = Prisma.AtLeast<{
   currency?: Prisma.StringFilter<"Branch"> | string
   taxRate?: Prisma.FloatFilter<"Branch"> | number
   isAcceptingOrders?: Prisma.BoolFilter<"Branch"> | boolean
+  latitude?: Prisma.FloatNullableFilter<"Branch"> | number | null
+  longitude?: Prisma.FloatNullableFilter<"Branch"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Branch"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Branch"> | Date | string
   company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
@@ -340,6 +368,8 @@ export type BranchOrderByWithAggregationInput = {
   currency?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
   isAcceptingOrders?: Prisma.SortOrder
+  latitude?: Prisma.SortOrderInput | Prisma.SortOrder
+  longitude?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.BranchCountOrderByAggregateInput
@@ -362,6 +392,8 @@ export type BranchScalarWhereWithAggregatesInput = {
   currency?: Prisma.StringWithAggregatesFilter<"Branch"> | string
   taxRate?: Prisma.FloatWithAggregatesFilter<"Branch"> | number
   isAcceptingOrders?: Prisma.BoolWithAggregatesFilter<"Branch"> | boolean
+  latitude?: Prisma.FloatNullableWithAggregatesFilter<"Branch"> | number | null
+  longitude?: Prisma.FloatNullableWithAggregatesFilter<"Branch"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Branch"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Branch"> | Date | string
 }
@@ -375,6 +407,8 @@ export type BranchCreateInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   company: Prisma.CompanyCreateNestedOneWithoutBranchesInput
@@ -400,6 +434,8 @@ export type BranchUncheckedCreateInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutBranchInput
@@ -423,6 +459,8 @@ export type BranchUpdateInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneRequiredWithoutBranchesNestedInput
@@ -448,6 +486,8 @@ export type BranchUncheckedUpdateInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutBranchNestedInput
@@ -472,6 +512,8 @@ export type BranchCreateManyInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -485,6 +527,8 @@ export type BranchUpdateManyMutationInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -499,6 +543,8 @@ export type BranchUncheckedUpdateManyInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -523,12 +569,16 @@ export type BranchCountOrderByAggregateInput = {
   currency?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
   isAcceptingOrders?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type BranchAvgOrderByAggregateInput = {
   taxRate?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
 }
 
 export type BranchMaxOrderByAggregateInput = {
@@ -541,6 +591,8 @@ export type BranchMaxOrderByAggregateInput = {
   currency?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
   isAcceptingOrders?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -555,12 +607,16 @@ export type BranchMinOrderByAggregateInput = {
   currency?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
   isAcceptingOrders?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type BranchSumOrderByAggregateInput = {
   taxRate?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
 }
 
 export type BranchNullableScalarRelationFilter = {
@@ -629,6 +685,14 @@ export type FloatFieldUpdateOperationsInput = {
 
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
+}
+
+export type NullableFloatFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type BranchCreateNestedOneWithoutUsersInput = {
@@ -784,6 +848,8 @@ export type BranchCreateWithoutCompanyInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserCreateNestedManyWithoutBranchInput
@@ -807,6 +873,8 @@ export type BranchUncheckedCreateWithoutCompanyInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutBranchInput
@@ -860,6 +928,8 @@ export type BranchScalarWhereInput = {
   currency?: Prisma.StringFilter<"Branch"> | string
   taxRate?: Prisma.FloatFilter<"Branch"> | number
   isAcceptingOrders?: Prisma.BoolFilter<"Branch"> | boolean
+  latitude?: Prisma.FloatNullableFilter<"Branch"> | number | null
+  longitude?: Prisma.FloatNullableFilter<"Branch"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Branch"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Branch"> | Date | string
 }
@@ -873,6 +943,8 @@ export type BranchCreateWithoutUsersInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   company: Prisma.CompanyCreateNestedOneWithoutBranchesInput
@@ -897,6 +969,8 @@ export type BranchUncheckedCreateWithoutUsersInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   menuCategories?: Prisma.MenuCategoryUncheckedCreateNestedManyWithoutBranchInput
@@ -935,6 +1009,8 @@ export type BranchUpdateWithoutUsersInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneRequiredWithoutBranchesNestedInput
@@ -959,6 +1035,8 @@ export type BranchUncheckedUpdateWithoutUsersInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   menuCategories?: Prisma.MenuCategoryUncheckedUpdateManyWithoutBranchNestedInput
@@ -981,6 +1059,8 @@ export type BranchCreateWithoutMenuCategoriesInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   company: Prisma.CompanyCreateNestedOneWithoutBranchesInput
@@ -1005,6 +1085,8 @@ export type BranchUncheckedCreateWithoutMenuCategoriesInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutBranchInput
@@ -1043,6 +1125,8 @@ export type BranchUpdateWithoutMenuCategoriesInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneRequiredWithoutBranchesNestedInput
@@ -1067,6 +1151,8 @@ export type BranchUncheckedUpdateWithoutMenuCategoriesInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutBranchNestedInput
@@ -1089,6 +1175,8 @@ export type BranchCreateWithoutAddonCategoriesInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   company: Prisma.CompanyCreateNestedOneWithoutBranchesInput
@@ -1113,6 +1201,8 @@ export type BranchUncheckedCreateWithoutAddonCategoriesInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutBranchInput
@@ -1151,6 +1241,8 @@ export type BranchUpdateWithoutAddonCategoriesInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneRequiredWithoutBranchesNestedInput
@@ -1175,6 +1267,8 @@ export type BranchUncheckedUpdateWithoutAddonCategoriesInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutBranchNestedInput
@@ -1197,6 +1291,8 @@ export type BranchCreateWithoutAddonsInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   company: Prisma.CompanyCreateNestedOneWithoutBranchesInput
@@ -1221,6 +1317,8 @@ export type BranchUncheckedCreateWithoutAddonsInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutBranchInput
@@ -1259,6 +1357,8 @@ export type BranchUpdateWithoutAddonsInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneRequiredWithoutBranchesNestedInput
@@ -1283,6 +1383,8 @@ export type BranchUncheckedUpdateWithoutAddonsInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutBranchNestedInput
@@ -1305,6 +1407,8 @@ export type BranchCreateWithoutDiscountsInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   company: Prisma.CompanyCreateNestedOneWithoutBranchesInput
@@ -1329,6 +1433,8 @@ export type BranchUncheckedCreateWithoutDiscountsInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutBranchInput
@@ -1367,6 +1473,8 @@ export type BranchUpdateWithoutDiscountsInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneRequiredWithoutBranchesNestedInput
@@ -1391,6 +1499,8 @@ export type BranchUncheckedUpdateWithoutDiscountsInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutBranchNestedInput
@@ -1413,6 +1523,8 @@ export type BranchCreateWithoutTablesInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   company: Prisma.CompanyCreateNestedOneWithoutBranchesInput
@@ -1437,6 +1549,8 @@ export type BranchUncheckedCreateWithoutTablesInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutBranchInput
@@ -1475,6 +1589,8 @@ export type BranchUpdateWithoutTablesInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneRequiredWithoutBranchesNestedInput
@@ -1499,6 +1615,8 @@ export type BranchUncheckedUpdateWithoutTablesInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutBranchNestedInput
@@ -1521,6 +1639,8 @@ export type BranchCreateWithoutOrdersInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   company: Prisma.CompanyCreateNestedOneWithoutBranchesInput
@@ -1545,6 +1665,8 @@ export type BranchUncheckedCreateWithoutOrdersInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutBranchInput
@@ -1583,6 +1705,8 @@ export type BranchUpdateWithoutOrdersInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneRequiredWithoutBranchesNestedInput
@@ -1607,6 +1731,8 @@ export type BranchUncheckedUpdateWithoutOrdersInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutBranchNestedInput
@@ -1629,6 +1755,8 @@ export type BranchCreateWithoutInvoicesInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   company: Prisma.CompanyCreateNestedOneWithoutBranchesInput
@@ -1653,6 +1781,8 @@ export type BranchUncheckedCreateWithoutInvoicesInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutBranchInput
@@ -1691,6 +1821,8 @@ export type BranchUpdateWithoutInvoicesInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneRequiredWithoutBranchesNestedInput
@@ -1715,6 +1847,8 @@ export type BranchUncheckedUpdateWithoutInvoicesInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutBranchNestedInput
@@ -1737,6 +1871,8 @@ export type BranchCreateWithoutMenuOnBranchesInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   company: Prisma.CompanyCreateNestedOneWithoutBranchesInput
@@ -1761,6 +1897,8 @@ export type BranchUncheckedCreateWithoutMenuOnBranchesInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutBranchInput
@@ -1799,6 +1937,8 @@ export type BranchUpdateWithoutMenuOnBranchesInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneRequiredWithoutBranchesNestedInput
@@ -1823,6 +1963,8 @@ export type BranchUncheckedUpdateWithoutMenuOnBranchesInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutBranchNestedInput
@@ -1845,6 +1987,8 @@ export type BranchCreateWithoutPromoCodesInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   company: Prisma.CompanyCreateNestedOneWithoutBranchesInput
@@ -1869,6 +2013,8 @@ export type BranchUncheckedCreateWithoutPromoCodesInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutBranchInput
@@ -1907,6 +2053,8 @@ export type BranchUpdateWithoutPromoCodesInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneRequiredWithoutBranchesNestedInput
@@ -1931,6 +2079,8 @@ export type BranchUncheckedUpdateWithoutPromoCodesInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutBranchNestedInput
@@ -1953,6 +2103,8 @@ export type BranchCreateManyCompanyInput = {
   currency?: string
   taxRate?: number
   isAcceptingOrders?: boolean
+  latitude?: number | null
+  longitude?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1966,6 +2118,8 @@ export type BranchUpdateWithoutCompanyInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUpdateManyWithoutBranchNestedInput
@@ -1989,6 +2143,8 @@ export type BranchUncheckedUpdateWithoutCompanyInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutBranchNestedInput
@@ -2012,6 +2168,8 @@ export type BranchUncheckedUpdateManyWithoutCompanyInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   taxRate?: Prisma.FloatFieldUpdateOperationsInput | number
   isAcceptingOrders?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -2138,6 +2296,8 @@ export type BranchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   currency?: boolean
   taxRate?: boolean
   isAcceptingOrders?: boolean
+  latitude?: boolean
+  longitude?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
@@ -2164,6 +2324,8 @@ export type BranchSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   currency?: boolean
   taxRate?: boolean
   isAcceptingOrders?: boolean
+  latitude?: boolean
+  longitude?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
@@ -2179,6 +2341,8 @@ export type BranchSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   currency?: boolean
   taxRate?: boolean
   isAcceptingOrders?: boolean
+  latitude?: boolean
+  longitude?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
@@ -2194,11 +2358,13 @@ export type BranchSelectScalar = {
   currency?: boolean
   taxRate?: boolean
   isAcceptingOrders?: boolean
+  latitude?: boolean
+  longitude?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type BranchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "address" | "phone" | "companyId" | "restaurantName" | "currency" | "taxRate" | "isAcceptingOrders" | "createdAt" | "updatedAt", ExtArgs["result"]["branch"]>
+export type BranchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "address" | "phone" | "companyId" | "restaurantName" | "currency" | "taxRate" | "isAcceptingOrders" | "latitude" | "longitude" | "createdAt" | "updatedAt", ExtArgs["result"]["branch"]>
 export type BranchInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   users?: boolean | Prisma.Branch$usersArgs<ExtArgs>
@@ -2245,6 +2411,8 @@ export type $BranchPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     currency: string
     taxRate: number
     isAcceptingOrders: boolean
+    latitude: number | null
+    longitude: number | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["branch"]>
@@ -2690,6 +2858,8 @@ export interface BranchFieldRefs {
   readonly currency: Prisma.FieldRef<"Branch", 'String'>
   readonly taxRate: Prisma.FieldRef<"Branch", 'Float'>
   readonly isAcceptingOrders: Prisma.FieldRef<"Branch", 'Boolean'>
+  readonly latitude: Prisma.FieldRef<"Branch", 'Float'>
+  readonly longitude: Prisma.FieldRef<"Branch", 'Float'>
   readonly createdAt: Prisma.FieldRef<"Branch", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Branch", 'DateTime'>
 }

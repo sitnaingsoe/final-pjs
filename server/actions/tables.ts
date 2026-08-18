@@ -277,3 +277,175 @@ export async function requestBillForTable(tableNumber: string, tableId?: string 
     return { success: false, error: "ဘေလ်တောင်း၍မရပါ" }
   }
 }
+
+export async function cancelTableOrder(orderId: string) {
+  try {
+    const updatedOrder = await prisma.$transaction(async (tx) => {
+      const order = await tx.order.findUnique({
+        where: { id: orderId },
+        select: { status: true, items: true }
+      })
+
+      if (!order) {
+        throw new Error("Order not found")
+      }
+
+      if (['PAID', 'CANCELLED'].includes(order.status)) {
+        throw new Error("ဤအော်ဒါအား ဖျက်၍မရတော့ပါ")
+      }
+
+      const items = (order.items as any[]) || []
+      const hasPendingItems = items.some(item => (item.status || 'PENDING') === 'PENDING')
+
+      if (!hasPendingItems) {
+        throw new Error("ဖျက်ရန် စောင့်ဆိုင်းနေသော ဟင်းပွဲမရှိပါ (သို့မဟုတ်) မီးဖိုချောင်မှ စတင်ပြင်ဆင်နေပါပြီ။")
+      }
+
+      // 1. Mark pending items as CANCELLED
+      const updatedItems = items.map(item => 
+        (item.status || 'PENDING') === 'PENDING' 
+          ? { ...item, status: 'CANCELLED' } 
+          : item
+      )
+
+      // 2. Recalculate totals for remaining active items
+      let newTotalAmount = 0
+      updatedItems.forEach(item => {
+        if (item.status !== 'CANCELLED') {
+          const addonsPrice = item.addons?.reduce((sum: number, a: any) => sum + (a.price || 0), 0) || 0
+          const price = item.price + addonsPrice
+          newTotalAmount += price * item.quantity
+        }
+      })
+
+      const newTaxAmount = newTotalAmount * 0.05
+      const newFinalAmount = newTotalAmount + newTaxAmount
+
+      // 3. Resolve new top-level status
+      let newStatus = order.status
+      const activeItems = updatedItems.filter(i => i.status !== 'CANCELLED')
+      if (activeItems.length === 0) {
+        newStatus = 'CANCELLED'
+      } else {
+        const statuses = activeItems.map(i => i.status || 'PENDING')
+        if (statuses.includes('PENDING')) {
+          newStatus = 'PENDING'
+        } else if (statuses.includes('CONFIRMED')) {
+          newStatus = 'CONFIRMED'
+        } else if (statuses.includes('COOKING')) {
+          newStatus = 'COOKING'
+        } else if (statuses.includes('READY')) {
+          newStatus = 'READY'
+        } else if (statuses.every(s => s === 'DELIVERED')) {
+          newStatus = 'DELIVERED'
+        }
+      }
+
+      return await tx.order.update({
+        where: { id: orderId },
+        data: {
+          items: updatedItems,
+          totalAmount: newTotalAmount,
+          taxAmount: newTaxAmount,
+          finalAmount: newFinalAmount,
+          status: newStatus as any
+        }
+      })
+    })
+
+    revalidatePath('/pos')
+    revalidatePath('/dashboard/store/orders')
+    return { success: true }
+  } catch (error: any) {
+    console.error("Error cancelling order:", error)
+    return { success: false, error: error.message || "အော်ဒါဖျက်၍ မရပါ" }
+  }
+}
+
+export async function cancelTableOrderItem(orderId: string, itemIndex: number) {
+  try {
+    const updatedOrder = await prisma.$transaction(async (tx) => {
+      const order = await tx.order.findUnique({
+        where: { id: orderId },
+        select: { status: true, items: true }
+      })
+
+      if (!order) {
+        throw new Error("Order not found")
+      }
+
+      if (['PAID', 'CANCELLED'].includes(order.status)) {
+        throw new Error("ဤအော်ဒါအား ပြင်ဆင်၍မရတော့ပါ")
+      }
+
+      const items = (order.items as any[]) || []
+      const itemToCancel = items[itemIndex]
+
+      if (!itemToCancel) {
+        throw new Error("ဟင်းပွဲ ရှာမတွေ့ပါ")
+      }
+
+      if ((itemToCancel.status || 'PENDING') !== 'PENDING') {
+        throw new Error("မီးဖိုချောင်မှ စတင်ပြင်ဆင်နေပြီဖြစ်၍ ဖျက်၍မရတော့ပါ။")
+      }
+
+      // 1. Mark this specific item as CANCELLED
+      const updatedItems = items.map((item, idx) => 
+        idx === itemIndex 
+          ? { ...item, status: 'CANCELLED' } 
+          : item
+      )
+
+      // 2. Recalculate totals for remaining active items
+      let newTotalAmount = 0
+      updatedItems.forEach(item => {
+        if (item.status !== 'CANCELLED') {
+          const addonsPrice = item.addons?.reduce((sum: number, a: any) => sum + (a.price || 0), 0) || 0
+          const price = item.price + addonsPrice
+          newTotalAmount += price * item.quantity
+        }
+      })
+
+      const newTaxAmount = newTotalAmount * 0.05
+      const newFinalAmount = newTotalAmount + newTaxAmount
+
+      // 3. Resolve new top-level status
+      let newStatus = order.status
+      const activeItems = updatedItems.filter(i => i.status !== 'CANCELLED')
+      if (activeItems.length === 0) {
+        newStatus = 'CANCELLED'
+      } else {
+        const statuses = activeItems.map(i => i.status || 'PENDING')
+        if (statuses.includes('PENDING')) {
+          newStatus = 'PENDING'
+        } else if (statuses.includes('CONFIRMED')) {
+          newStatus = 'CONFIRMED'
+        } else if (statuses.includes('COOKING')) {
+          newStatus = 'COOKING'
+        } else if (statuses.includes('READY')) {
+          newStatus = 'READY'
+        } else if (statuses.every(s => s === 'DELIVERED')) {
+          newStatus = 'DELIVERED'
+        }
+      }
+
+      return await tx.order.update({
+        where: { id: orderId },
+        data: {
+          items: updatedItems,
+          totalAmount: newTotalAmount,
+          taxAmount: newTaxAmount,
+          finalAmount: newFinalAmount,
+          status: newStatus as any
+        }
+      })
+    })
+
+    revalidatePath('/pos')
+    revalidatePath('/dashboard/store/orders')
+    return { success: true, data: updatedOrder }
+  } catch (error: any) {
+    console.error("Error cancelling order item:", error)
+    return { success: false, error: error.message || "ဟင်းပွဲဖျက်၍ မရပါ" }
+  }
+}

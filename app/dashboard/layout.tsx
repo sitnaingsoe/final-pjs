@@ -4,6 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react' // 💡 Session ယူရန် useSession ပါတွဲသုံးပါသည်
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 // Icon definitions
 const HomeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
@@ -76,8 +77,8 @@ export default function DashboardLayout({
     // Session ဆွဲနေတုန်း UI ဗလာမဖြစ်အောင် loading ပြခြင်း
     if (status === 'loading') {
         return (
-            <div className="min-h-screen bg-slate-50 flex items-center justify-center text-black">
-                <span className="w-8 h-8 border-4 border-black border-t-transparent rounded-full animate-spin"></span>
+            <div className="min-h-screen bg-background flex items-center justify-center text-foreground">
+                <span className="w-8 h-8 border-4 border-foreground border-t-transparent rounded-full animate-spin"></span>
             </div>
         )
     }
@@ -92,13 +93,16 @@ export default function DashboardLayout({
                         key={link.path}
                         href={link.path}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className={`flex items-center gap-3 p-3.5 rounded-2xl transition-all text-sm font-bold ${isActive
-                            ? 'bg-black text-white shadow-lg shadow-black/10 translate-x-1'
-                            : 'text-gray-500 hover:bg-black/5 hover:text-black'
+                        className={`flex items-center gap-3 p-3 transition-all duration-300 text-sm font-semibold relative overflow-hidden ${isActive
+                            ? 'text-orange-600'
+                            : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900 rounded-2xl'
                             }`}
                     >
-                        <span className={isActive ? 'text-white' : 'text-gray-400'}>{link.icon}</span>
-                        <span>{link.name}</span>
+                        {isActive && (
+                            <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-transparent border-l-2 border-orange-500 rounded-r-2xl" />
+                        )}
+                        <span className={`relative z-10 transition-colors ${isActive ? 'text-orange-500' : 'text-slate-400 group-hover:text-slate-700'}`}>{link.icon}</span>
+                        <span className="relative z-10 tracking-wide">{link.name}</span>
                     </Link>
                 )
             })}
@@ -106,20 +110,20 @@ export default function DashboardLayout({
     )
 
     const sidebarFooter = (
-        <div className="p-4 border-t border-gray-100 flex items-center justify-between gap-2 bg-white/80 backdrop-blur-md">
+        <div className="p-4 border-t border-slate-200/80 flex items-center justify-between gap-2 bg-white">
             <div className="flex items-center gap-3 overflow-hidden">
-                <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center font-black text-white text-sm shrink-0 uppercase shadow-md shadow-black/10">
+                <div className="w-9 h-9 bg-orange-50 text-orange-600 rounded-lg flex items-center justify-center font-bold text-sm shrink-0 uppercase">
                     {userName.substring(0, 2)}
                 </div>
                 <div className="overflow-hidden">
-                    <p className="text-sm font-bold truncate text-gray-900">{userName}</p>
-                    <p className="text-3xs text-gray-400 font-black uppercase tracking-widest mt-0.5">{role || 'STAFF'}</p>
+                    <p className="text-sm font-semibold truncate text-slate-800">{userName}</p>
+                    <p className="text-[10px] text-slate-500 font-medium uppercase tracking-wider mt-0.5">{role || 'STAFF'}</p>
                 </div>
             </div>
 
             <button
                 onClick={handleLogout}
-                className="p-2.5 hover:bg-red-50 text-gray-400 hover:text-red-600 rounded-xl transition-colors shrink-0 group"
+                className="p-2.5 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-xl transition-colors shrink-0 group"
                 title="စနစ်မှထွက်မည်"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-x-0.5 transition-transform"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
@@ -128,17 +132,17 @@ export default function DashboardLayout({
     )
 
     return (
-        <div className="flex h-screen bg-slate-50 font-sans text-gray-900 overflow-hidden relative">
+        <div className="flex h-screen bg-background font-sans text-foreground overflow-hidden relative">
 
             {/* ၁။ SIDEBAR (Desktop View) */}
-            <aside className="w-[280px] bg-white text-black flex-col justify-between hidden lg:flex border-r border-gray-100 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-10">
-                <div className="p-6 pb-4 flex items-center gap-3">
-                    <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white shadow-lg shadow-black/20 shrink-0">
+            <aside className="w-[280px] bg-white text-slate-800 flex-col justify-between hidden lg:flex border-r border-slate-200/80 z-20 relative">
+                <div className="p-6 pb-4 flex items-center gap-3 relative z-10">
+                    <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center text-white shrink-0 shadow-sm shadow-orange-500/20">
                         <LogoIcon />
                     </div>
                     <div>
-                        <span className="text-base font-black tracking-tight text-black leading-none block">BITECRAFT</span>
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] leading-none block mt-1">Operating System</span>
+                        <span className="text-base font-bold tracking-tight text-slate-900 leading-none block">BITECRAFT</span>
+                        <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest leading-none block mt-1">Operating System</span>
                     </div>
                 </div>
                 {navigationLinks}
@@ -155,21 +159,21 @@ export default function DashboardLayout({
                     />
                     
                     {/* Drawer Content */}
-                    <aside className="relative w-[280px] bg-white text-black flex flex-col justify-between h-full shadow-2xl z-10 animate-in slide-in-from-left duration-300">
+                    <aside className="relative w-[280px] bg-card text-foreground flex flex-col justify-between h-full shadow-2xl z-10 animate-in slide-in-from-left duration-300">
                         <div>
                             <div className="p-6 pb-4 flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white shadow-lg shadow-black/20 shrink-0">
+                                    <div className="w-9 h-9 bg-foreground rounded-lg flex items-center justify-center text-background shrink-0">
                                         <LogoIcon />
                                     </div>
                                     <div>
-                                        <span className="text-base font-black tracking-tight text-black leading-none block">BITECRAFT</span>
-                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] leading-none block mt-1">Operating System</span>
+                                        <span className="text-base font-bold tracking-tight text-foreground leading-none block">BITECRAFT</span>
+                                        <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest leading-none block mt-1">Operating System</span>
                                     </div>
                                 </div>
                                 <button 
                                     onClick={() => setIsMobileMenuOpen(false)} 
-                                    className="p-2 rounded-xl hover:bg-gray-50 text-gray-400 hover:text-black transition-colors"
+                                    className="p-2 rounded-xl hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
                                 </button>
@@ -185,40 +189,43 @@ export default function DashboardLayout({
             <div className="flex-1 flex flex-col overflow-hidden bg-slate-50/50">
 
                 {/* TOP NAVBAR */}
-                <header className="h-[72px] bg-white/80 backdrop-blur-md flex items-center justify-between px-6 border-b border-gray-100 sticky top-0 z-10">
-                    <div className="flex items-center gap-4">
+                <header className="h-[76px] bg-white/80 backdrop-blur-2xl flex items-center justify-between px-6 border-b border-slate-200/80 sticky top-0 z-10 relative">
+                    <div className="flex items-center gap-4 relative z-10">
                         <button 
                             onClick={() => setIsMobileMenuOpen(true)}
-                            className="lg:hidden p-2 -ml-2 rounded-xl hover:bg-gray-100 text-gray-600 transition-colors"
+                            className="lg:hidden p-2.5 -ml-2 rounded-2xl hover:bg-slate-100 text-slate-500 transition-all"
                             aria-label="Open menu"
                         >
                             <HamburgerIcon />
                         </button>
                         <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-black/5 flex items-center justify-center text-black hidden sm:flex">
+                            <div className="w-10 h-10 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center hidden sm:flex">
                                 {role === 'COMPANY_HEAD' ? <StoreIcon /> : <HomeIcon />}
                             </div>
                             <div>
-                                <h1 className="text-sm font-black text-black tracking-tight uppercase">
+                                <h1 className="text-sm font-bold text-slate-900 tracking-tight uppercase">
                                     {role === 'COMPANY_HEAD' ? 'Central Control' : 'Branch Operation'}
                                 </h1>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">
+                                <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest mt-0.5">
                                     Workspace
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-green-50/50 border border-green-100 rounded-full">
+                    <div className="flex items-center gap-4 relative z-10">
+                        <ThemeToggle />
+                        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full">
                             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
                             <span className="text-xs font-bold text-green-700 uppercase tracking-wider">Live</span>
                         </div>
                     </div>
                 </header>
 
-                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50/50 p-6 lg:p-8">
-                    {children}
+                <main className="flex-1 overflow-x-hidden overflow-y-auto p-6 lg:p-8 relative">
+                    <div className="relative z-10">
+                        {children}
+                    </div>
                 </main>
             </div>
 

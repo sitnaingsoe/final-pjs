@@ -54,6 +54,7 @@ export async function POST(request: Request) {
         const response = NextResponse.json({
             success: true,
             accessToken, // Frontend will save this in localStorage
+            refreshToken, // Mobile clients need this in the body (can't read HttpOnly cookies)
             user: {
                 id: user.id,
                 email: user.email,

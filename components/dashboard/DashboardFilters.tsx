@@ -22,26 +22,26 @@ export default function DashboardFilters() {
     }
 
     return (
-        <div className="flex flex-wrap items-center gap-3 bg-white p-4 rounded-xl border border-gray-100 shadow-md">
+        <div className="flex flex-wrap items-center gap-3 glass p-4 rounded-xl border border-border/50 shadow-md">
             <div className="flex items-center gap-2">
-                <span className="text-3xs font-black uppercase text-gray-400 tracking-wider">ရက်စွဲအလိုက်စစ်မည်:</span>
+                <span className="text-3xs font-black uppercase text-muted-foreground tracking-wider">ရက်စွဲအလိုက်စစ်မည်:</span>
 
                 {/* Start Date */}
                 <input
                     type="date"
                     value={fromVal}
                     onChange={(e) => handleFilterChange('from', e.target.value)}
-                    className="bg-gray-50 border border-gray-200 rounded-lg p-1.5 text-2xs text-black focus:outline-none focus:border-black"
+                    className="bg-muted/50 border border-border rounded-lg p-1.5 text-2xs text-foreground focus:outline-none focus:border-primary"
                 />
 
-                <span className="text-gray-300 text-xs">to</span>
+                <span className="text-muted-foreground/50 text-xs">to</span>
 
                 {/* End Date */}
                 <input
                     type="date"
                     value={toVal}
                     onChange={(e) => handleFilterChange('to', e.target.value)}
-                    className="bg-gray-50 border border-gray-200 rounded-lg p-1.5 text-2xs text-black focus:outline-none focus:border-black"
+                    className="bg-muted/50 border border-border rounded-lg p-1.5 text-2xs text-foreground focus:outline-none focus:border-primary"
                 />
             </div>
 
@@ -49,7 +49,7 @@ export default function DashboardFilters() {
             {(fromVal || toVal) && (
                 <button
                     onClick={() => router.push('/dashboard')}
-                    className="text-3xs text-black font-bold hover:underline"
+                    className="text-3xs text-foreground font-bold hover:underline"
                 >
                     Clear Filter
                 </button>

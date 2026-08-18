@@ -63,20 +63,20 @@ export default function CreateMenuForm({ categories, addonCategories, discounts 
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-300">
                     <div className="absolute inset-0 bg-black/40 backdrop-blur-md transition-opacity" onClick={() => !isPending && setIsOpen(false)}></div>
 
-                    <div className="bg-white/90 backdrop-blur-2xl rounded-[2rem] w-full max-w-2xl max-h-[85vh] overflow-y-auto relative z-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] animate-in zoom-in-95 duration-300 flex flex-col border border-white custom-scrollbar">
-                        <div className="sticky top-0 z-20 bg-gradient-to-r from-white/60 to-white/40 border-b border-gray-100 p-6 sm:p-8 flex justify-between items-start backdrop-blur-xl">
+                    <div className="bg-card/90 backdrop-blur-2xl rounded-[2rem] w-full max-w-2xl max-h-[85vh] overflow-y-auto relative z-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] animate-in zoom-in-95 duration-300 flex flex-col border border-border/50 custom-scrollbar">
+                        <div className="sticky top-0 z-20 bg-card/80 border-b border-border/50 p-6 sm:p-8 flex justify-between items-start backdrop-blur-xl">
                             <div className="flex gap-4 items-start">
-                                <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center shrink-0 shadow-lg shadow-black/10">
+                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-500 flex items-center justify-center shrink-0 shadow-lg shadow-orange-500/20">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M4 10h16"/><path d="M4 14h16"/><path d="M4 18h16"/><path d="M4 6h16"/></svg>
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-black text-black tracking-tight">Create Menu Item</h3>
-                                    <p className="text-[10px] text-gray-400 mt-1 font-bold uppercase tracking-widest">ဆိုင်ခွဲအတွက် ဟင်းပွဲအသစ် သို့မဟုတ် မုန့်အသစ် ဖန်တီးရန်</p>
+                                    <h3 className="text-xl font-black text-foreground tracking-tight">Create Menu Item</h3>
+                                    <p className="text-[10px] text-muted-foreground mt-1 font-bold uppercase tracking-widest">ဆိုင်ခွဲအတွက် ဟင်းပွဲအသစ် သို့မဟုတ် မုန့်အသစ် ဖန်တီးရန်</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="p-6 sm:p-8 bg-white/40">
+                        <div className="p-6 sm:p-8 bg-card/40">
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 {error && (
                                     <div className="bg-red-50 border border-red-100 text-red-600 text-xs font-bold p-4 rounded-xl flex items-center gap-3 animate-in slide-in-from-top-2 shadow-sm">
@@ -87,34 +87,34 @@ export default function CreateMenuForm({ categories, addonCategories, discounts 
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-1.5">
-                                        <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest">ဟင်းပွဲ/မုန့် အမည် <span className="text-black">*</span></label>
-                                        <input type="text" name="name" required disabled={isPending} className="w-full bg-white border border-gray-200 rounded-xl p-3 text-xs font-bold text-black placeholder-slate-400 focus:outline-none focus:border-black transition-all shadow-sm focus:shadow-md" placeholder="e.g. Fried Chicken" />
+                                        <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest">ဟင်းပွဲ/မုန့် အမည် <span className="text-foreground">*</span></label>
+                                        <input type="text" name="name" required disabled={isPending} className="w-full bg-card border border-border rounded-xl p-3 text-xs font-bold text-foreground placeholder-slate-400 focus:outline-none focus:border-primary transition-all shadow-sm focus:shadow-md" placeholder="e.g. Fried Chicken" />
                                     </div>
 
                                     <div className="space-y-1.5">
-                                        <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest">ဈေးနှုန်း (MMK) <span className="text-black">*</span></label>
-                                        <input type="number" name="price" required disabled={isPending} className="w-full bg-white border border-gray-200 rounded-xl p-3 text-xs font-bold text-black placeholder-slate-400 focus:outline-none focus:border-black transition-all shadow-sm focus:shadow-md font-mono" placeholder="e.g. 3500" />
+                                        <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest">ဈေးနှုန်း (MMK) <span className="text-foreground">*</span></label>
+                                        <input type="number" name="price" required disabled={isPending} className="w-full bg-card border border-border rounded-xl p-3 text-xs font-bold text-foreground placeholder-slate-400 focus:outline-none focus:border-primary transition-all shadow-sm focus:shadow-md font-mono" placeholder="e.g. 3500" />
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-1.5">
-                                        <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest">အုပ်စု ရွေးချယ်ရန် <span className="text-black">*</span></label>
+                                        <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest">အုပ်စု ရွေးချယ်ရန် <span className="text-foreground">*</span></label>
                                         <div className="relative">
-                                            <select name="categoryId" required disabled={isPending} className="w-full bg-white border border-gray-200 rounded-xl p-3 text-xs font-bold text-black focus:outline-none focus:border-black appearance-none transition-all shadow-sm focus:shadow-md">
+                                            <select name="categoryId" required disabled={isPending} className="w-full bg-card border border-border rounded-xl p-3 text-xs font-bold text-foreground focus:outline-none focus:border-primary appearance-none transition-all shadow-sm focus:shadow-md">
                                                 <option value="">-- အမျိုးအစား ရွေးပါ --</option>
                                                 {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                                             </select>
-                                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div className="space-y-1.5">
-                                        <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest">လျှော့စျေး (Discount)</label>
+                                        <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest">လျှော့စျေး (Discount)</label>
                                         <div className="relative">
-                                            <select name="discountId" disabled={isPending} className="w-full bg-white border border-gray-200 rounded-xl p-3 text-xs font-bold text-black focus:outline-none focus:border-black appearance-none transition-all shadow-sm focus:shadow-md">
+                                            <select name="discountId" disabled={isPending} className="w-full bg-card border border-border rounded-xl p-3 text-xs font-bold text-foreground focus:outline-none focus:border-primary appearance-none transition-all shadow-sm focus:shadow-md">
                                                 <option value="">-- လျှော့စျေး မရှိပါ --</option>
                                                 {discounts?.map(disc => (
                                                     <option key={disc.id} value={disc.id}>
@@ -122,7 +122,7 @@ export default function CreateMenuForm({ categories, addonCategories, discounts 
                                                     </option>
                                                 ))}
                                             </select>
-                                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                                             </div>
                                         </div>
@@ -130,10 +130,10 @@ export default function CreateMenuForm({ categories, addonCategories, discounts 
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest">ဟင်းပွဲ ဓာတ်ပုံ (Image)</label>
-                                    <div className="flex items-center gap-4 bg-white border border-gray-200 rounded-xl p-2 shadow-sm">
+                                    <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest">ဟင်းပွဲ ဓာတ်ပုံ (Image)</label>
+                                    <div className="flex items-center gap-4 bg-card border border-border rounded-xl p-2 shadow-sm">
                                         {imagePreview && (
-                                            <div className="w-12 h-12 rounded-lg overflow-hidden border border-gray-100 shrink-0 shadow-inner">
+                                            <div className="w-12 h-12 rounded-lg overflow-hidden border border-border/50 shrink-0 shadow-inner">
                                                 <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                                             </div>
                                         )}
@@ -143,36 +143,36 @@ export default function CreateMenuForm({ categories, addonCategories, discounts 
                                             accept="image/*"
                                             onChange={handleImageChange}
                                             disabled={isPending}
-                                            className="w-full text-xs font-bold text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-[10px] file:uppercase file:tracking-widest file:font-black file:bg-black file:text-white hover:file:bg-gray-900 transition-colors cursor-pointer"
+                                            className="w-full text-xs font-bold text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-[10px] file:uppercase file:tracking-widest file:font-black file:bg-black file:text-white hover:file:bg-gray-900 transition-colors cursor-pointer"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest">တွဲဖက်စားစရာ (Addon Categories)</label>
-                                    <div className="bg-white border border-gray-200 rounded-xl p-3 max-h-40 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-2 shadow-inner custom-scrollbar">
+                                    <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest">တွဲဖက်စားစရာ (Addon Categories)</label>
+                                    <div className="bg-card border border-border rounded-xl p-3 max-h-40 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-2 shadow-inner custom-scrollbar">
                                         {addonCategories.map(addon => (
-                                            <label key={addon.id} className="flex items-center gap-3 text-xs text-gray-700 cursor-pointer select-none hover:text-black transition-colors bg-gray-50 p-3 rounded-xl border border-gray-100 hover:border-black/20 hover:bg-white shadow-sm">
-                                                <input type="checkbox" checked={selectedAddons.includes(addon.id)} onChange={() => handleAddonChange(addon.id)} className="accent-black rounded border-gray-200 bg-white w-4 h-4 cursor-pointer" disabled={isPending} />
+                                            <label key={addon.id} className="flex items-center gap-3 text-xs text-foreground cursor-pointer select-none hover:text-foreground transition-colors bg-muted/50 p-3 rounded-xl border border-border/50 hover:border-orange-500/20 hover:bg-card shadow-sm">
+                                                <input type="checkbox" checked={selectedAddons.includes(addon.id)} onChange={() => handleAddonChange(addon.id)} className="accent-black rounded border-border bg-card w-4 h-4 cursor-pointer" disabled={isPending} />
                                                 <span className="truncate font-bold text-[10px] uppercase tracking-widest">{addon.name}</span>
                                             </label>
                                         ))}
                                         {addonCategories.length === 0 && (
-                                            <div className="col-span-1 sm:col-span-2 text-[10px] text-gray-400 font-bold p-2 text-center py-4 uppercase tracking-widest">အပိုပစ္စည်းများ မရှိသေးပါ</div>
+                                            <div className="col-span-1 sm:col-span-2 text-[10px] text-muted-foreground font-bold p-2 text-center py-4 uppercase tracking-widest">အပိုပစ္စည်းများ မရှိသေးပါ</div>
                                         )}
                                     </div>
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest">ပါဝင်ပစ္စည်း / ဖော်ပြချက်</label>
-                                    <textarea name="description" disabled={isPending} className="w-full bg-white border border-gray-200 rounded-xl p-3 text-xs font-bold text-black placeholder-slate-400 focus:outline-none focus:border-black h-24 resize-none transition-all shadow-sm focus:shadow-md" placeholder="Enter description..." />
+                                    <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest">ပါဝင်ပစ္စည်း / ဖော်ပြချက်</label>
+                                    <textarea name="description" disabled={isPending} className="w-full bg-card border border-border rounded-xl p-3 text-xs font-bold text-foreground placeholder-slate-400 focus:outline-none focus:border-primary h-24 resize-none transition-all shadow-sm focus:shadow-md" placeholder="Enter description..." />
                                 </div>
 
-                                <div className="flex justify-end gap-3 pt-6 border-t border-gray-200/50">
-                                    <button type="button" onClick={() => setIsOpen(false)} disabled={isPending} className="bg-white hover:bg-gray-50 border border-gray-200 text-gray-600 hover:text-black font-bold px-6 py-3 rounded-xl text-[10px] uppercase tracking-widest transition-colors shadow-sm">
+                                <div className="flex justify-end gap-3 pt-6 border-t border-border/50">
+                                    <button type="button" onClick={() => setIsOpen(false)} disabled={isPending} className="bg-card hover:bg-muted/50 border border-border text-muted-foreground hover:text-foreground font-bold px-6 py-3 rounded-xl text-[10px] uppercase tracking-widest transition-colors shadow-sm">
                                         Cancel
                                     </button>
-                                    <button type="submit" disabled={isPending} className="group relative bg-black hover:bg-gray-900 text-white font-bold px-8 py-3 rounded-xl text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-black/10 hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 flex items-center gap-2">
+                                    <button type="submit" disabled={isPending} className="group relative bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold px-8 py-3 rounded-xl text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-orange-500/20 hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 flex items-center gap-2">
                                         {isPending ? (
                                             <>
                                                 <svg className="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>

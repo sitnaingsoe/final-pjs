@@ -8,11 +8,21 @@ export async function POST(request: Request) {
         const cookieStore = await cookies()
         const refreshTokenCookie = cookieStore.get('refreshToken')
 
-        if (!refreshTokenCookie || !refreshTokenCookie.value) {
-            return NextResponse.json({ success: false, error: "No refresh token provided" }, { status: 401 })
+        // Mobile fallback: refresh token ကို request body ထဲကလည်း ဖတ်နိုင်သည်
+        let tokenValue = refreshTokenCookie?.value || null
+
+        if (!tokenValue) {
+            try {
+                const body = await request.json()
+                tokenValue = body?.refreshToken || null
+            } catch {
+                // Body parsing fail ဖြစ်ရင် ဆက်သွားမည်
+            }
         }
 
-        const tokenValue = refreshTokenCookie.value
+        if (!tokenValue) {
+            return NextResponse.json({ success: false, error: "No refresh token provided" }, { status: 401 })
+        }
 
         // Verify JWT signature and expiration
         const payload = verifyRefreshToken(tokenValue)

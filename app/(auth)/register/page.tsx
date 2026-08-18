@@ -38,23 +38,27 @@ export default function RegisterPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 py-12">
-            <div className="bg-white p-8 sm:p-10 rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] border border-gray-100 w-full max-w-md space-y-8 animate-in fade-in zoom-in-95 duration-500">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4 py-12 relative overflow-hidden">
+            {/* Background Glows */}
+            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/20 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/20 blur-[120px] rounded-full pointer-events-none" />
+
+            <div className="animate-in fade-in zoom-in-95 duration-700 glass p-8 sm:p-10 rounded-[2rem] shadow-2xl border border-border w-full max-w-md space-y-8 relative z-10">
 
                 {/* Header */}
                 <div className="text-center space-y-3">
-                    <div className="w-16 h-16 bg-black rounded-2xl mx-auto flex items-center justify-center shadow-xl shadow-black/20">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+                    <div className="w-16 h-16 bg-gradient-to-tr from-accent to-purple-500 rounded-2xl mx-auto flex items-center justify-center shadow-xl shadow-accent/20 mb-4 text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
                     </div>
                     <div>
-                        <h1 className="text-2xl font-black text-black tracking-tight uppercase">Owner Registration</h1>
-                        <p className="text-sm text-gray-500 mt-1 font-medium">လုပ်ငန်းစုစနစ်အသစ် စတင်ရန်နှင့် ပိုင်ရှင်အကောင့်ဆောက်ရန်</p>
+                        <h1 className="text-3xl font-black text-foreground tracking-tight uppercase">Owner Registration</h1>
+                        <p className="text-sm text-muted-foreground mt-2 font-medium">Create a new company account to get started.</p>
                     </div>
                 </div>
 
                 {/* Error Alert */}
                 {error && (
-                    <div className="bg-red-50 border border-red-100 text-red-600 text-sm p-4 rounded-2xl font-medium flex items-center gap-3 animate-in slide-in-from-top-2">
+                    <div className="animate-in slide-in-from-top-2 bg-red-500/10 border border-red-500/20 text-red-500 text-sm p-4 rounded-2xl font-medium flex items-center gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                         <span>{error}</span>
                     </div>
@@ -65,12 +69,12 @@ export default function RegisterPage() {
 
                     {/* ကုမ္ပဏီ/လုပ်ငန်းအမည် */}
                     <div className="space-y-1.5">
-                        <label className="block text-xs font-black text-gray-500 uppercase tracking-wider">လုပ်ငန်း/ကုမ္ပဏီအမည် (Business/Company Name)</label>
+                        <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">Business/Company Name</label>
                         <input
                             type="text"
                             name="companyName"
-                            placeholder="ဥပမာ - BiteCraft Food Group"
-                            className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3.5 text-sm text-black placeholder-gray-400 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
+                            placeholder="e.g. BiteCraft Food Group"
+                            className="w-full bg-background/50 border border-border rounded-xl p-3.5 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
                             required
                             disabled={isPending}
                         />
@@ -78,24 +82,24 @@ export default function RegisterPage() {
 
                     {/* ပိုင်ရှင်အမည် */}
                     <div className="space-y-1.5">
-                        <label className="block text-xs font-black text-gray-500 uppercase tracking-wider">ပိုင်ရှင်အမည် (Owner Name)</label>
+                        <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">Owner Name</label>
                         <input
                             type="text"
                             name="name"
-                            placeholder="ဥပမာ - ဦးကျော်ကျော်"
-                            className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3.5 text-sm text-black placeholder-gray-400 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
+                            placeholder="e.g. John Doe"
+                            className="w-full bg-background/50 border border-border rounded-xl p-3.5 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
                             disabled={isPending}
                         />
                     </div>
 
                     {/* အီးမေးလ် */}
                     <div className="space-y-1.5">
-                        <label className="block text-xs font-black text-gray-500 uppercase tracking-wider">အီးမေးလ် (Owner Email)</label>
+                        <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">Email Address</label>
                         <input
                             type="email"
                             name="email"
                             placeholder="owner@bitecraft.com"
-                            className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3.5 text-sm text-black placeholder-gray-400 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
+                            className="w-full bg-background/50 border border-border rounded-xl p-3.5 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
                             required
                             disabled={isPending}
                         />
@@ -103,13 +107,13 @@ export default function RegisterPage() {
 
                     {/* လျှို့ဝှက်နံပါတ် + Show/Hide */}
                     <div className="space-y-1.5">
-                        <label className="block text-xs font-black text-gray-500 uppercase tracking-wider">လျှို့ဝှက်နံပါတ် (Password)</label>
+                        <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">Password</label>
                         <div className="relative">
                             <input
                                 type={showPassword ? 'text' : 'password'}
                                 name="password"
                                 placeholder="••••••••"
-                                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3.5 pr-12 text-sm text-black placeholder-gray-400 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
+                                className="w-full bg-background/50 border border-border rounded-xl p-3.5 pr-12 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
                                 required
                                 minLength={6}
                                 disabled={isPending}
@@ -117,7 +121,7 @@ export default function RegisterPage() {
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors"
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                                 aria-label={showPassword ? 'Hide password' : 'Show password'}
                             >
                                 {showPassword ? (
@@ -131,20 +135,20 @@ export default function RegisterPage() {
 
                     {/* လျှို့ဝှက်နံပါတ် ထပ်မံရိုက်ပါ (Confirm Password) */}
                     <div className="space-y-1.5">
-                        <label className="block text-xs font-black text-gray-500 uppercase tracking-wider">လျှို့ဝှက်နံပါတ်ထပ်မံရိုက်ပါ (Confirm Password)</label>
+                        <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">Confirm Password</label>
                         <div className="relative">
                             <input
                                 type={showConfirm ? 'text' : 'password'}
                                 name="confirmPassword"
                                 placeholder="••••••••"
-                                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3.5 pr-12 text-sm text-black placeholder-gray-400 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
+                                className="w-full bg-background/50 border border-border rounded-xl p-3.5 pr-12 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
                                 required
                                 disabled={isPending}
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowConfirm(!showConfirm)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors"
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                                 aria-label={showConfirm ? 'Hide confirm password' : 'Show confirm password'}
                             >
                                 {showConfirm ? (
@@ -160,7 +164,7 @@ export default function RegisterPage() {
                     <button
                         type="submit"
                         disabled={isPending}
-                        className="group relative w-full bg-black text-white text-sm font-bold py-4 rounded-xl transition-all overflow-hidden flex items-center justify-center gap-2 mt-4 shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]"
+                        className="group relative w-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-bold py-4 rounded-xl transition-all overflow-hidden flex items-center justify-center gap-2 mt-4 shadow-lg hover:-translate-y-0.5 disabled:opacity-70 disabled:hover:translate-y-0"
                     >
                         {!isPending && (
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
@@ -172,18 +176,18 @@ export default function RegisterPage() {
                             </>
                         ) : (
                             <>
-                                <span>ကုမ္ပဏီနှင့် အကောင့်ဆောက်မည်</span>
+                                <span>Register Account</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                             </>
                         )}
                     </button>
                 </form>
 
-                <div className="text-center pt-6 border-t border-gray-100">
-                    <p className="text-sm text-gray-500 font-medium">
-                        အကောင့်ရှိပြီးသားလား?{' '}
-                        <Link href="/login" className="text-black font-bold hover:underline transition-all">
-                            Login ဝင်ရန်
+                <div className="text-center pt-6 border-t border-border/50">
+                    <p className="text-sm text-muted-foreground font-medium">
+                        Already have an account?{' '}
+                        <Link href="/login" className="text-foreground font-bold hover:text-accent transition-all">
+                            Sign In
                         </Link>
                     </p>
                 </div>

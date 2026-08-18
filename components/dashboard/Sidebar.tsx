@@ -26,12 +26,12 @@ export default function Sidebar() {
         ]
 
     return (
-        <div className="w-64 min-h-screen bg-white border-r border-gray-200 p-4 space-y-6 text-black">
+        <div className="w-64 min-h-screen bg-card border-r border-border p-4 space-y-6 text-foreground">
             {/* App Logo */}
-            <div className="px-2 py-4 border-b border-gray-100">
-                <h2 className="text-lg font-black text-black uppercase tracking-widest">BiteCraft OS</h2>
-                <p className="text-3xs text-gray-400 font-bold uppercase mt-0.5">
-                    Role: <span className="text-gray-700">{role || 'Loading...'}</span>
+            <div className="px-2 py-4 border-b border-border/50">
+                <h2 className="text-lg font-black text-foreground uppercase tracking-widest">BiteCraft OS</h2>
+                <p className="text-3xs text-muted-foreground font-bold uppercase mt-0.5">
+                    Role: <span className="text-foreground">{role || 'Loading...'}</span>
                 </p>
             </div>
 
@@ -45,7 +45,7 @@ export default function Sidebar() {
                             href={link.path}
                             className={`flex items-center px-4 py-3 text-xs font-bold rounded-xl transition ${isActive
                                     ? 'bg-black text-white shadow-md'
-                                    : 'text-gray-500 hover:bg-gray-50 hover:text-black'
+                                    : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                                 }`}
                         >
                             {link.name}

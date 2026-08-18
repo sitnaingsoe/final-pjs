@@ -4,31 +4,38 @@ import { prisma } from '@/lib/db'
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 
-// 🚀 Backend Data Fetching Logic (Role အလိုက် ဒေတာဆွဲထုတ်ခြင်း)
-async function getInvoices(role: string, branchId: string | null | undefined) {
-    if (role === 'COMPANY_HEAD') {
-        // Owner ဆိုလျှင် ဆိုင်ခွဲအားလုံး၏ ဘေလ်များကို ဆွဲထုတ်ပြီး ဆိုင်ခွဲအမည်ပါ တွဲယူမည်
-        return await prisma.invoice.findMany({
-            include: {
-                branch: { select: { name: true } }
-            },
-            orderBy: { createdAt: 'desc' }
-        })
-    } else {
-        // ဆိုင်ခွဲဝန်ထမ်း/မန်နေဂျာ ဆိုလျှင် မိမိဆိုင်ခွဲတစ်ခုတည်းကိုသာ Filter ချမည်
-        return await prisma.invoice.findMany({
-            where: { 
-                branchId: branchId || ""
-            },
-            include: {
-                branch: { select: { name: true } }
-            },
-            orderBy: { createdAt: 'desc' }
-        })
-    }
+const ITEMS_PER_PAGE = 10;
+
+async function getInvoices(role: string, branchId: string | null | undefined, page: number = 1, limit: number = ITEMS_PER_PAGE) {
+    const skip = (page - 1) * limit
+    const baseWhere = role === 'COMPANY_HEAD' ? {} : { branchId: branchId || "" }
+
+    const [invoices, total] = await Promise.all([
+        prisma.invoice.findMany({
+            where: baseWhere,
+            include: { branch: { select: { name: true } } },
+            orderBy: { createdAt: 'desc' },
+            skip,
+            take: limit
+        }),
+        prisma.invoice.count({ where: baseWhere })
+    ])
+
+    // Calculate total settled revenue (all time)
+    const overallTotalAgg = await prisma.invoice.aggregate({
+        where: { ...baseWhere, paymentStatus: 'PAID' },
+        _sum: { finalAmount: true }
+    })
+    const overallTotal = overallTotalAgg._sum.finalAmount || 0
+
+    return { invoices, total, overallTotal, totalPages: Math.ceil(total / limit) }
 }
 
-export default async function InvoicesPage() {
+export default async function InvoicesPage(
+    props: { searchParams?: Promise<{ page?: string }> }
+) {
+    const searchParams = await props.searchParams;
+    const page = Number(searchParams?.page) || 1
     const session = await auth()
 
     if (!session?.user) {
@@ -36,62 +43,57 @@ export default async function InvoicesPage() {
     }
 
     const { role, branchId } = session.user
-    const invoices = await getInvoices(role!, branchId)
-
-    // စုစုပေါင်း ရောင်းရငွေအားလုံးကို ပေါင်းတွက်ခြင်း
-    const overallTotal = invoices.reduce((sum, inv) => inv.paymentStatus === 'PAID' ? sum + inv.finalAmount : sum, 0)
+    const { invoices, total, overallTotal, totalPages } = await getInvoices(role!, branchId, page, ITEMS_PER_PAGE)
 
     return (
         <div className="space-y-6 lg:space-y-8 animate-in fade-in zoom-in-95 duration-500">
 
             {/* Header Area + Financial Stat Card */}
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 p-6 md:p-8 bg-white/60 backdrop-blur-xl rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 p-6 md:p-8 glass rounded-[2rem] border border-border/50 shadow-2xl">
                 <div className="flex items-center gap-5">
-                    <div className="w-14 h-14 bg-black rounded-2xl flex items-center justify-center text-white shadow-xl shadow-black/10 shrink-0">
+                    <div className="w-14 h-14 bg-gradient-to-tr from-orange-500 to-amber-500 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-orange-500/20 shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
                     </div>
                     <div>
-                        <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-black">Invoice Ledger</h1>
-                        <p className="text-sm font-bold text-gray-400 mt-1 uppercase tracking-widest">
-                            {role === 'COMPANY_HEAD' ? 'လုပ်ငန်းစုတစ်ခုလုံး၏ ငွေရှင်းပြီးသား ဘေလ်မှတ်တမ်းများချုပ်' : 'သင့်ဆိုင်ခွဲ၏ အရောင်းပြေစာ မှတ်တမ်းများ'}
-                        </p>
+                        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground">Invoice Ledger</h1>
+                        <p className="text-sm font-medium text-muted-foreground mt-1">Track and manage branch revenue globally.</p>
                     </div>
                 </div>
 
                 {/* ရောင်းရငွေပြသသည့် Quick Stat Box */}
-                <div className="bg-white border border-gray-100 px-6 py-4 rounded-2xl flex flex-col justify-center min-w-[220px] shadow-sm">
-                    <div className="flex items-center gap-2 mb-1 text-gray-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                        <span className="text-[10px] font-black uppercase tracking-widest">Total Settled (စုစုပေါင်းဝင်ငွေ)</span>
+                <div className="bg-card/50 border border-border/50 px-6 py-4 rounded-2xl flex flex-col justify-center min-w-[220px] shadow-sm hover:shadow-md transition-all">
+                    <div className="flex items-center gap-2 mb-1 text-muted-foreground">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        <span className="text-xs font-semibold uppercase tracking-wider">Total Settled (စုစုပေါင်းဝင်ငွေ)</span>
                     </div>
-                    <span className="text-xl font-black text-black font-mono">
-                        {overallTotal.toLocaleString()} <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-0.5">MMK</span>
+                    <span className="text-2xl font-extrabold text-foreground font-mono mt-1">
+                        {overallTotal.toLocaleString()} <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-0.5">MMK</span>
                     </span>
                 </div>
             </div>
 
             {/* 🧾 Invoices List Table */}
-            <div className="bg-white/60 backdrop-blur-xl border border-gray-100 rounded-[2rem] p-6 lg:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-                <div className="flex items-center gap-3 mb-6 md:mb-8">
-                    <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white shadow-md shadow-black/10 shrink-0">
+            <div className="glass border border-border/50 rounded-[2rem] p-6 lg:p-8 shadow-2xl">
+                <div className="flex items-center gap-3 mb-6 md:mb-8 border-b border-border/50 pb-6">
+                    <div className="w-10 h-10 bg-gradient-to-tr from-orange-500 to-amber-500 rounded-xl flex items-center justify-center text-white shadow-md shadow-orange-500/20 shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
                     </div>
-                    <h2 className="text-base font-black uppercase tracking-wider text-black">Invoice Registry <span className="font-bold text-gray-400 tracking-normal ml-1 text-sm">({invoices.length})</span></h2>
+                    <h2 className="text-base font-bold tracking-tight text-foreground">Invoice Registry <span className="font-medium text-muted-foreground tracking-normal ml-1 text-sm">({total})</span></h2>
                 </div>
 
                 <div className="overflow-x-auto custom-scrollbar">
-                    <table className="w-full text-left text-sm text-gray-700 min-w-[1000px]">
-                        <thead className="text-xs uppercase font-black tracking-widest text-gray-400 border-b border-gray-100">
+                    <table className="w-full text-left text-sm text-foreground min-w-[1000px]">
+                        <thead className="text-xs uppercase font-bold tracking-wider text-muted-foreground border-b border-border/50 bg-muted/20">
                             <tr>
-                                <th className="pb-4 pl-4 font-black">Invoice No.</th>
-                                {role === 'COMPANY_HEAD' && <th className="pb-4 font-black">Branch</th>}
-                                <th className="pb-4 font-black">Payment Method</th>
-                                <th className="pb-4 text-right font-black">Sub Total</th>
-                                <th className="pb-4 text-right font-black">Tax (5%)</th>
-                                <th className="pb-4 text-right font-black">Discount</th>
-                                <th className="pb-4 text-right font-black">Final Amount</th>
-                                <th className="pb-4 text-center font-black">Status</th>
-                                <th className="pb-4 text-right pr-4 font-black">Date</th>
+                                <th className="py-4 pl-4 font-bold">Invoice No.</th>
+                                {role === 'COMPANY_HEAD' && <th className="py-4 font-bold">Branch</th>}
+                                <th className="py-4 font-bold">Payment Method</th>
+                                <th className="py-4 text-right font-bold">Sub Total</th>
+                                <th className="py-4 text-right font-bold">Tax (5%)</th>
+                                <th className="py-4 text-right font-bold">Discount</th>
+                                <th className="py-4 text-right font-bold">Final Amount</th>
+                                <th className="py-4 text-center font-bold">Status</th>
+                                <th className="py-4 text-right pr-4 font-bold">Date</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
@@ -99,11 +101,11 @@ export default async function InvoicesPage() {
                                 <tr>
                                     <td colSpan={role === 'COMPANY_HEAD' ? 9 : 8} className="py-12">
                                         <div className="flex flex-col items-center justify-center text-center">
-                                            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center text-gray-300 mb-4 border border-dashed border-gray-200">
+                                            <div className="w-16 h-16 bg-muted/50 rounded-full flex items-center justify-center text-muted-foreground/50 mb-4 border border-dashed border-border">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
                                             </div>
-                                            <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest mb-1">No Invoices Found</h3>
-                                            <p className="text-xs text-gray-500 font-bold">မည်သည့် ပြေစာမှတ်တမ်းမျှ မရှိသေးပါ။</p>
+                                            <h3 className="text-sm font-bold text-foreground tracking-wide mb-1">No Invoices Found</h3>
+                                            <p className="text-xs text-muted-foreground font-medium">မည်သည့် ပြေစာမှတ်တမ်းမျှ မရှိသေးပါ။</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -111,15 +113,15 @@ export default async function InvoicesPage() {
                                 invoices.map((invoice) => (
                                     <tr key={invoice.id} className="hover:bg-black/5 transition-colors group">
                                         {/* Invoice Number */}
-                                        <td className="py-4 pl-4 font-black text-black font-mono">
-                                            <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-md text-[10px] uppercase tracking-widest mr-2 group-hover:bg-black group-hover:text-white transition-colors">#{invoice.invoiceNumber}</span>
+                                        <td className="py-4 pl-4 font-bold text-foreground font-mono">
+                                            <span className="bg-muted text-muted-foreground px-2.5 py-1 rounded-md text-xs uppercase tracking-wider mr-2 group-hover:bg-black group-hover:text-white transition-colors">#{invoice.invoiceNumber}</span>
                                         </td>
 
                                         {/* Company Head သာ မြင်ရမည့် ဆိုင်ခွဲအမည် */}
                                         {role === 'COMPANY_HEAD' && (
-                                            <td className="py-4 text-gray-900 font-bold text-sm">
+                                            <td className="py-4 text-foreground font-bold text-sm">
                                                 <div className="flex items-center gap-2">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                                                     {invoice.branch?.name || '-'}
                                                 </div>
                                             </td>
@@ -127,24 +129,24 @@ export default async function InvoicesPage() {
 
                                         {/* Payment Method */}
                                         <td className="py-4">
-                                            <span className="bg-white border border-gray-200 px-2.5 py-1 rounded-md text-gray-600 font-black uppercase text-[10px] tracking-widest shadow-sm">
+                                            <span className="bg-card border border-border px-3 py-1 rounded-full text-muted-foreground font-semibold uppercase text-[10px] tracking-wider shadow-sm">
                                                 {invoice.paymentMethod}
                                             </span>
                                         </td>
 
                                         {/* Financial Breakdowns */}
-                                        <td className="py-4 text-right font-mono text-gray-500 font-bold">{invoice.subTotal.toLocaleString()}</td>
-                                        <td className="py-4 text-right font-mono text-gray-400 font-medium">{invoice.taxAmount.toLocaleString()}</td>
-                                        <td className="py-4 text-right font-mono text-red-500 font-bold">-{invoice.discountAmount.toLocaleString()}</td>
-                                        <td className="py-4 text-right font-mono font-black text-black">{invoice.finalAmount.toLocaleString()}</td>
+                                        <td className="py-4 text-right font-mono text-muted-foreground font-medium">{invoice.subTotal.toLocaleString()}</td>
+                                        <td className="py-4 text-right font-mono text-muted-foreground font-medium">{invoice.taxAmount.toLocaleString()}</td>
+                                        <td className="py-4 text-right font-mono text-red-500 font-medium">-{invoice.discountAmount.toLocaleString()}</td>
+                                        <td className="py-4 text-right font-mono font-bold text-foreground">{invoice.finalAmount.toLocaleString()}</td>
 
                                         {/* Payment Status Badges */}
                                         <td className="py-4 text-center">
-                                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-widest ${invoice.paymentStatus === 'PAID'
-                                                    ? 'bg-green-50 text-green-700'
+                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border shadow-sm ${invoice.paymentStatus === 'PAID'
+                                                    ? 'bg-green-50/50 text-green-700 border-green-200/50'
                                                     : invoice.paymentStatus === 'UNPAID'
-                                                        ? 'bg-amber-50 text-amber-600'
-                                                        : 'bg-red-50 text-red-600'
+                                                        ? 'bg-amber-50/50 text-amber-700 border-amber-200/50'
+                                                        : 'bg-red-50/50 text-red-600 border-red-200/50'
                                                 }`}>
                                                 <span className={`w-1.5 h-1.5 rounded-full ${invoice.paymentStatus === 'PAID' ? 'bg-green-500' : invoice.paymentStatus === 'UNPAID' ? 'bg-amber-500' : 'bg-red-500'}`}></span>
                                                 {invoice.paymentStatus}
@@ -152,7 +154,7 @@ export default async function InvoicesPage() {
                                         </td>
 
                                         {/* Date formatted */}
-                                        <td className="py-4 text-right pr-4 text-gray-400 font-mono font-bold text-xs uppercase tracking-widest">
+                                        <td className="py-4 text-right pr-4 text-muted-foreground font-mono font-medium text-xs tracking-wider">
                                             {new Date(invoice.createdAt).toLocaleDateString('en-GB')}
                                         </td>
                                     </tr>
@@ -161,6 +163,29 @@ export default async function InvoicesPage() {
                         </tbody>
                     </table>
                 </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                    <div className="mt-8 flex items-center justify-between border-t border-border/50 pt-6">
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+                            Showing page {page} of {totalPages}
+                        </p>
+                        <div className="flex items-center gap-2">
+                            <a 
+                                href={page > 1 ? `/dashboard/hq/invoices?page=${page - 1}` : '#'} 
+                                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${page > 1 ? 'bg-card border-border/50 text-foreground hover:border-orange-500/50 hover:shadow-md' : 'bg-muted/50 border-transparent text-muted-foreground/50 cursor-not-allowed'}`}
+                            >
+                                Previous
+                            </a>
+                            <a 
+                                href={page < totalPages ? `/dashboard/hq/invoices?page=${page + 1}` : '#'} 
+                                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${page < totalPages ? 'bg-card border-border/50 text-foreground hover:border-orange-500/50 hover:shadow-md' : 'bg-muted/50 border-transparent text-muted-foreground/50 cursor-not-allowed'}`}
+                            >
+                                Next
+                            </a>
+                        </div>
+                    </div>
+                )}
             </div>
 
         </div>

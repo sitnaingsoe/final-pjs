@@ -27,12 +27,12 @@ export default function ToggleLocalMenu({ itemId, initialIsActive }: { itemId: s
             <button
                 onClick={handleToggle}
                 disabled={isLoading}
-                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${isActive ? 'bg-black' : 'bg-gray-300'} ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${isActive ? 'bg-slate-900' : 'bg-slate-200'} ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                 title={isActive ? "Mark Out of Stock" : "Mark In Stock"}
             >
-                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isActive ? 'translate-x-4' : 'translate-x-1'}`} />
+                <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow-sm ${isActive ? 'translate-x-4.5' : 'translate-x-0.5'}`} />
             </button>
-            <span className="text-[10px] font-bold text-gray-500 uppercase">
+            <span className="text-xs font-semibold text-slate-600">
                 {isActive ? 'In Stock' : 'Out of Stock'}
             </span>
         </div>

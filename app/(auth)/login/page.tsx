@@ -27,23 +27,30 @@ function LoginForm() {
     }, [urlError])
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-            <div className="bg-white p-8 sm:p-10 rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] border border-gray-100 w-full max-w-md space-y-8 animate-in fade-in zoom-in-95 duration-500">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
+            {/* Background Glows */}
+            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/20 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/20 blur-[120px] rounded-full pointer-events-none" />
 
+            <div 
+                className="animate-in fade-in zoom-in-95 duration-700 glass p-8 sm:p-10 rounded-[2rem] shadow-2xl border border-border w-full max-w-md space-y-8 relative z-10"
+            >
                 {/* Header */}
                 <div className="text-center space-y-3">
-                    <div className="w-16 h-16 bg-black rounded-2xl mx-auto flex items-center justify-center shadow-xl shadow-black/20">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M2 18v3c0 .6.4 1 1 1h4v-3h3v-3h2l1.4-1.4a6.5 6.5 0 1 0-4-4Z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></svg>
+                    <div className="w-16 h-16 bg-gradient-to-tr from-accent to-purple-500 rounded-2xl mx-auto flex items-center justify-center shadow-xl shadow-accent/20 mb-4 text-white font-bold text-2xl">
+                        B
                     </div>
                     <div>
-                        <h1 className="text-2xl font-black text-black tracking-tight">Sign In</h1>
-                        <p className="text-sm text-gray-500 mt-1 font-medium">BiteCraft Restaurant OS စနစ်ထဲသို့ ဝင်ရောက်ရန်</p>
+                        <h1 className="text-3xl font-black text-foreground tracking-tight">Welcome Back</h1>
+                        <p className="text-sm text-muted-foreground mt-2 font-medium">Sign in to BiteCraft OS</p>
                     </div>
                 </div>
 
                 {/* Error Alert */}
                 {error && (
-                    <div className="bg-red-50 border border-red-100 text-red-600 text-sm p-4 rounded-2xl font-medium flex items-center gap-3 animate-in slide-in-from-top-2">
+                    <div 
+                        className="animate-in slide-in-from-top-2 bg-red-500/10 border border-red-500/20 text-red-500 text-sm p-4 rounded-2xl font-medium flex items-center gap-3"
+                    >
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                         <span>{error}</span>
                     </div>
@@ -108,38 +115,42 @@ function LoginForm() {
 
                     {/* Email Input */}
                     <div className="space-y-1.5">
-                        <label className="block text-xs font-black text-gray-500 uppercase tracking-wider">အီးမေးလ် (Email Address)</label>
-                        <input
-                            type="email"
-                            name="email"
-                            placeholder="name@company.com"
-                            className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3.5 text-sm text-black placeholder-gray-400 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
-                            required
-                            disabled={isPending}
-                        />
+                        <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">Email Address</label>
+                        <div className="relative">
+                            <svg className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="name@company.com"
+                                className="w-full bg-background/50 border border-border rounded-xl p-3.5 pl-11 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
+                                required
+                                disabled={isPending}
+                            />
+                        </div>
                     </div>
 
                     {/* Password Input */}
                     <div className="space-y-1.5">
                         <div className="flex justify-between items-center">
-                            <label className="block text-xs font-black text-gray-500 uppercase tracking-wider">လျှို့ဝှက်နံပါတ် (Password)</label>
-                            <Link href="/forgot-password" className="text-xs font-bold text-gray-500 hover:text-black transition-colors">
+                            <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">Password</label>
+                            <Link href="/forgot-password" className="text-xs font-bold text-accent hover:text-accent/80 transition-colors">
                                 Forgot?
                             </Link>
                         </div>
                         <div className="relative">
+                            <svg className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                             <input
                                 type={showPassword ? 'text' : 'password'}
                                 name="password"
                                 placeholder="••••••••"
-                                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3.5 pr-12 text-sm text-black placeholder-gray-400 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
+                                className="w-full bg-background/50 border border-border rounded-xl p-3.5 pl-11 pr-12 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
                                 required
                                 disabled={isPending}
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors"
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                                 aria-label={showPassword ? 'Hide password' : 'Show password'}
                             >
                                 {showPassword ? (
@@ -155,36 +166,36 @@ function LoginForm() {
                     <button
                         type="submit"
                         disabled={isPending || isSuccess}
-                        className={`group relative w-full text-white text-sm font-bold py-4 rounded-xl transition-all overflow-hidden flex items-center justify-center gap-2 mt-4 shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] ${isSuccess ? 'bg-green-600' : 'bg-black'}`}
+                        className={`group relative w-full text-primary-foreground text-sm font-bold py-4 rounded-xl transition-all overflow-hidden flex items-center justify-center gap-2 mt-4 shadow-lg disabled:opacity-70 ${isSuccess ? 'bg-green-500' : 'bg-primary hover:scale-[1.02]'}`}
                     >
                         {!isSuccess && !isPending && (
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
                         )}
                         {isSuccess ? (
                             <>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                <span>အကောင့်ဝင်ခြင်း အောင်မြင်ပါသည်</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                <span>Success! Redirecting...</span>
                             </>
                         ) : isPending ? (
                             <>
                                 <svg className="w-5 h-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                <span>စစ်ဆေးနေသည်...</span>
+                                <span>Authenticating...</span>
                             </>
                         ) : (
                             <>
-                                <span>စနစ်ထဲသို့ ဝင်မည်</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                <span>Sign In to System</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                             </>
                         )}
                     </button>
                 </form>
 
                 {/* Register Link */}
-                <div className="text-center pt-6 border-t border-gray-100">
-                    <p className="text-sm text-gray-500 font-medium">
-                        လုပ်ငန်းအသစ် စတင်မှာလား?{' '}
-                        <Link href="/register" className="text-black font-bold hover:underline transition-all">
-                            ကုမ္ပဏီအကောင့်ဆောက်ရန်
+                <div className="text-center pt-6 border-t border-border/50">
+                    <p className="text-sm text-muted-foreground font-medium">
+                        New to BiteCraft?{' '}
+                        <Link href="/register" className="text-foreground font-bold hover:text-accent transition-all">
+                            Create an Account
                         </Link>
                     </p>
                 </div>
@@ -196,7 +207,7 @@ function LoginForm() {
 
 export default function LoginPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-50 text-black font-medium">Loading...</div>}>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-background text-foreground font-medium">Loading...</div>}>
             <LoginForm />
         </Suspense>
     )

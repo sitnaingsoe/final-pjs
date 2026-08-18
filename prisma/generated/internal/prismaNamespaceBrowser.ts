@@ -104,6 +104,8 @@ export const BranchScalarFieldEnum = {
   currency: 'currency',
   taxRate: 'taxRate',
   isAcceptingOrders: 'isAcceptingOrders',
+  latitude: 'latitude',
+  longitude: 'longitude',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

@@ -47,25 +47,25 @@ export default function CreateStaffForm() {
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-300">
                     <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity" onClick={() => !isSubmitting && setIsOpen(false)}></div>
 
-                    <div className="bg-white rounded-[2rem] w-full max-w-lg max-h-[90vh] flex flex-col relative z-10 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.4)] border border-gray-100 overflow-hidden animate-in zoom-in-95 duration-300">
+                    <div className="bg-card rounded-[2rem] w-full max-w-lg max-h-[90vh] flex flex-col relative z-10 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.4)] border border-border/50 overflow-hidden animate-in zoom-in-95 duration-300">
                         {/* Header */}
-                        <div className="bg-white border-b border-gray-100 p-6 sm:p-8 flex justify-between items-start shrink-0">
+                        <div className="bg-card border-b border-border/50 p-6 sm:p-8 flex justify-between items-start shrink-0">
                             <div className="flex gap-4 items-start">
-                                <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center shrink-0 shadow-lg shadow-black/10">
+                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-500 flex items-center justify-center shrink-0 shadow-lg shadow-orange-500/20">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-black text-black tracking-tight">Create Staff Account</h3>
-                                    <p className="text-[10px] text-gray-400 mt-1 font-bold uppercase tracking-widest">ဆိုင်ခွဲအတွက် ဝန်ထမ်းအကောင့်အသစ် ဖန်တီးရန်</p>
+                                    <h3 className="text-xl font-black text-foreground tracking-tight">Create Staff Account</h3>
+                                    <p className="text-[10px] text-muted-foreground mt-1 font-bold uppercase tracking-widest">ဆိုင်ခွဲအတွက် ဝန်ထမ်းအကောင့်အသစ် ဖန်တီးရန်</p>
                                 </div>
                             </div>
-                            <button onClick={() => !isSubmitting && setIsOpen(false)} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 transition-colors">
+                            <button onClick={() => !isSubmitting && setIsOpen(false)} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-muted-foreground transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                             </button>
                         </div>
                         
                         {/* Scrollable Body */}
-                        <div className="p-6 sm:p-8 bg-white overflow-y-auto custom-scrollbar flex-1">
+                        <div className="p-6 sm:p-8 bg-card overflow-y-auto custom-scrollbar flex-1">
                             {error && (
                                 <div className="mb-6 bg-red-50 border border-red-100 text-red-600 text-xs font-bold p-4 rounded-xl flex items-center gap-3 animate-in slide-in-from-top-2 shadow-sm">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -80,11 +80,11 @@ export default function CreateStaffForm() {
                                     <InputField label="Password (လျှို့ဝှက်နံပါတ်)" type="password" name="password" placeholder="Min. 6 characters" minLength={6} required disabled={isSubmitting} />
                                 </div>
 
-                                <div className="flex justify-end gap-3 pt-6 border-t border-gray-200/50">
-                                    <button type="button" onClick={() => setIsOpen(false)} disabled={isSubmitting} className="bg-white hover:bg-gray-50 border border-gray-200 text-gray-600 hover:text-black font-bold px-6 py-3 rounded-xl text-[10px] uppercase tracking-widest transition-colors shadow-sm">
+                                <div className="flex justify-end gap-3 pt-6 border-t border-border/50">
+                                    <button type="button" onClick={() => setIsOpen(false)} disabled={isSubmitting} className="bg-card hover:bg-muted/50 border border-border text-muted-foreground hover:text-foreground font-bold px-6 py-3 rounded-xl text-[10px] uppercase tracking-widest transition-colors shadow-sm">
                                         Cancel
                                     </button>
-                                    <button type="submit" disabled={isSubmitting} className="group relative bg-black hover:bg-gray-900 text-white font-bold px-8 py-3 rounded-xl text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-black/10 hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 flex items-center gap-2">
+                                    <button type="submit" disabled={isSubmitting} className="group relative bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold px-8 py-3 rounded-xl text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-orange-500/20 hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 flex items-center gap-2">
                                         {isSubmitting ? (
                                             <>
                                                 <svg className="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>

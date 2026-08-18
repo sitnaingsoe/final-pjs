@@ -181,12 +181,24 @@ export default function PosTerminal({
     
     const [searchQuery, setSearchQuery] = useState('')
 
+    // Pagination State
+    const [currentPage, setCurrentPage] = useState(1)
+    const ITEMS_PER_PAGE = 8
+
+    // Reset pagination to page 1 whenever category or search query changes
+    useEffect(() => {
+        setCurrentPage(1)
+    }, [selectedCategory, searchQuery])
+
     // Filter menu items by selected category and search query
     const displayItems = menuItems.filter(item => {
         const matchesCategory = selectedCategory === 'all' || item.categoryId === selectedCategory
         const matchesSearch = searchQuery.trim() === '' || item.name.toLowerCase().includes(searchQuery.toLowerCase())
         return matchesCategory && matchesSearch
     })
+
+    const totalPages = Math.ceil(displayItems.length / ITEMS_PER_PAGE) || 1
+    const paginatedItems = displayItems.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
 
     // Calculate discounted price
     const getFinalPrice = (item: any) => {
@@ -465,12 +477,12 @@ export default function PosTerminal({
                 {billRequests.length > 0 && (
                     <div className="absolute top-4 right-4 md:right-[420px] z-50 flex flex-col gap-2 w-full max-w-xs">
                         {billRequests.map(req => (
-                            <div key={req.id} className="bg-gradient-to-r from-rose-600 to-red-600 text-black p-3 rounded-2xl shadow-2xl flex items-center justify-between gap-3 animate-in slide-in-from-top-4 border border-rose-400">
+                            <div key={req.id} className="bg-destructive text-destructive-foreground p-3 rounded-xl shadow-lg flex items-center justify-between gap-3 animate-in slide-in-from-top-4 border border-destructive/20">
                                 <div className="flex items-center gap-3">
                                     <span className="text-2xl origin-top animate-[wiggle_1s_ease-in-out_infinite]">🔔</span>
                                     <div className="leading-tight">
                                         <p className="font-bold text-sm">ဘေလ်တောင်းထားသည်</p>
-                                        <p className="text-xs text-rose-200 mt-0.5">စားပွဲ {req.table?.number}</p>
+                                        <p className="text-xs text-destructive-foreground/80 mt-0.5">စားပွဲ {req.table?.number}</p>
                                     </div>
                                 </div>
                                 <button 
@@ -478,7 +490,7 @@ export default function PosTerminal({
                                         setSelectedTableId(req.tableId)
                                         if (window.innerWidth < 768) setIsCartOpen(true)
                                     }}
-                                    className="bg-white text-rose-600 px-3 py-2 rounded-xl text-xs font-black shadow-md hover:bg-rose-50 active:scale-95 transition-all"
+                                    className="bg-background text-foreground px-3 py-2 rounded-lg text-xs font-bold shadow-sm hover:bg-secondary active:scale-[0.98] transition-all"
                                 >
                                     ကြည့်မည်
                                 </button>
@@ -500,10 +512,10 @@ export default function PosTerminal({
                         </div>
                     )}
                     {/* 🔍 Search & Categories Bar */}
-                    <div className="p-4 bg-gray-50/80 border-b border-gray-200 shrink-0 space-y-3">
+                    <div className="p-4 bg-background border-b border-border/50 shrink-0 space-y-4">
                         {/* Search Input Bar */}
-                        <div className="relative w-full">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
+                        <div className="relative w-full max-w-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
                                 <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
                             </svg>
                             <input
@@ -511,12 +523,12 @@ export default function PosTerminal({
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="ဟင်းပွဲအမည် ဖြင့် ရှာဖွေပါ (Search menu items...)"
-                                className="w-full bg-white border border-gray-200 rounded-2xl pl-10 pr-10 py-2.5 text-xs font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-black focus:ring-2 focus:ring-black/10 transition-all shadow-sm"
+                                className="w-full rounded-xl bg-white border border-slate-200 pl-10 pr-4 py-2.5 text-sm font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-orange-500 shadow-sm transition-all"
                             />
                             {searchQuery && (
                                 <button
                                     onClick={() => setSearchQuery('')}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black font-bold text-xs"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 font-medium text-xs p-1"
                                 >
                                     ✕
                                 </button>
@@ -524,13 +536,13 @@ export default function PosTerminal({
                         </div>
 
                         {/* Category Scrollable Pills */}
-                        <div className="flex gap-2 overflow-x-auto no-scrollbar py-0.5">
+                        <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 pt-1 px-1 ">
                             <button
                                 onClick={() => setSelectedCategory('all')}
-                                className={`whitespace-nowrap px-4 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-1.5 ${selectedCategory === 'all' ? 'bg-black text-white shadow-lg shadow-black/10 scale-[1.02]' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100 hover:text-black'}`}
+                                className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${selectedCategory === 'all' ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'}`}
                             >
                                 <span>🍽️ အားလုံး</span>
-                                <span className={`text-[10px] px-2 py-0.5 rounded-full font-black ${selectedCategory === 'all' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-700'}`}>
+                                <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold transition-colors ${selectedCategory === 'all' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}`}>
                                     {menuItems.length}
                                 </span>
                             </button>
@@ -540,10 +552,10 @@ export default function PosTerminal({
                                     <button
                                         key={cat.id}
                                         onClick={() => setSelectedCategory(cat.id)}
-                                        className={`whitespace-nowrap px-4 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-1.5 ${selectedCategory === cat.id ? 'bg-black text-white shadow-lg shadow-black/10 scale-[1.02]' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100 hover:text-black'}`}
+                                        className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${selectedCategory === cat.id ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'}`}
                                     >
                                         <span>{cat.name}</span>
-                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-black ${selectedCategory === cat.id ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-700'}`}>
+                                        <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold transition-colors ${selectedCategory === cat.id ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}`}>
                                             {catCount}
                                         </span>
                                     </button>
@@ -553,99 +565,143 @@ export default function PosTerminal({
                     </div>
 
                 {/* 🍱 Premium Lookable Menu Items Grid */}
-                <div className="flex-1 overflow-y-auto p-4 lg:p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 pb-28 lg:pb-6 content-start bg-gray-50/30">
-                    {displayItems.map((item) => (
-                        <div 
-                            key={item.id} 
-                            onClick={() => handleItemClick(item)} 
-                            className={`group bg-white border rounded-[1.5rem] transition-all duration-300 flex flex-col justify-between relative overflow-hidden ${
-                                item.isActive !== false 
-                                    ? 'border-gray-200/80 cursor-pointer hover:border-black hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1 active:scale-95' 
-                                    : 'border-red-200 opacity-60 cursor-not-allowed bg-red-50/10'
-                            }`}
-                        >
-                            {/* OUT OF STOCK Badge Overlay */}
-                            {item.isActive === false && (
-                                <div className="absolute top-3 right-3 bg-red-600 text-white text-[9px] font-black px-2.5 py-1 rounded-xl z-20 shadow-md uppercase tracking-wider">
-                                    OUT OF STOCK
-                                </div>
-                            )}
-
-                            {/* Red Discount Tag */}
-                            {item.discount && item.discount.isActive && item.isActive !== false && (
-                                <div className="absolute top-3 left-3 bg-red-600 text-white text-[9px] font-black px-2.5 py-1 rounded-xl z-20 shadow-md uppercase tracking-wider flex items-center gap-1">
-                                    <span>🔥</span>
-                                    <span>{item.discount.type === 'PERCENTAGE' ? `-${item.discount.value}%` : `-${item.discount.value.toLocaleString()} MMK`}</span>
-                                </div>
-                            )}
-
-                            {/* 🖼️ Hero Image Container */}
-                            {item.imageUrl ? (
-                                <div className="w-full h-44 bg-gray-100 relative overflow-hidden">
-                                    <Image src={item.imageUrl} alt={item.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500 ease-out" sizes="(max-width: 768px) 50vw, 25vw" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                                </div>
-                            ) : (
-                                <div className="w-full h-36 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center relative overflow-hidden">
-                                    <span className="text-gray-400 text-4xl group-hover:scale-110 transition-transform duration-300">🍽️</span>
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                                </div>
-                            )}
-
-                            {/* Item Details */}
-                            <div className="p-4 flex-1 flex flex-col justify-between relative z-10 bg-white">
-                                <div>
-                                    <div className="flex items-start justify-between gap-2">
-                                        <h3 className="text-sm font-black text-gray-900 group-hover:text-black transition-colors line-clamp-2 leading-snug tracking-tight">
-                                            {item.name}
-                                        </h3>
-                                        {item.addonCategories && item.addonCategories.length > 0 && (
-                                            <span className="text-[9px] bg-amber-50 text-amber-700 border border-amber-200/80 font-black px-2 py-0.5 rounded-lg shrink-0">
-                                                +Addon
-                                            </span>
-                                        )}
+                <div className="flex-1 overflow-y-auto custom-scrollbar p-4 lg:p-6 flex flex-col justify-between bg-background/50">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 content-start">
+                        {paginatedItems.map((item) => (
+                            <div 
+                                key={item.id} 
+                                onClick={() => handleItemClick(item)} 
+                                className={`group bg-white rounded-2xl border border-slate-100 flex flex-col justify-between relative overflow-hidden transition-all duration-200 ${
+                                    item.isActive !== false 
+                                        ? 'cursor-pointer hover:shadow-lg hover:-translate-y-1 active:scale-[0.98]' 
+                                        : 'opacity-70 cursor-not-allowed bg-slate-50'
+                                }`}
+                            >
+                                {/* OUT OF STOCK Badge Overlay */}
+                                {item.isActive === false && (
+                                    <div className="absolute top-3 right-3 backdrop-blur-md bg-rose-500/90 text-white text-xs font-semibold px-2.5 py-1 rounded-full z-20 shadow-sm uppercase tracking-wider">
+                                        OUT OF STOCK
                                     </div>
-                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">
-                                        {item.category?.name || 'General'}
-                                    </p>
-                                </div>
+                                )}
 
-                                <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
+                                {/* Red Discount Tag */}
+                                {item.discount && item.discount.isActive && item.isActive !== false && (
+                                    <div className="absolute top-3 left-3 backdrop-blur-md bg-rose-500/90 text-white text-xs font-semibold px-2.5 py-1 rounded-full z-20 shadow-sm uppercase tracking-wider flex items-center gap-1.5">
+                                        <span>🔥</span>
+                                        <span>{item.discount.type === 'PERCENTAGE' ? `-${item.discount.value}%` : `-${item.discount.value.toLocaleString()} MMK`}</span>
+                                    </div>
+                                )}
+
+                                {/* 🖼️ Hero Image Container */}
+                                {item.imageUrl ? (
+                                    <div className="w-full h-44 bg-slate-100 relative overflow-hidden rounded-t-2xl border-b border-slate-100">
+                                        <Image src={item.imageUrl} alt={item.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out" sizes="(max-width: 768px) 50vw, 25vw" />
+                                    </div>
+                                ) : (
+                                    <div className="w-full h-40 bg-secondary flex items-center justify-center relative overflow-hidden border-b border-border/10">
+                                        <span className="text-muted-foreground text-4xl group-hover:scale-105 transition-transform duration-300">🍽️</span>
+                                    </div>
+                                )}
+
+                                {/* Item Details */}
+                                <div className="p-4 flex-1 flex flex-col justify-between relative z-10 bg-transparent">
                                     <div>
-                                        <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest block leading-none mb-0.5">Price</span>
-                                        {item.discount && item.discount.isActive ? (
-                                            <div className="flex items-baseline gap-1.5">
-                                                <span className="text-sm font-black text-red-600 font-mono tracking-tight">
-                                                    {getFinalPrice(item).toLocaleString()} <span className="text-[9px] font-bold">MMK</span>
+                                        <div className="flex items-start justify-between gap-2">
+                                            <h3 className="text-base font-semibold text-slate-800 line-clamp-1">
+                                                {item.name}
+                                            </h3>
+                                            {item.addonCategories && item.addonCategories.length > 0 && (
+                                                <span className="text-[9px] bg-slate-100 text-slate-600 font-bold px-2.5 py-1 rounded-full shrink-0">
+                                                    +Addon
                                                 </span>
-                                                <span className="text-[10px] text-gray-400 line-through font-mono">
-                                                    {item.price.toLocaleString()}
-                                                </span>
-                                            </div>
-                                        ) : (
-                                            <span className="text-sm font-black text-gray-900 font-mono tracking-tight">
-                                                {item.price.toLocaleString()} <span className="text-[9px] text-gray-500 font-bold">MMK</span>
-                                            </span>
-                                        )}
+                                            )}
+                                        </div>
+                                        <p className="text-xs uppercase tracking-wider text-slate-400 font-medium mt-1">
+                                            {item.category?.name || 'General'}
+                                        </p>
                                     </div>
 
-                                    {/* Quick Add Button Icon */}
-                                    <button className={`w-8 h-8 rounded-xl flex items-center justify-center font-black transition-all ${item.isActive !== false ? 'bg-black text-white group-hover:bg-gray-800 shadow-md shadow-black/10' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>
-                                        +
-                                    </button>
+                                    <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                                        <div>
+                                            <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider block leading-none mb-1">Price</span>
+                                            {item.discount && item.discount.isActive ? (
+                                                <div className="flex items-baseline">
+                                                    <span className="text-base font-bold text-orange-600">
+                                                        {getFinalPrice(item).toLocaleString()} <span className="text-xs">MMK</span>
+                                                    </span>
+                                                    <span className="text-xs text-slate-400 line-through ml-1.5">
+                                                        {item.price.toLocaleString()}
+                                                    </span>
+                                                </div>
+                                            ) : (
+                                                <span className="text-base font-bold text-orange-600">
+                                                    {item.price.toLocaleString()} <span className="text-xs text-orange-600/70">MMK</span>
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        {/* Quick Add Button Icon */}
+                                        <button className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg transition-all duration-200 ${item.isActive !== false ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-sm hover:shadow-md' : 'bg-slate-100 text-slate-400 cursor-not-allowed'}`}>
+                                            +
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
+
                     {displayItems.length === 0 && (
-                        <div className="col-span-full h-64 flex flex-col items-center justify-center text-center bg-white rounded-3xl border border-gray-100 p-8 shadow-sm">
+                        <div className="h-64 flex flex-col items-center justify-center text-center bg-card rounded-xl border border-border/50 p-8 shadow-sm my-auto">
                             <span className="text-4xl mb-3 opacity-40">🔍</span>
-                            <h4 className="text-sm font-black text-gray-900 uppercase tracking-wider mb-1">
+                            <h4 className="text-sm font-bold text-foreground uppercase tracking-wider mb-1">
                                 မီနူး ရှာမတွေ့ပါ
                             </h4>
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-muted-foreground">
                                 ရှာဖွေမှု စာလုံး သို့မဟုတ် ကက်တဂိုရီကို အခြားတစ်ခု ပြောင်းကြည့်ပါခင်ဗျာ။
                             </p>
+                        </div>
+                    )}
+
+                    {/* 📄 Pagination Bar */}
+                    {displayItems.length > 0 && (
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 pb-2 px-2 border-t border-slate-200/80 mt-6 shrink-0">
+                            <div className="text-xs text-slate-500 font-medium">
+                                Showing <span className="font-bold text-slate-800">{Math.min((currentPage - 1) * ITEMS_PER_PAGE + 1, displayItems.length)}</span> - <span className="font-bold text-slate-800">{Math.min(currentPage * ITEMS_PER_PAGE, displayItems.length)}</span> of <span className="font-bold text-slate-800">{displayItems.length}</span> items
+                            </div>
+                            
+                            {totalPages > 1 && (
+                                <div className="flex items-center gap-1.5">
+                                    <button
+                                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                        disabled={currentPage === 1}
+                                        className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm"
+                                    >
+                                        ‹ Prev
+                                    </button>
+                                    
+                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                        <button
+                                            key={page}
+                                            onClick={() => setCurrentPage(page)}
+                                            className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${
+                                                currentPage === page
+                                                    ? 'bg-orange-500 text-white shadow-sm shadow-orange-500/20'
+                                                    : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                                            }`}
+                                        >
+                                            {page}
+                                        </button>
+                                    ))}
+                                    
+                                    <button
+                                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                        disabled={currentPage === totalPages}
+                                        className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm"
+                                    >
+                                        Next ›
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
@@ -653,17 +709,18 @@ export default function PosTerminal({
 
             {/* === ညာဘက်ခြမ်း: Shopping Cart (Desktop Sidebar / Mobile Bottom Sheet) === */}
             <div className={`
-                fixed inset-y-0 right-0 z-40 w-full md:w-[400px] bg-gray-50 border-l border-gray-200 shadow-2xl flex flex-col transition-transform duration-300 ease-in-out
+                fixed inset-y-0 right-0 z-40 w-full md:w-[420px] flex flex-col transition-transform duration-300 ease-in-out md:p-4 lg:p-6 bg-slate-50/95 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none
                 ${isCartOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
                 md:relative md:z-0
             `}>
-                <div className="p-5 border-b border-gray-200 flex justify-between items-center bg-white/50">
+                <div className="bg-white md:rounded-2xl border-l md:border border-slate-200 shadow-sm flex flex-col h-full overflow-hidden">
+                    <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-transparent shrink-0">
                     <div className="flex flex-col">
-                        <h2 className="text-lg font-black text-gray-800 flex items-center gap-2">
-                            <span className="text-black">🛒</span> Current Order
+                        <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+                            <span className="text-xl">🛒</span> Current Order
                         </h2>
                         {isBillRequested && (
-                            <span className="text-xs bg-rose-500 text-black font-bold px-2 py-1 rounded-full animate-pulse mt-2 mb-1 inline-block text-center shadow-lg shadow-rose-500/20 border border-rose-400">
+                            <span className="text-[10px] bg-destructive/10 text-destructive font-bold px-3 py-1.5 rounded-full animate-pulse mt-2 mb-1 inline-block text-center border border-destructive/20">
                                 🔔 ဘေလ်ရှင်းရန် တောင်းဆိုထားသည်
                             </span>
                         )}
@@ -683,19 +740,19 @@ export default function PosTerminal({
                     </div>
                     <button 
                         onClick={() => setIsCartOpen(false)}
-                        className="md:hidden w-8 h-8 flex items-center justify-center rounded-lg bg-gray-200 text-gray-500"
+                        className="md:hidden w-8 h-8 flex items-center justify-center rounded-lg bg-secondary text-muted-foreground hover:text-foreground transition-colors"
                     >
                         ✕
                     </button>
                 </div>
 
                 {/* Table Selector */}
-                <div className="p-4 border-b border-gray-200 bg-gray-50">
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">စားပွဲ ရွေးချယ်ရန် (Table)</label>
+                <div className="p-4 border-b border-slate-100 bg-slate-50 shrink-0">
+                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">စားပွဲ ရွေးချယ်ရန် (Table)</label>
                     <select 
                         value={selectedTableId || ''} 
                         onChange={(e) => setSelectedTableId(e.target.value || null)}
-                        className="w-full bg-white border border-gray-300 rounded-xl p-3 text-sm text-gray-800 focus:outline-none focus:border-black transition-colors"
+                        className="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all shadow-sm cursor-pointer"
                     >
                         <option value="">ပါဆယ် (Takeaway)</option>
                         {tablesList.map(table => (
@@ -706,44 +763,44 @@ export default function PosTerminal({
                     </select>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                <div className="flex-1 overflow-y-auto p-5 space-y-3 bg-slate-50/50 custom-scrollbar">
                     {/* Existing Items */}
                     {existingItems.map((item, index) => (
-                        <div key={`exist-${index}`} className="bg-gray-50 border border-gray-300/50 rounded-xl p-3 flex justify-between gap-3 opacity-70">
+                        <div key={`exist-${index}`} className="bg-secondary/40 border border-border/50 rounded-3xl p-4 flex justify-between gap-3 opacity-80 backdrop-blur-sm">
                             <div className="flex-1">
-                                <h4 className="text-sm font-bold text-gray-700 leading-tight">{item.name}</h4>
+                                <h4 className="text-[15px] font-semibold text-foreground leading-tight">{item.name}</h4>
                                 {item.addons && item.addons.length > 0 && (
-                                    <p className="text-3xs text-gray-400 mt-0.5 leading-tight">
+                                    <p className="text-[10px] text-muted-foreground mt-1 leading-tight">
                                         {item.addons.map((a: any) => a.name).join(', ')}
                                     </p>
                                 )}
-                                <p className="text-xs font-mono text-gray-500 mt-1">{(item.price * item.quantity).toLocaleString()} MMK</p>
+                                <p className="text-sm font-medium text-muted-foreground mt-1.5">{(item.price * item.quantity).toLocaleString()} MMK</p>
                             </div>
                             <div className="flex items-center gap-3">
-                                <span className="w-8 text-center text-xs font-bold text-gray-500">Qty: {item.quantity}</span>
+                                <span className="w-8 text-center text-xs font-bold text-muted-foreground bg-background px-2 py-1 rounded-lg">x{item.quantity}</span>
                             </div>
                         </div>
                     ))}
                     {/* New Items */}
                     {cart.map((item, index) => (
-                        <div key={item.id} className="bg-white border border-gray-200 rounded-xl p-3 flex justify-between gap-3 animate-in fade-in slide-in-from-right-4">
+                        <div key={item.id} className="bg-card border border-border/50 rounded-3xl p-4 flex justify-between gap-3 animate-in fade-in slide-in-from-right-4 soft-shadow">
                             <div className="flex-1">
-                                <h4 className="text-sm font-bold text-gray-800 leading-tight">{item.name}</h4>
+                                <h4 className="text-[15px] font-semibold text-foreground leading-tight">{item.name}</h4>
                                 {item.addons && item.addons.length > 0 && (
-                                    <p className="text-3xs text-gray-500 mt-0.5 leading-tight">
+                                    <p className="text-[10px] text-muted-foreground mt-1 leading-tight">
                                         {item.addons.map(a => a.name).join(', ')}
                                     </p>
                                 )}
-                                <p className="text-xs font-mono text-gray-800 mt-1">{(item.price * item.quantity).toLocaleString()} MMK</p>
+                                <p className="text-sm font-semibold text-primary mt-1.5">{(item.price * item.quantity).toLocaleString()} MMK</p>
                             </div>
                             <div className="flex items-center gap-3">
-                                <div className="flex items-center bg-gray-50 rounded-lg border border-gray-300">
-                                    <button onClick={() => updateQuantity(item.id, -1)} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-100 rounded-l-lg transition-colors text-lg">−</button>
-                                    <span className="w-6 text-center text-xs font-bold text-gray-800">{item.quantity}</span>
-                                    <button onClick={() => updateQuantity(item.id, 1)} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-100 rounded-r-lg transition-colors text-lg">+</button>
+                                <div className="flex items-center bg-secondary/50 rounded-2xl p-1">
+                                    <button onClick={() => updateQuantity(item.id, -1)} className="w-8 h-8 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-background rounded-xl transition-all text-lg shadow-sm">−</button>
+                                    <span className="w-8 text-center text-[13px] font-bold text-foreground">{item.quantity}</span>
+                                    <button onClick={() => updateQuantity(item.id, 1)} className="w-8 h-8 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-background rounded-xl transition-all text-lg shadow-sm">+</button>
                                 </div>
-                                <button onClick={() => removeItem(item.id)} className="w-8 h-8 flex items-center justify-center bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-lg transition-colors">
-                                    🗑️
+                                <button onClick={() => removeItem(item.id)} className="w-10 h-10 flex items-center justify-center bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground rounded-2xl transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
                                 </button>
                             </div>
                         </div>
@@ -757,50 +814,50 @@ export default function PosTerminal({
                 </div>
 
                 {/* Promo Code Section */}
-                <div className="px-5 py-3 bg-gray-50 border-t border-gray-200">
+                <div className="px-6 py-4 bg-white border-t border-slate-100 shrink-0">
                     {appliedPromo ? (
-                        <div className="flex justify-between items-center bg-green-50 text-green-700 px-4 py-2 rounded-lg border border-green-200 shadow-sm">
-                            <span className="font-bold text-xs flex items-center gap-2">🎟️ Promo Applied: {appliedPromo.code}</span>
+                        <div className="flex justify-between items-center bg-orange-50 text-orange-600 px-5 py-3 rounded-xl border border-orange-200">
+                            <span className="font-semibold text-sm flex items-center gap-2">🎟️ Promo Applied: {appliedPromo.code}</span>
                             <div className="flex items-center gap-3">
-                                <span className="font-black font-mono">-{appliedPromo.amount.toLocaleString()} MMK</span>
-                                <button onClick={() => setAppliedPromo(null)} className="text-red-500 hover:text-red-700 font-black text-xs">✕</button>
+                                <span className="font-bold">-{appliedPromo.amount.toLocaleString()} MMK</span>
+                                <button onClick={() => setAppliedPromo(null)} className="text-orange-600 hover:text-orange-800 font-bold text-sm bg-orange-100 rounded-full w-6 h-6 flex items-center justify-center">✕</button>
                             </div>
                         </div>
                     ) : (
                         <div>
-                            <div className="flex gap-2">
+                            <div className="flex rounded-xl border border-slate-200 overflow-hidden shadow-sm">
                                 <input 
                                     type="text" 
                                     placeholder="Enter Promo Code" 
                                     value={promoCodeInput}
                                     onChange={(e) => setPromoCodeInput(e.target.value.toUpperCase())}
-                                    className="flex-1 bg-white border border-gray-300 rounded-xl px-4 py-2 text-xs font-bold uppercase outline-none focus:border-gray-1000"
+                                    className="flex-1 bg-white border-none px-4 py-3 text-sm font-medium uppercase outline-none text-slate-800 placeholder:text-slate-400"
                                 />
                                 <button 
                                     onClick={handleApplyPromo}
                                     disabled={!promoCodeInput || isSubmitting}
-                                    className="bg-gray-800 hover:bg-black text-white px-4 py-2 rounded-xl text-xs font-bold transition-colors shadow-sm disabled:opacity-50"
+                                    className="bg-slate-900 hover:bg-black text-white px-6 py-3 text-sm font-bold transition-all disabled:opacity-50 disabled:bg-slate-300"
                                 >
                                     Apply
                                 </button>
                             </div>
-                            {promoError && <p className="text-red-500 text-3xs font-bold mt-1.5 ml-1">{promoError}</p>}
+                            {promoError && <p className="text-rose-500 text-xs font-bold mt-2 ml-2">{promoError}</p>}
                         </div>
                     )}
                 </div>
 
-                <div className="p-5 bg-white border-t border-gray-200 shrink-0">
-                    <div className="flex justify-between items-center mb-4">
-                        <span className="text-sm font-bold text-gray-500 uppercase tracking-wider">Total</span>
-                        <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-800 to-gray-500 font-mono">
-                            {totalAmount.toLocaleString()} MMK
+                <div className="p-6 bg-slate-50 border-t border-slate-100 shrink-0 rounded-b-2xl">
+                    <div className="flex justify-between items-center mb-5">
+                        <span className="text-sm font-bold text-slate-500 uppercase tracking-widest">Total</span>
+                        <span className="text-3xl font-bold text-slate-900 tracking-tight">
+                            {totalAmount.toLocaleString()} <span className="text-lg text-slate-500">MMK</span>
                         </span>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-3 mb-3">
                         <button
                             onClick={handlePrintReceipt}
                             disabled={(cart.length === 0 && existingItems.length === 0) || isSubmitting}
-                            className="bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold px-3 py-3 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1 border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold py-3 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1 border border-slate-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             title="Print Thermal Receipt"
                         >
                             🖨️ ဘေလ်ရိုက်မည်
@@ -808,18 +865,19 @@ export default function PosTerminal({
                         <button
                             onClick={handleSendOrder}
                             disabled={(cart.length === 0 || isSubmitting) ? true : undefined}
-                            className="flex-1 bg-gray-200 hover:bg-slate-700 disabled:bg-gray-50 disabled:text-gray-300 text-black text-xs font-bold py-3 rounded-xl transition-all shadow-lg flex items-center justify-center"
+                            className="flex-1 bg-slate-200 hover:bg-slate-300 disabled:bg-slate-100 disabled:text-slate-400 text-slate-800 text-xs font-bold py-3 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1"
                         >
                             👨‍🍳 အော်ဒါပို့မည်
                         </button>
-                        <button
-                            onClick={handleCheckout}
-                            disabled={((cart.length === 0 && !activeOrderId) || isSubmitting) ? true : undefined}
-                            className="flex-[1.5] bg-gray-900 hover:bg-black disabled:from-slate-800 disabled:to-slate-800 disabled:text-gray-400 text-white text-sm font-black py-3 rounded-xl transition-all shadow-lg hover:shadow-gray-900/10 flex items-center justify-center gap-1"
-                        >
-                            {isSubmitting ? "..." : "💸 ရှင်းမည်"}
-                        </button>
                     </div>
+                    <button
+                        onClick={handleCheckout}
+                        disabled={((cart.length === 0 && !activeOrderId) || isSubmitting) ? true : undefined}
+                        className="w-full py-3.5 bg-slate-900 hover:bg-black text-white font-bold rounded-xl shadow-md transition-all disabled:opacity-50 disabled:bg-slate-300 flex items-center justify-center gap-2"
+                    >
+                        {isSubmitting ? "..." : "💸 ရှင်းမည်"}
+                    </button>
+                </div>
                 </div>
             </div>
 
