@@ -49,7 +49,10 @@ export default async function CategoriesPage() {
                     </div>
 
                     <form
-                        action={createCategory}
+                        action={async (formData) => {
+                            "use server"
+                            await createCategory(formData)
+                        }}
                         className="space-y-4"
                     >
                         <div className="space-y-1.5">

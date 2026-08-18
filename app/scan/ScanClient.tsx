@@ -233,10 +233,11 @@ export default function AdvancedCustomerScanPage() {
         const res = await cancelTableOrderItem(activeOrder.id, itemIndex)
         setIsCancelling(false)
 
-        if (res.success) {
+        if (res.success && res.data) {
             alert('ဟင်းပွဲကို ပယ်ဖျက်လိုက်ပါပြီ။')
             const updatedOrder = res.data
-            const hasActiveItems = updatedOrder.items?.some((i: any) => i.status !== 'CANCELLED')
+            const items = (updatedOrder.items as any[]) || []
+            const hasActiveItems = items.some((i: any) => i.status !== 'CANCELLED')
             if (!hasActiveItems) {
                 setIsOrdered(false)
                 setActiveOrder(null)

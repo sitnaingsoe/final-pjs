@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // app/dashboard/addons/page.tsx
 import React from 'react'
 import {
@@ -68,7 +70,10 @@ export default async function AddonsPage() {
                         </div>
 
                         <form
-                            action={createAddonCategory}
+                            action={async (formData) => {
+                                "use server"
+                                await createAddonCategory(formData)
+                            }}
                             className="space-y-4"
                         >
                             <div className="space-y-1.5">
@@ -124,7 +129,10 @@ export default async function AddonsPage() {
                         </div>
 
                         <form
-                            action={createAddon}
+                            action={async (formData) => {
+                                "use server"
+                                await createAddon(formData)
+                            }}
                             className="space-y-4"
                         >
                             <div className="space-y-1.5">
