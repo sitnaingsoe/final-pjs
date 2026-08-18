@@ -4,15 +4,16 @@
 import { prisma } from '@/lib/db'
 import { auth } from '@/auth'
 import { revalidatePath } from 'next/cache'
+import { getEffectiveBranchId } from '@/lib/branchContext'
 
 export async function getMenuItems() {
-    const session = await auth()
-    if (!session?.user?.branchId) return { success: false, data: [] }
+    const branchId = await getEffectiveBranchId()
+    if (!branchId) return { success: false, data: [] }
 
     try {
         const data = await prisma.menuItem.findMany({
             where: { 
-                category: { branchId: session.user.branchId },
+                category: { branchId },
                 isDeleted: false
             },
             include: {
@@ -30,17 +31,17 @@ export async function getMenuItems() {
 
 // ၁.၁။ သက်ဆိုင်ရာဆိုင်ခွဲအတွက် ချထားပေးသော Master Menus များကို ဆွဲထုတ်ခြင်း
 export async function getBranchMasterMenus() {
-    const session = await auth()
-    if (!session?.user?.branchId) return { success: false, data: [] }
+    const branchId = await getEffectiveBranchId()
+    if (!branchId) return { success: false, data: [] }
 
     try {
         const data = await prisma.menuOnBranch.findMany({
-            where: { branchId: session.user.branchId },
+            where: { branchId },
             include: {
                 menu: {
                     include: {
                         addonCategories: {
-                            where: { branchId: session.user.branchId },
+                            where: { branchId },
                             include: { addons: true }
                         }
                     }
@@ -229,13 +230,13 @@ export async function deleteMenuItem(id: string) {
 
 // ၅။ ဖျက်ထားသော မီနူးများ ဆွဲထုတ်ရန် (Trash)
 export async function getDeletedMenuItems() {
-    const session = await auth()
-    if (!session?.user?.branchId) return { success: false, data: [] }
+    const branchId = await getEffectiveBranchId()
+    if (!branchId) return { success: false, data: [] }
 
     try {
         const data = await prisma.menuItem.findMany({
             where: { 
-                category: { branchId: session.user.branchId },
+                category: { branchId },
                 isDeleted: true
             },
             include: {
@@ -252,12 +253,13 @@ export async function getDeletedMenuItems() {
 // ၆။ ဖျက်ထားသော မီနူးကို ပြန်ယူရန် (Restore)
 export async function restoreMenuItem(id: string) {
     const session = await auth()
-    if (!session?.user?.branchId) return { success: false, error: "Unauthorized" }
-    if (session.user.role === 'STAFF') return { success: false, error: "Permission Denied" }
+    const branchId = await getEffectiveBranchId()
+    if (!branchId) return { success: false, error: "Unauthorized" }
+    if (session?.user?.role === 'STAFF') return { success: false, error: "Permission Denied" }
 
     try {
         const menuItem = await prisma.menuItem.findUnique({ where: { id }, include: { category: true } })
-        if (!menuItem || menuItem.category.branchId !== session.user.branchId) return { success: false, error: "Unauthorized" }
+        if (!menuItem || menuItem.category.branchId !== branchId) return { success: false, error: "Unauthorized" }
 
         await prisma.menuItem.update({ 
             where: { id },
@@ -274,12 +276,13 @@ export async function restoreMenuItem(id: string) {
 // ၇။ ဖျက်ထားသော မီနူးကို အပြီးတိုင်ဖျက်ရန် (Permanent Delete)
 export async function permanentlyDeleteMenuItem(id: string) {
     const session = await auth()
-    if (!session?.user?.branchId) return { success: false, error: "Unauthorized" }
-    if (session.user.role === 'STAFF') return { success: false, error: "Permission Denied" }
+    const branchId = await getEffectiveBranchId()
+    if (!branchId) return { success: false, error: "Unauthorized" }
+    if (session?.user?.role === 'STAFF') return { success: false, error: "Permission Denied" }
 
     try {
         const menuItem = await prisma.menuItem.findUnique({ where: { id }, include: { category: true } })
-        if (!menuItem || menuItem.category.branchId !== session.user.branchId) return { success: false, error: "Unauthorized" }
+        if (!menuItem || menuItem.category.branchId !== branchId) return { success: false, error: "Unauthorized" }
 
         await prisma.menuItem.delete({ where: { id } })
         revalidatePath('/dashboard/store/settings')
@@ -294,12 +297,12 @@ export async function permanentlyDeleteMenuItem(id: string) {
 
 // ၅။ Addon Categories အားလုံး ဆွဲထုတ်ရန် (Helper)
 export async function getAddonCategories() {
-    const session = await auth()
-    if (!session?.user?.branchId) return { success: false, data: [] }
+    const branchId = await getEffectiveBranchId()
+    if (!branchId) return { success: false, data: [] }
 
     try {
         const data = await prisma.addonCategory.findMany({
-            where: { branchId: session.user.branchId },
+            where: { branchId },
             orderBy: { createdAt: 'desc' }
         })
         return { success: true, data }

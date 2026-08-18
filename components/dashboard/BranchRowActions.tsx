@@ -5,6 +5,7 @@ import React, { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { updateBranch, deleteBranch } from '@/server/actions/branch'
 import InputField from '../ui/InputField'
+import MapPickerModal from './MapPickerModal'
 
 export default function BranchRowActions({ branch }: { branch: any }) {
     const router = useRouter()
@@ -12,6 +13,18 @@ export default function BranchRowActions({ branch }: { branch: any }) {
     const [isEditOpen, setIsEditOpen] = useState(false)
     const [isDeleteOpen, setIsDeleteOpen] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [isMapOpen, setIsMapOpen] = useState(false)
+    const [editLat, setEditLat] = useState<string>(branch.latitude ? branch.latitude.toString() : '')
+    const [editLng, setEditLng] = useState<string>(branch.longitude ? branch.longitude.toString() : '')
+    const [editAddress, setEditAddress] = useState<string>(branch.address || '')
+
+    const handleMapLocationSelected = (location: { lat: number; lng: number; address?: string }) => {
+        setEditLat(location.lat.toString())
+        setEditLng(location.lng.toString())
+        if (location.address && !editAddress) {
+            setEditAddress(location.address)
+        }
+    }
 
     // Edit Submit Handle
     const handleUpdate = (formData: FormData) => {
@@ -41,8 +54,28 @@ export default function BranchRowActions({ branch }: { branch: any }) {
         })
     }
 
+    // Switch to Branch Store View
+    const handleViewStore = () => {
+        startTransition(async () => {
+            const { setActiveBranchView } = await import('@/server/actions/branch')
+            await setActiveBranchView(branch.id)
+            router.push('/dashboard/store')
+        })
+    }
+
     return (
         <div className="flex items-center justify-center gap-2">
+            {/* 🏪 View Store Button */}
+            <button
+                onClick={handleViewStore}
+                disabled={isPending}
+                className="group relative inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-orange-500/10 hover:bg-orange-500 text-orange-600 dark:text-orange-400 hover:text-white rounded-lg border border-orange-500/20 text-xs font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 disabled:opacity-50"
+                title="View as Store Manager / Cashier"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                <span className="hidden sm:inline">View Store</span>
+            </button>
+
             {/* 📝 Edit Button */}
             <button
                 onClick={() => setIsEditOpen(true)}
@@ -92,8 +125,62 @@ export default function BranchRowActions({ branch }: { branch: any }) {
                             <form action={handleUpdate} className="space-y-5">
                                 <div className="space-y-4">
                                     <InputField label="Branch Name" name="branchName" defaultValue={branch.name} required disabled={isPending} />
-                                    <InputField label="Address" name="address" defaultValue={branch.address || ''} disabled={isPending} />
+                                    <div>
+                                        <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Address</label>
+                                        <input
+                                            type="text"
+                                            name="address"
+                                            value={editAddress}
+                                            onChange={(e) => setEditAddress(e.target.value)}
+                                            placeholder="Address"
+                                            disabled={isPending}
+                                            className="w-full px-4 py-3 rounded-xl bg-card border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 disabled:opacity-50 transition-all font-medium"
+                                        />
+                                    </div>
                                     <InputField label="Phone" name="phone" defaultValue={branch.phone || ''} disabled={isPending} />
+                                    
+                                    <div className="pt-2 border-t border-border/50">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block">
+                                                GPS Coordinates
+                                            </label>
+                                            <button
+                                                type="button"
+                                                onClick={() => setIsMapOpen(true)}
+                                                disabled={isPending}
+                                                className="inline-flex items-center gap-1.5 text-[10px] font-bold text-white bg-black hover:bg-gray-800 px-2.5 py-1 rounded-lg border border-black transition-colors shadow-sm"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                                <span>📍 Pick on Map</span>
+                                            </button>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <input
+                                                    type="number"
+                                                    step="any"
+                                                    name="latitude"
+                                                    placeholder="Latitude"
+                                                    value={editLat}
+                                                    onChange={(e) => setEditLat(e.target.value)}
+                                                    disabled={isPending}
+                                                    className="w-full px-3 py-2 text-xs bg-muted/40 border border-border/80 rounded-xl font-mono text-foreground focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
+                                                />
+                                            </div>
+                                            <div>
+                                                <input
+                                                    type="number"
+                                                    step="any"
+                                                    name="longitude"
+                                                    placeholder="Longitude"
+                                                    value={editLng}
+                                                    onChange={(e) => setEditLng(e.target.value)}
+                                                    disabled={isPending}
+                                                    className="w-full px-3 py-2 text-xs bg-muted/40 border border-border/80 rounded-xl font-mono text-foreground focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div className="flex justify-end gap-3 pt-6 border-t border-border/50">
@@ -142,6 +229,16 @@ export default function BranchRowActions({ branch }: { branch: any }) {
                     </div>
                 </div>
             )}
+
+            {/* Interactive Map Location Picker Modal */}
+            <MapPickerModal
+                isOpen={isMapOpen}
+                onClose={() => setIsMapOpen(false)}
+                onSelectLocation={handleMapLocationSelected}
+                initialLat={editLat ? parseFloat(editLat) : null}
+                initialLng={editLng ? parseFloat(editLng) : null}
+                initialAddress={editAddress}
+            />
         </div>
     )
 }

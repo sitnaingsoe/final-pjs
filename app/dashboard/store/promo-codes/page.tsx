@@ -2,15 +2,21 @@ import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
 import { redirect } from 'next/navigation'
 import PromoCodeManager from '@/components/dashboard/PromoCodeManager'
+import { getEffectiveBranchId } from '@/lib/branchContext'
 
 export default async function PromoCodesPage() {
     const session = await auth()
-    if (!session?.user?.branchId || session.user.role !== 'BRANCH_ADMIN') {
+    if (!session?.user) {
         redirect('/login')
     }
 
+    const branchId = await getEffectiveBranchId()
+    if (!branchId) {
+        redirect('/dashboard/hq')
+    }
+
     const promoCodes = await prisma.promoCode.findMany({
-        where: { branchId: session.user.branchId },
+        where: { branchId },
         orderBy: { createdAt: 'desc' }
     })
 
@@ -29,7 +35,7 @@ export default async function PromoCodesPage() {
                 </div>
             </div>
             
-            <PromoCodeManager branchId={session.user.branchId} promoCodes={promoCodes} />
+            <PromoCodeManager branchId={branchId} promoCodes={promoCodes} />
         </div>
     )
 }

@@ -1739,6 +1739,7 @@ export const PromoCodeScalarFieldEnum = {
   expiryDate: 'expiryDate',
   isActive: 'isActive',
   branchId: 'branchId',
+  companyId: 'companyId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

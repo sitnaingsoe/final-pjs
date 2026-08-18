@@ -119,6 +119,20 @@ export default async function ManageBranchesPage() {
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                                                             {branch.address || 'လိပ်စာမရှိ'}
                                                         </div>
+                                                        {branch.latitude && branch.longitude ? (
+                                                            <a
+                                                                href={`https://www.google.com/maps?q=${branch.latitude},${branch.longitude}`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="text-[10px] text-orange-600 hover:text-orange-700 dark:text-orange-400 font-mono font-bold flex items-center gap-1 mt-1 hover:underline"
+                                                                title="Open in Google Maps"
+                                                            >
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                                                                <span>{branch.latitude.toFixed(4)}, {branch.longitude.toFixed(4)}</span>
+                                                            </a>
+                                                        ) : (
+                                                            <span className="text-[9px] text-muted-foreground/60 font-medium block mt-0.5">No GPS Set</span>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </td>

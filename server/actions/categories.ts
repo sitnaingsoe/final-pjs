@@ -4,15 +4,16 @@
 import { prisma } from '@/lib/db'
 import { auth } from '@/auth'
 import { revalidatePath } from 'next/cache'
+import { getEffectiveBranchId } from '@/lib/branchContext'
 
 // ၁။ လက်ရှိဆိုင်ခွဲနှင့် သက်ဆိုင်သော အမျိုးအစားများအားလုံး ဆွဲထုတ်ခြင်း
 export async function getCategories() {
-    const session = await auth()
-    if (!session?.user?.branchId) return { success: false, data: [] }
+    const branchId = await getEffectiveBranchId()
+    if (!branchId) return { success: false, data: [] }
 
     try {
         const data = await prisma.menuCategory.findMany({
-            where: { branchId: session.user.branchId },
+            where: { branchId },
             include: {
                 _count: { select: { menuItems: true } }
             },
@@ -27,8 +28,9 @@ export async function getCategories() {
 // ၂။ အမျိုးအစားအသစ် တည်ဆောက်ခြင်း
 export async function createCategory(formData: FormData) {
     const session = await auth()
-    if (!session?.user?.branchId) return { success: false, error: "Authentication လိုအပ်ပါသည်" }
-    if (session.user.role === 'STAFF') return { success: false, error: "Permission Denied: Staff cannot perform this action." }
+    const branchId = await getEffectiveBranchId()
+    if (!branchId) return { success: false, error: "Authentication လိုအပ်ပါသည်" }
+    if (session?.user?.role === 'STAFF') return { success: false, error: "Permission Denied: Staff cannot perform this action." }
 
     const name = formData.get('name') as string
     const description = formData.get('description') as string
@@ -40,10 +42,10 @@ export async function createCategory(formData: FormData) {
             data: {
                 name,
                 description,
-                branchId: session.user.branchId
+                branchId
             }
         })
-        revalidatePath('/dashboard/categories')
+        revalidatePath('/dashboard/store/categories')
         return { success: true }
     } catch (error) {
         return { success: false, error: "အသစ်ဆောက်ရာတွင် အမှားအယွင်း ရှိနေပါသည်" }

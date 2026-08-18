@@ -177,6 +177,7 @@ export type CompanyWhereInput = {
   branches?: Prisma.BranchListRelationFilter
   users?: Prisma.UserListRelationFilter
   menus?: Prisma.MenuListRelationFilter
+  promoCodes?: Prisma.PromoCodeListRelationFilter
 }
 
 export type CompanyOrderByWithRelationInput = {
@@ -187,6 +188,7 @@ export type CompanyOrderByWithRelationInput = {
   branches?: Prisma.BranchOrderByRelationAggregateInput
   users?: Prisma.UserOrderByRelationAggregateInput
   menus?: Prisma.MenuOrderByRelationAggregateInput
+  promoCodes?: Prisma.PromoCodeOrderByRelationAggregateInput
 }
 
 export type CompanyWhereUniqueInput = Prisma.AtLeast<{
@@ -200,6 +202,7 @@ export type CompanyWhereUniqueInput = Prisma.AtLeast<{
   branches?: Prisma.BranchListRelationFilter
   users?: Prisma.UserListRelationFilter
   menus?: Prisma.MenuListRelationFilter
+  promoCodes?: Prisma.PromoCodeListRelationFilter
 }, "id">
 
 export type CompanyOrderByWithAggregationInput = {
@@ -230,6 +233,7 @@ export type CompanyCreateInput = {
   branches?: Prisma.BranchCreateNestedManyWithoutCompanyInput
   users?: Prisma.UserCreateNestedManyWithoutCompanyInput
   menus?: Prisma.MenuCreateNestedManyWithoutCompanyInput
+  promoCodes?: Prisma.PromoCodeCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateInput = {
@@ -240,6 +244,7 @@ export type CompanyUncheckedCreateInput = {
   branches?: Prisma.BranchUncheckedCreateNestedManyWithoutCompanyInput
   users?: Prisma.UserUncheckedCreateNestedManyWithoutCompanyInput
   menus?: Prisma.MenuUncheckedCreateNestedManyWithoutCompanyInput
+  promoCodes?: Prisma.PromoCodeUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUpdateInput = {
@@ -250,6 +255,7 @@ export type CompanyUpdateInput = {
   branches?: Prisma.BranchUpdateManyWithoutCompanyNestedInput
   users?: Prisma.UserUpdateManyWithoutCompanyNestedInput
   menus?: Prisma.MenuUpdateManyWithoutCompanyNestedInput
+  promoCodes?: Prisma.PromoCodeUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateInput = {
@@ -260,6 +266,7 @@ export type CompanyUncheckedUpdateInput = {
   branches?: Prisma.BranchUncheckedUpdateManyWithoutCompanyNestedInput
   users?: Prisma.UserUncheckedUpdateManyWithoutCompanyNestedInput
   menus?: Prisma.MenuUncheckedUpdateManyWithoutCompanyNestedInput
+  promoCodes?: Prisma.PromoCodeUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateManyInput = {
@@ -368,6 +375,22 @@ export type CompanyUpdateOneWithoutMenusNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutMenusInput, Prisma.CompanyUpdateWithoutMenusInput>, Prisma.CompanyUncheckedUpdateWithoutMenusInput>
 }
 
+export type CompanyCreateNestedOneWithoutPromoCodesInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutPromoCodesInput, Prisma.CompanyUncheckedCreateWithoutPromoCodesInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutPromoCodesInput
+  connect?: Prisma.CompanyWhereUniqueInput
+}
+
+export type CompanyUpdateOneWithoutPromoCodesNestedInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutPromoCodesInput, Prisma.CompanyUncheckedCreateWithoutPromoCodesInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutPromoCodesInput
+  upsert?: Prisma.CompanyUpsertWithoutPromoCodesInput
+  disconnect?: Prisma.CompanyWhereInput | boolean
+  delete?: Prisma.CompanyWhereInput | boolean
+  connect?: Prisma.CompanyWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutPromoCodesInput, Prisma.CompanyUpdateWithoutPromoCodesInput>, Prisma.CompanyUncheckedUpdateWithoutPromoCodesInput>
+}
+
 export type CompanyCreateWithoutBranchesInput = {
   id?: string
   name: string
@@ -375,6 +398,7 @@ export type CompanyCreateWithoutBranchesInput = {
   updatedAt?: Date | string
   users?: Prisma.UserCreateNestedManyWithoutCompanyInput
   menus?: Prisma.MenuCreateNestedManyWithoutCompanyInput
+  promoCodes?: Prisma.PromoCodeCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutBranchesInput = {
@@ -384,6 +408,7 @@ export type CompanyUncheckedCreateWithoutBranchesInput = {
   updatedAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutCompanyInput
   menus?: Prisma.MenuUncheckedCreateNestedManyWithoutCompanyInput
+  promoCodes?: Prisma.PromoCodeUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutBranchesInput = {
@@ -409,6 +434,7 @@ export type CompanyUpdateWithoutBranchesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUpdateManyWithoutCompanyNestedInput
   menus?: Prisma.MenuUpdateManyWithoutCompanyNestedInput
+  promoCodes?: Prisma.PromoCodeUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutBranchesInput = {
@@ -418,6 +444,7 @@ export type CompanyUncheckedUpdateWithoutBranchesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutCompanyNestedInput
   menus?: Prisma.MenuUncheckedUpdateManyWithoutCompanyNestedInput
+  promoCodes?: Prisma.PromoCodeUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutUsersInput = {
@@ -427,6 +454,7 @@ export type CompanyCreateWithoutUsersInput = {
   updatedAt?: Date | string
   branches?: Prisma.BranchCreateNestedManyWithoutCompanyInput
   menus?: Prisma.MenuCreateNestedManyWithoutCompanyInput
+  promoCodes?: Prisma.PromoCodeCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutUsersInput = {
@@ -436,6 +464,7 @@ export type CompanyUncheckedCreateWithoutUsersInput = {
   updatedAt?: Date | string
   branches?: Prisma.BranchUncheckedCreateNestedManyWithoutCompanyInput
   menus?: Prisma.MenuUncheckedCreateNestedManyWithoutCompanyInput
+  promoCodes?: Prisma.PromoCodeUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutUsersInput = {
@@ -461,6 +490,7 @@ export type CompanyUpdateWithoutUsersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branches?: Prisma.BranchUpdateManyWithoutCompanyNestedInput
   menus?: Prisma.MenuUpdateManyWithoutCompanyNestedInput
+  promoCodes?: Prisma.PromoCodeUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutUsersInput = {
@@ -470,6 +500,7 @@ export type CompanyUncheckedUpdateWithoutUsersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branches?: Prisma.BranchUncheckedUpdateManyWithoutCompanyNestedInput
   menus?: Prisma.MenuUncheckedUpdateManyWithoutCompanyNestedInput
+  promoCodes?: Prisma.PromoCodeUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutMenusInput = {
@@ -479,6 +510,7 @@ export type CompanyCreateWithoutMenusInput = {
   updatedAt?: Date | string
   branches?: Prisma.BranchCreateNestedManyWithoutCompanyInput
   users?: Prisma.UserCreateNestedManyWithoutCompanyInput
+  promoCodes?: Prisma.PromoCodeCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutMenusInput = {
@@ -488,6 +520,7 @@ export type CompanyUncheckedCreateWithoutMenusInput = {
   updatedAt?: Date | string
   branches?: Prisma.BranchUncheckedCreateNestedManyWithoutCompanyInput
   users?: Prisma.UserUncheckedCreateNestedManyWithoutCompanyInput
+  promoCodes?: Prisma.PromoCodeUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutMenusInput = {
@@ -513,6 +546,7 @@ export type CompanyUpdateWithoutMenusInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branches?: Prisma.BranchUpdateManyWithoutCompanyNestedInput
   users?: Prisma.UserUpdateManyWithoutCompanyNestedInput
+  promoCodes?: Prisma.PromoCodeUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutMenusInput = {
@@ -522,6 +556,63 @@ export type CompanyUncheckedUpdateWithoutMenusInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branches?: Prisma.BranchUncheckedUpdateManyWithoutCompanyNestedInput
   users?: Prisma.UserUncheckedUpdateManyWithoutCompanyNestedInput
+  promoCodes?: Prisma.PromoCodeUncheckedUpdateManyWithoutCompanyNestedInput
+}
+
+export type CompanyCreateWithoutPromoCodesInput = {
+  id?: string
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branches?: Prisma.BranchCreateNestedManyWithoutCompanyInput
+  users?: Prisma.UserCreateNestedManyWithoutCompanyInput
+  menus?: Prisma.MenuCreateNestedManyWithoutCompanyInput
+}
+
+export type CompanyUncheckedCreateWithoutPromoCodesInput = {
+  id?: string
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branches?: Prisma.BranchUncheckedCreateNestedManyWithoutCompanyInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutCompanyInput
+  menus?: Prisma.MenuUncheckedCreateNestedManyWithoutCompanyInput
+}
+
+export type CompanyCreateOrConnectWithoutPromoCodesInput = {
+  where: Prisma.CompanyWhereUniqueInput
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutPromoCodesInput, Prisma.CompanyUncheckedCreateWithoutPromoCodesInput>
+}
+
+export type CompanyUpsertWithoutPromoCodesInput = {
+  update: Prisma.XOR<Prisma.CompanyUpdateWithoutPromoCodesInput, Prisma.CompanyUncheckedUpdateWithoutPromoCodesInput>
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutPromoCodesInput, Prisma.CompanyUncheckedCreateWithoutPromoCodesInput>
+  where?: Prisma.CompanyWhereInput
+}
+
+export type CompanyUpdateToOneWithWhereWithoutPromoCodesInput = {
+  where?: Prisma.CompanyWhereInput
+  data: Prisma.XOR<Prisma.CompanyUpdateWithoutPromoCodesInput, Prisma.CompanyUncheckedUpdateWithoutPromoCodesInput>
+}
+
+export type CompanyUpdateWithoutPromoCodesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branches?: Prisma.BranchUpdateManyWithoutCompanyNestedInput
+  users?: Prisma.UserUpdateManyWithoutCompanyNestedInput
+  menus?: Prisma.MenuUpdateManyWithoutCompanyNestedInput
+}
+
+export type CompanyUncheckedUpdateWithoutPromoCodesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branches?: Prisma.BranchUncheckedUpdateManyWithoutCompanyNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutCompanyNestedInput
+  menus?: Prisma.MenuUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 
@@ -533,12 +624,14 @@ export type CompanyCountOutputType = {
   branches: number
   users: number
   menus: number
+  promoCodes: number
 }
 
 export type CompanyCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branches?: boolean | CompanyCountOutputTypeCountBranchesArgs
   users?: boolean | CompanyCountOutputTypeCountUsersArgs
   menus?: boolean | CompanyCountOutputTypeCountMenusArgs
+  promoCodes?: boolean | CompanyCountOutputTypeCountPromoCodesArgs
 }
 
 /**
@@ -572,6 +665,13 @@ export type CompanyCountOutputTypeCountMenusArgs<ExtArgs extends runtime.Types.E
   where?: Prisma.MenuWhereInput
 }
 
+/**
+ * CompanyCountOutputType without action
+ */
+export type CompanyCountOutputTypeCountPromoCodesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PromoCodeWhereInput
+}
+
 
 export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -581,6 +681,7 @@ export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   branches?: boolean | Prisma.Company$branchesArgs<ExtArgs>
   users?: boolean | Prisma.Company$usersArgs<ExtArgs>
   menus?: boolean | Prisma.Company$menusArgs<ExtArgs>
+  promoCodes?: boolean | Prisma.Company$promoCodesArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["company"]>
 
@@ -610,6 +711,7 @@ export type CompanyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   branches?: boolean | Prisma.Company$branchesArgs<ExtArgs>
   users?: boolean | Prisma.Company$usersArgs<ExtArgs>
   menus?: boolean | Prisma.Company$menusArgs<ExtArgs>
+  promoCodes?: boolean | Prisma.Company$promoCodesArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CompanyIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -621,6 +723,7 @@ export type $CompanyPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     branches: Prisma.$BranchPayload<ExtArgs>[]
     users: Prisma.$UserPayload<ExtArgs>[]
     menus: Prisma.$MenuPayload<ExtArgs>[]
+    promoCodes: Prisma.$PromoCodePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1024,6 +1127,7 @@ export interface Prisma__CompanyClient<T, Null = never, ExtArgs extends runtime.
   branches<T extends Prisma.Company$branchesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$branchesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   users<T extends Prisma.Company$usersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$usersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   menus<T extends Prisma.Company$menusArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$menusArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MenuPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  promoCodes<T extends Prisma.Company$promoCodesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$promoCodesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PromoCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1519,6 +1623,30 @@ export type Company$menusArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.MenuScalarFieldEnum | Prisma.MenuScalarFieldEnum[]
+}
+
+/**
+ * Company.promoCodes
+ */
+export type Company$promoCodesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PromoCode
+   */
+  select?: Prisma.PromoCodeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PromoCode
+   */
+  omit?: Prisma.PromoCodeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PromoCodeInclude<ExtArgs> | null
+  where?: Prisma.PromoCodeWhereInput
+  orderBy?: Prisma.PromoCodeOrderByWithRelationInput | Prisma.PromoCodeOrderByWithRelationInput[]
+  cursor?: Prisma.PromoCodeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PromoCodeScalarFieldEnum | Prisma.PromoCodeScalarFieldEnum[]
 }
 
 /**

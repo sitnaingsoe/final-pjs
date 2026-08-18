@@ -831,10 +831,12 @@ export type BranchCreateNestedOneWithoutPromoCodesInput = {
   connect?: Prisma.BranchWhereUniqueInput
 }
 
-export type BranchUpdateOneRequiredWithoutPromoCodesNestedInput = {
+export type BranchUpdateOneWithoutPromoCodesNestedInput = {
   create?: Prisma.XOR<Prisma.BranchCreateWithoutPromoCodesInput, Prisma.BranchUncheckedCreateWithoutPromoCodesInput>
   connectOrCreate?: Prisma.BranchCreateOrConnectWithoutPromoCodesInput
   upsert?: Prisma.BranchUpsertWithoutPromoCodesInput
+  disconnect?: Prisma.BranchWhereInput | boolean
+  delete?: Prisma.BranchWhereInput | boolean
   connect?: Prisma.BranchWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.BranchUpdateToOneWithWhereWithoutPromoCodesInput, Prisma.BranchUpdateWithoutPromoCodesInput>, Prisma.BranchUncheckedUpdateWithoutPromoCodesInput>
 }

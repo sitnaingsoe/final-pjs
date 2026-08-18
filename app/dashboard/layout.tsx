@@ -1,10 +1,12 @@
+// app/dashboard/layout.tsx
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { signOut, useSession } from 'next-auth/react' // 💡 Session ယူရန် useSession ပါတွဲသုံးပါသည်
+import { signOut, useSession } from 'next-auth/react'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import LogoutConfirmModal from '@/components/dashboard/LogoutConfirmModal'
 
 // Icon definitions
 const HomeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
@@ -33,32 +35,36 @@ export default function DashboardLayout({
     const role = session?.user?.role
     const userName = session?.user?.name || 'ဝန်ထမ်း'
 
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false)
+    const [isLoggingOut, setIsLoggingOut] = useState(false)
+
     // 🚪 စနစ်မှထွက်ပြီး Login Page သို့ ပြန်မောင်းထုတ်မည့် function
     const handleLogout = async () => {
-        // Custom JWT Access Token ကို ရှင်းလင်းမည်
+        setIsLoggingOut(true)
         localStorage.removeItem('accessToken')
-        
-        // Refresh Token ကို ဖျက်ရန် API ခေါ်မည်
         try {
             await fetch('/api/auth/logout', { method: 'POST' })
         } catch (e) {
             console.error("Logout API failed", e)
         }
-
-        // NextAuth Session ရှင်းမည်
         await signOut({ callbackUrl: '/login' })
     }
 
-    // 🎯 Role အပေါ်မူတည်ပြီး လမ်းကြောင်းသစ်များ (dashboard/...) ခွဲခြားသတ်မှတ်ခြင်း
-    const links = role === 'COMPANY_HEAD'
+    const isStoreView = pathname.startsWith('/dashboard/store')
+
+    // 🎯 Role နှင့် လက်ရှိ Route အပေါ်မူတည်ပြီး လမ်းကြောင်းသစ်များ ခွဲခြားသတ်မှတ်ခြင်း
+    const links = (role === 'COMPANY_HEAD' && !isStoreView)
         ? [
             { name: "Overview Dashboard", path: "/dashboard/hq", icon: <HomeIcon /> },
             { name: "ဆိုင်ခွဲများ (Branches)", path: "/dashboard/hq/branches", icon: <StoreIcon /> },
+            { name: "ဗဟိုပရိုမိုကုဒ် (Campaigns)", path: "/dashboard/hq/campaigns", icon: <TicketIcon /> },
             { name: "ဘေလ်မှတ်တမ်းများ (Invoices)", path: "/dashboard/hq/invoices", icon: <InvoiceIcon /> },
             { name: "ဝန်ထမ်းများ (Staff)", path: "/dashboard/hq/staff", icon: <UsersIcon /> },
             { name: "ဗဟိုမီနူး (Main Menu)", path: "/dashboard/hq/menu", icon: <MenuIcon /> },
+            { name: "ဗဟိုဆက်တင် (HQ Settings)", path: "/dashboard/hq/settings", icon: <SettingsIcon /> },
         ]
         : [
+            ...(role === 'COMPANY_HEAD' ? [{ name: "← Back to HQ Control", path: "/dashboard/hq", icon: <HomeIcon /> }] : []),
             { name: "ပင်မ Dashboard", path: "/dashboard/store", icon: <HomeIcon /> },
             { name: "အော်ဒါများ (Orders)", path: "/dashboard/store/orders", icon: <OrdersIcon /> },
             { name: "ဘေလ်မှတ်တမ်းများ (Invoices)", path: "/dashboard/store/invoices", icon: <InvoiceIcon /> },
@@ -74,11 +80,10 @@ export default function DashboardLayout({
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
 
-    // Session ဆွဲနေတုန်း UI ဗလာမဖြစ်အောင် loading ပြခြင်း
     if (status === 'loading') {
         return (
             <div className="min-h-screen bg-background flex items-center justify-center text-foreground">
-                <span className="w-8 h-8 border-4 border-foreground border-t-transparent rounded-full animate-spin"></span>
+                <span className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></span>
             </div>
         )
     }
@@ -93,15 +98,16 @@ export default function DashboardLayout({
                         key={link.path}
                         href={link.path}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className={`flex items-center gap-3 p-3 transition-all duration-300 text-sm font-semibold relative overflow-hidden ${isActive
-                            ? 'text-orange-600'
-                            : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900 rounded-2xl'
-                            }`}
+                        className={`flex items-center gap-3 p-3 transition-all duration-300 text-sm font-semibold relative overflow-hidden rounded-2xl ${
+                            isActive
+                                ? 'text-orange-600 dark:text-orange-400 font-bold bg-orange-500/10'
+                                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                        }`}
                     >
                         {isActive && (
-                            <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-transparent border-l-2 border-orange-500 rounded-r-2xl" />
+                            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-gradient-to-b from-orange-500 to-amber-500 rounded-r-full" />
                         )}
-                        <span className={`relative z-10 transition-colors ${isActive ? 'text-orange-500' : 'text-slate-400 group-hover:text-slate-700'}`}>{link.icon}</span>
+                        <span className={`relative z-10 transition-colors ${isActive ? 'text-orange-500' : 'text-muted-foreground group-hover:text-foreground'}`}>{link.icon}</span>
                         <span className="relative z-10 tracking-wide">{link.name}</span>
                     </Link>
                 )
@@ -110,20 +116,20 @@ export default function DashboardLayout({
     )
 
     const sidebarFooter = (
-        <div className="p-4 border-t border-slate-200/80 flex items-center justify-between gap-2 bg-white">
+        <div className="p-4 border-t border-border flex items-center justify-between gap-2 bg-card">
             <div className="flex items-center gap-3 overflow-hidden">
-                <div className="w-9 h-9 bg-orange-50 text-orange-600 rounded-lg flex items-center justify-center font-bold text-sm shrink-0 uppercase">
+                <div className="w-9 h-9 bg-orange-500/10 text-orange-600 dark:text-orange-400 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 uppercase border border-orange-500/20">
                     {userName.substring(0, 2)}
                 </div>
                 <div className="overflow-hidden">
-                    <p className="text-sm font-semibold truncate text-slate-800">{userName}</p>
-                    <p className="text-[10px] text-slate-500 font-medium uppercase tracking-wider mt-0.5">{role || 'STAFF'}</p>
+                    <p className="text-sm font-semibold truncate text-foreground">{userName}</p>
+                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mt-0.5">{role || 'STAFF'}</p>
                 </div>
             </div>
 
             <button
-                onClick={handleLogout}
-                className="p-2.5 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-xl transition-colors shrink-0 group"
+                onClick={() => setIsLogoutModalOpen(true)}
+                className="p-2.5 hover:bg-red-500/10 text-muted-foreground hover:text-red-500 rounded-xl transition-colors shrink-0 group cursor-pointer"
                 title="စနစ်မှထွက်မည်"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-x-0.5 transition-transform"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
@@ -135,47 +141,45 @@ export default function DashboardLayout({
         <div className="flex h-screen bg-background font-sans text-foreground overflow-hidden relative">
 
             {/* ၁။ SIDEBAR (Desktop View) */}
-            <aside className="w-[280px] bg-white text-slate-800 flex-col justify-between hidden lg:flex border-r border-slate-200/80 z-20 relative">
+            <aside className="w-[280px] bg-card text-card-foreground flex-col justify-between hidden lg:flex border-r border-border z-20 relative">
                 <div className="p-6 pb-4 flex items-center gap-3 relative z-10">
-                    <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center text-white shrink-0 shadow-sm shadow-orange-500/20">
+                    <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center text-white shrink-0 shadow-md shadow-orange-500/20">
                         <LogoIcon />
                     </div>
                     <div>
-                        <span className="text-base font-bold tracking-tight text-slate-900 leading-none block">BITECRAFT</span>
-                        <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest leading-none block mt-1">Operating System</span>
+                        <span className="text-base font-bold tracking-tight text-foreground leading-none block">BITECRAFT</span>
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none block mt-1">Operating System</span>
                     </div>
                 </div>
                 {navigationLinks}
                 {sidebarFooter}
             </aside>
 
-            {/* ၂။ MOBILE DRAWER (Mobile View Navigation Overlay) */}
+            {/* ၂။ MOBILE DRAWER */}
             {isMobileMenuOpen && (
                 <div className="fixed inset-0 z-50 lg:hidden flex">
-                    {/* Backdrop */}
                     <div 
-                        className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity animate-in fade-in" 
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity animate-in fade-in" 
                         onClick={() => setIsMobileMenuOpen(false)}
                     />
                     
-                    {/* Drawer Content */}
-                    <aside className="relative w-[280px] bg-card text-foreground flex flex-col justify-between h-full shadow-2xl z-10 animate-in slide-in-from-left duration-300">
+                    <aside className="relative w-[280px] bg-card text-foreground flex flex-col justify-between h-full shadow-2xl z-10 animate-in slide-in-from-left duration-300 border-r border-border">
                         <div>
-                            <div className="p-6 pb-4 flex items-center justify-between">
+                            <div className="p-6 pb-4 flex items-center justify-between border-b border-border/50">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-9 h-9 bg-foreground rounded-lg flex items-center justify-center text-background shrink-0">
+                                    <div className="w-9 h-9 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center text-white shrink-0 shadow-sm">
                                         <LogoIcon />
                                     </div>
                                     <div>
                                         <span className="text-base font-bold tracking-tight text-foreground leading-none block">BITECRAFT</span>
-                                        <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest leading-none block mt-1">Operating System</span>
+                                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none block mt-1">Operating System</span>
                                     </div>
                                 </div>
                                 <button 
                                     onClick={() => setIsMobileMenuOpen(false)} 
                                     className="p-2 rounded-xl hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
                                 </button>
                             </div>
                             {navigationLinks}
@@ -186,27 +190,27 @@ export default function DashboardLayout({
             )}
 
             {/* ၃။ MAIN CONTENT AREA */}
-            <div className="flex-1 flex flex-col overflow-hidden bg-slate-50/50">
+            <div className="flex-1 flex flex-col overflow-hidden bg-background">
 
                 {/* TOP NAVBAR */}
-                <header className="h-[76px] bg-white/80 backdrop-blur-2xl flex items-center justify-between px-6 border-b border-slate-200/80 sticky top-0 z-10 relative">
+                <header className="h-[76px] bg-card/80 backdrop-blur-2xl flex items-center justify-between px-6 border-b border-border sticky top-0 z-10 relative">
                     <div className="flex items-center gap-4 relative z-10">
                         <button 
                             onClick={() => setIsMobileMenuOpen(true)}
-                            className="lg:hidden p-2.5 -ml-2 rounded-2xl hover:bg-slate-100 text-slate-500 transition-all"
+                            className="lg:hidden p-2.5 -ml-2 rounded-2xl hover:bg-muted text-muted-foreground hover:text-foreground transition-all"
                             aria-label="Open menu"
                         >
                             <HamburgerIcon />
                         </button>
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center hidden sm:flex">
+                            <div className="w-10 h-10 rounded-2xl bg-orange-500/10 text-orange-600 dark:text-orange-400 flex items-center justify-center hidden sm:flex border border-orange-500/20">
                                 {role === 'COMPANY_HEAD' ? <StoreIcon /> : <HomeIcon />}
                             </div>
                             <div>
-                                <h1 className="text-sm font-bold text-slate-900 tracking-tight uppercase">
+                                <h1 className="text-sm font-bold text-foreground tracking-tight uppercase">
                                     {role === 'COMPANY_HEAD' ? 'Central Control' : 'Branch Operation'}
                                 </h1>
-                                <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest mt-0.5">
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">
                                     Workspace
                                 </p>
                             </div>
@@ -217,7 +221,7 @@ export default function DashboardLayout({
                         <ThemeToggle />
                         <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full">
                             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
-                            <span className="text-xs font-bold text-green-700 uppercase tracking-wider">Live</span>
+                            <span className="text-xs font-bold text-green-600 dark:text-green-400 uppercase tracking-wider">Live</span>
                         </div>
                     </div>
                 </header>
@@ -228,6 +232,13 @@ export default function DashboardLayout({
                     </div>
                 </main>
             </div>
+
+            <LogoutConfirmModal
+                isOpen={isLogoutModalOpen}
+                onClose={() => !isLoggingOut && setIsLogoutModalOpen(false)}
+                onConfirm={handleLogout}
+                isPending={isLoggingOut}
+            />
 
         </div>
     )

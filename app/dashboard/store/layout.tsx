@@ -1,5 +1,7 @@
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
+import { getActiveBranchInfo } from '@/lib/branchContext'
+import StoreViewBanner from '@/components/dashboard/StoreViewBanner'
 
 export default async function StoreDashboardLayout({
     children,
@@ -20,11 +22,18 @@ export default async function StoreDashboardLayout({
         redirect('/pos')
     }
 
-    // 🎯 COMPANY_HEAD ဆိုလျှင် သူတို့၏ Headquarter Dashboard သို့ ပို့မည်
-    if (role === 'COMPANY_HEAD') {
-        redirect('/dashboard/hq')
-    }
+    const branchInfo = await getActiveBranchInfo()
 
-    // Role က BRANCH_ADMIN ဖြစ်မှသာ အောက်ပါ Store UI များကို ဆက်လက်ပြသမည်
-    return <>{children}</>
+    return (
+        <div className="space-y-6">
+            {branchInfo?.isOwnerImpersonating && branchInfo.branchId && (
+                <StoreViewBanner
+                    currentBranchId={branchInfo.branchId}
+                    currentBranchName={branchInfo.branchName}
+                    branches={branchInfo.branches}
+                />
+            )}
+            {children}
+        </div>
+    )
 }

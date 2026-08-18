@@ -15,6 +15,11 @@ export async function createBranchWithAdmin(formData: FormData) {
     const phone = formData.get('phone') as string
     const companyId = formData.get('companyId') as string // လက်ရှိ Owner ရဲ့ Company ID
 
+    const latStr = formData.get('latitude') as string
+    const lngStr = formData.get('longitude') as string
+    const latitude = latStr && !isNaN(parseFloat(latStr)) ? parseFloat(latStr) : null
+    const longitude = lngStr && !isNaN(parseFloat(lngStr)) ? parseFloat(lngStr) : null
+
     // Admin User အတွက် ဒေတာများ
     const adminEmail = formData.get('adminEmail') as string
     const adminName = formData.get('adminName') as string
@@ -46,7 +51,9 @@ export async function createBranchWithAdmin(formData: FormData) {
                     companyId,
                     restaurantName: branchName,
                     currency: "MMK",
-                    taxRate: 5.0
+                    taxRate: 5.0,
+                    latitude,
+                    longitude
                 }
             })
 
@@ -63,7 +70,7 @@ export async function createBranchWithAdmin(formData: FormData) {
         })
 
         // Dashboard ဒေတာများကို Update ဖြစ်သွားအောင် Cache ရှင်းခြင်း
-        revalidatePath('/company/branches')
+        revalidatePath('/dashboard/hq/branches')
         return { success: true }
 
     } catch (error) {
@@ -79,14 +86,19 @@ export async function updateBranch(branchId: string, formData: FormData) {
     const name = formData.get('branchName') as string
     const address = formData.get('address') as string
     const phone = formData.get('phone') as string
+    const latStr = formData.get('latitude') as string
+    const lngStr = formData.get('longitude') as string
+    const latitude = latStr && !isNaN(parseFloat(latStr)) ? parseFloat(latStr) : null
+    const longitude = lngStr && !isNaN(parseFloat(lngStr)) ? parseFloat(lngStr) : null
 
     if (!name) return { success: false, error: "ဆိုင်ခွဲအမည် ဖြည့်စွက်ပေးရပါမည်" }
 
     try {
         await prisma.branch.update({
             where: { id: branchId },
-            data: { name, address, phone }
+            data: { name, address, phone, latitude, longitude }
         })
+        revalidatePath('/dashboard/hq/branches')
         return { success: true }
     } catch (error) {
         return { success: false, error: "ပြင်ဆင်ရာတွင် အမှားအယွင်း ရှိနေပါသည်" }
@@ -107,9 +119,55 @@ export async function deleteBranch(branchId: string) {
             prisma.branch.delete({ where: { id: branchId } })
         ])
 
+        revalidatePath('/dashboard/hq/branches')
         return { success: true }
     } catch (error) {
         console.error(error)
         return { success: false, error: "ဖျက်ဆီးရာတွင် အမှားအယွင်း ရှိနေပါသည်" }
     }
+}
+
+// 🏢 ၃။ Company Head အနေဖြင့် ဆိုင်ခွဲတစ်ခုကို ရွေးချယ်ကြည့်ရှုမည့် Action
+export async function setActiveBranchView(branchId: string) {
+    const session = await auth()
+    if (session?.user?.role !== 'COMPANY_HEAD') {
+        return { success: false, error: 'Unauthorized: Only Company Head can switch branch view' }
+    }
+
+    try {
+        const currentUser = await prisma.user.findUnique({
+            where: { email: session.user.email! },
+            select: { companyId: true, branch: { select: { companyId: true } } }
+        })
+        const companyId = currentUser?.companyId || currentUser?.branch?.companyId
+        if (!companyId) return { success: false, error: 'No company found' }
+
+        const branch = await prisma.branch.findFirst({
+            where: { id: branchId, companyId },
+            select: { id: true, name: true }
+        })
+        if (!branch) return { success: false, error: 'Branch not found' }
+
+        const { cookies } = await import('next/headers')
+        const cookieStore = await cookies()
+        cookieStore.set('active_branch_id', branchId, { path: '/', httpOnly: true, sameSite: 'lax' })
+
+        revalidatePath('/dashboard/store')
+        revalidatePath('/dashboard/store/orders')
+        revalidatePath('/pos')
+        return { success: true, branchName: branch.name }
+    } catch (error: any) {
+        console.error('setActiveBranchView error:', error)
+        return { success: false, error: 'ဆိုင်ခွဲရွေးချယ်မှု မအောင်မြင်ပါ' }
+    }
+}
+
+// 🏢 ၄။ Store View မှ HQ Control သို့ ပြန်ထွက်မည့် Action
+export async function clearActiveBranchView() {
+    const { cookies } = await import('next/headers')
+    const cookieStore = await cookies()
+    cookieStore.delete('active_branch_id')
+
+    revalidatePath('/dashboard/hq')
+    return { success: true }
 }

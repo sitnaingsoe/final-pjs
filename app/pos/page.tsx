@@ -6,6 +6,9 @@ import { getMenuItems } from '@/server/actions/menu'
 import { getCategories } from '@/server/actions/categories'
 import { getTables } from '@/server/actions/tables'
 import PosTerminal from '@/components/pos/PosTerminal'
+import PosLogoutButton from '@/components/pos/PosLogoutButton'
+
+import { getEffectiveBranchId } from '@/lib/branchContext'
 
 export default async function PosPage({
     searchParams
@@ -14,9 +17,13 @@ export default async function PosPage({
 }) {
     const session = await auth()
     
-    // Ensure the user is logged in and has a branchId (must be STAFF or BRANCH_ADMIN)
-    if (!session?.user?.branchId || !session?.user?.id) {
+    if (!session?.user?.id) {
         redirect('/login')
+    }
+
+    const effectiveBranchId = session.user.branchId || (await getEffectiveBranchId())
+    if (!effectiveBranchId) {
+        redirect('/dashboard/hq')
     }
 
     // 🔥 အကောင့် ယာယီပိတ်ခံထားရခြင်း (isActive: false) ရှိမရှိ စစ်ဆေးမည်
@@ -63,7 +70,7 @@ export default async function PosPage({
         : localCategories
 
     // Filter tables for the current branch
-    const branchTables = (tablesResult.data || []).filter(t => t.branchId === session.user.branchId)
+    const branchTables = (tablesResult.data || []).filter(t => t.branchId === effectiveBranchId)
 
     return (
         <div className="h-[100dvh] w-full bg-background text-foreground overflow-hidden flex flex-col print:bg-white print:h-auto print:overflow-visible">
@@ -94,20 +101,8 @@ export default async function PosPage({
                         </a>
                     )}
 
-                    {/* 🚪 Logout Button */}
-                    <form action={async () => {
-                        'use server'
-                        await signOut({ redirectTo: '/login' })
-                    }}>
-                        <button
-                            type="submit"
-                            className="group relative inline-flex items-center justify-center gap-2 bg-destructive/10 hover:bg-destructive text-destructive hover:text-destructive-foreground font-medium px-4 py-2.5 rounded-lg text-xs uppercase tracking-wider transition-colors shrink-0"
-                            title="Logout POS Terminal"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:-translate-x-0.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
-                            <span>Logout</span>
-                        </button>
-                    </form>
+                    {/* 🚪 Logout Button with Confirmation Box */}
+                    <PosLogoutButton />
                 </div>
             </header>
 
@@ -116,7 +111,7 @@ export default async function PosPage({
                     menuItems={menuItems} 
                     categories={categories} 
                     tables={branchTables}
-                    branchId={session.user.branchId} 
+                    branchId={effectiveBranchId} 
                     initialTableNumber={initialTableNumber}
                 />
             </main>

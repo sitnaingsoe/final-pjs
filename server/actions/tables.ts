@@ -5,13 +5,14 @@
 import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
 import { revalidatePath } from 'next/cache'
+import { getEffectiveBranchId } from '@/lib/branchContext'
 
 export async function getTables() {
-  const session = await auth()
-  if (!session?.user?.branchId) return { success: false, data: [] }
+  const branchId = await getEffectiveBranchId()
+  if (!branchId) return { success: false, data: [] }
   try {
     const tables = await prisma.table.findMany({
-      where: { branchId: session.user.branchId },
+      where: { branchId },
       orderBy: { number: 'asc' }
     })
     return { success: true, data: tables }
@@ -24,14 +25,14 @@ export async function getTables() {
 export async function createTable(formData: FormData) {
   const number = formData.get('number') as string
   const session = await auth();
-  if (!session?.user?.branchId) return { success: false, data: [] }
-  if (session.user.role === 'STAFF') return { success: false, error: "Permission Denied: Staff cannot perform this action." }
+  const branchId = await getEffectiveBranchId()
+  if (!branchId) return { success: false, data: [] }
+  if (session?.user?.role === 'STAFF') return { success: false, error: "Permission Denied: Staff cannot perform this action." }
 
   if (!number) return { success: false, error: "စားပွဲနံပါတ် ထည့်သွင်းပါ" }
 
   try {
     const domain = process.env.AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-    const branchId = session.user.branchId;
 
     const newTable = await prisma.table.create({
       data: {

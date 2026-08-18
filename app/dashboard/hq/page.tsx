@@ -109,12 +109,37 @@ export default async function HQHomePage({ searchParams }: PageProps) {
 
   const averageOrderValue = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0
 
+  const companyRecord = await prisma.company.findUnique({
+    where: { id: companyId },
+    select: { name: true }
+  })
+  const companyName = companyRecord?.name || 'BiteCraft Food Group'
+
+  let dateRangeLabel = 'All Time'
+  if (params.from && params.to) {
+    dateRangeLabel = `${params.from} to ${params.to}`
+  } else if (params.from) {
+    dateRangeLabel = `From ${params.from}`
+  } else if (params.to) {
+    dateRangeLabel = `Until ${params.to}`
+  }
+
   const chartData = branchTableData.map(b => ({ 
     name: b.name, 
     revenue: b.revenue,
     orders: b.totalOrders
   }))
-  const dashboardPayload = { totalBranches, totalOrders, totalRevenue, averageOrderValue, branchTableData, chartData }
+
+  const dashboardPayload = { 
+    companyName,
+    dateRangeLabel,
+    totalBranches, 
+    totalOrders, 
+    totalRevenue, 
+    averageOrderValue, 
+    branchTableData, 
+    chartData 
+  }
 
   return (
     <div className="space-y-6 lg:space-y-8 animate-in fade-in zoom-in-95 duration-500">
@@ -127,7 +152,7 @@ export default async function HQHomePage({ searchParams }: PageProps) {
             </div>
             <div>
                 <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-foreground">Central Control</h1>
-
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">Multi-branch enterprise analytics & reporting</p>
             </div>
         </div>
         <div className="shrink-0 w-full md:w-auto">
