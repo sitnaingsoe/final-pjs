@@ -41,13 +41,16 @@ export default function DashboardLayout({
     // 🚪 စနစ်မှထွက်ပြီး Login Page သို့ ပြန်မောင်းထုတ်မည့် function
     const handleLogout = async () => {
         setIsLoggingOut(true)
-        localStorage.removeItem('accessToken')
         try {
+            localStorage.clear()
+            sessionStorage.clear()
             await fetch('/api/auth/logout', { method: 'POST' })
+            await signOut({ redirect: false })
         } catch (e) {
             console.error("Logout API failed", e)
+        } finally {
+            window.location.href = '/login'
         }
-        await signOut({ callbackUrl: '/login' })
     }
 
     const isStoreView = pathname.startsWith('/dashboard/store')

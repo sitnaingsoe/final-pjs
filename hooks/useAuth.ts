@@ -24,14 +24,15 @@ export function useAuth() {
 
     const logout = async () => {
         try {
+            localStorage.clear()
+            sessionStorage.clear()
             await fetch('/api/auth/logout', { method: 'POST' })
         } catch (e) {
             console.error('Logout request failed', e)
         } finally {
-            localStorage.removeItem('accessToken')
             setToken(null)
             setIsAuthenticated(false)
-            router.push('/login')
+            window.location.href = '/login'
         }
     }
 

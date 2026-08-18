@@ -11,13 +11,16 @@ export default function PosLogoutButton() {
 
     const handleConfirmLogout = async () => {
         setIsLoggingOut(true)
-        localStorage.removeItem('accessToken')
         try {
+            localStorage.clear()
+            sessionStorage.clear()
             await fetch('/api/auth/logout', { method: 'POST' })
+            await signOut({ redirect: false })
         } catch (e) {
             console.error("Logout API failed", e)
+        } finally {
+            window.location.href = '/login'
         }
-        await signOut({ callbackUrl: '/login' })
     }
 
     return (
